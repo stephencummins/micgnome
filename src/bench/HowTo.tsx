@@ -82,6 +82,11 @@ export function HowTo({ onClose }: { onClose: () => void }) {
           </a>
           . it is the authority on what the mic does &mdash; the effect list, the parameter ranges and the
           recovery instruction all come from it. mic gnome is not affiliated with teenage engineering.
+          it is one of the things at{' '}
+          <a href="https://stephen8n.com" target="_blank" rel="noreferrer noopener" className="text-orange underline">
+            stephen8n.com
+          </a>
+          .
         </p>
 
         <button type="button" onClick={onClose}
