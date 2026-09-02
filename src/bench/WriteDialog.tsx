@@ -17,11 +17,14 @@ export function WriteDialog({
   disk,
   config,
   report,
+  files,
   onClose,
 }: {
   disk: MicDisk
   config: Config
   report: Report
+  /** The sample wavs, already encoded exactly as the budget meter counted them. */
+  files: { name: string; data: Uint8Array }[]
   onClose: () => void
 }) {
   const [stage, setStage] = useState<Stage>('confirm')
@@ -37,7 +40,16 @@ export function WriteDialog({
     try {
       const snapshot = await disk.snapshot()
       setBackup(snapshot)
+
+      // Clear wavs the pack no longer uses first, so their bytes are free for
+      // the ones it does. Otherwise a straight swap can hit the ceiling.
+      const keep = new Set([CONFIG_NAME, ...files.map((f) => f.name)])
+      for (const existing of await disk.files()) {
+        if (!keep.has(existing.name)) await disk.remove(existing.name)
+      }
+      for (const file of files) await disk.write(file.name, file.data)
       await disk.write(CONFIG_NAME, serialize(config))
+
       const restart = await disk.eject()
       setResult(restart)
       setStage(restart.booted ? 'done' : 'failed')
@@ -73,7 +85,10 @@ export function WriteDialog({
           <div className="mt-4 flex flex-col gap-3">
             <ol className="m-0 flex list-none flex-col gap-2 p-0">
               <Step n="1">back up everything already on the disk, so putting it back is one click</Step>
-              <Step n="2">write {CONFIG_NAME} and any samples</Step>
+              <Step n="2">
+                write {CONFIG_NAME}
+                {files.length > 0 && ` and ${files.length} sample${files.length === 1 ? '' : 's'}`}
+              </Step>
               <Step n="3">eject, and wait for the mic to restart — do not pull the cable</Step>
             </ol>
             {blocked ? (

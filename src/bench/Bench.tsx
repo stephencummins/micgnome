@@ -1,47 +1,113 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react'
 import { MicDisk } from '../fxmic/disk'
+import { applyEncoding, encodedBytes, fit, nativeEncoding, type FitPlan } from '../fxmic/fit'
 import { parseConfig } from '../fxmic/parse'
-import { blankConfig } from '../fxmic/serialize'
+import { blankConfig, serialize } from '../fxmic/serialize'
 import { LIMITS } from '../fxmic/spec'
 import type { Config, DiskFile } from '../fxmic/types'
 import { validate } from '../fxmic/validate'
+import { checkPlayable, decodeWav, encodeWav, WavError } from '../fxmic/wav'
 import { Chain } from './Chain'
 import { HandleMap } from './HandleMap'
 import { Modulation } from './Modulation'
+import { SampleBay, type Source } from './SampleBay'
 import { Verdict } from './Verdict'
 import { WriteDialog } from './WriteDialog'
 import { reduce, type BenchState } from './state'
 
 const initial: BenchState = { config: blankConfig('PIER AT NIGHT'), selected: 0, handle: 0 }
+type Tab = 'chain' | 'samples'
 
 export function Bench() {
   const [state, dispatch] = useReducer(reduce, initial)
   const [disk] = useState(() => MicDisk.virtual())
-  const [files, setFiles] = useState<DiskFile[]>([])
+  const [diskFiles, setDiskFiles] = useState<DiskFile[]>([])
+  const [sources, setSources] = useState(new Map<string, Source>())
+  const [plan, setPlan] = useState<FitPlan>()
+  const [tab, setTab] = useState<Tab>('chain')
   const [writing, setWriting] = useState(false)
   const [focus, setFocus] = useState<string>()
+  const [note, setNote] = useState<string>()
 
-  const refresh = useCallback(async () => setFiles(await disk.files()), [disk])
+  const refresh = useCallback(async () => setDiskFiles(await disk.files()), [disk])
   useEffect(() => {
     void refresh()
   }, [refresh])
 
-  const report = useMemo(() => validate(state.config, { files }), [state.config, files])
-  const preset = state.config.presets[state.selected]
-  const used = files.reduce((n, f) => n + f.bytes, 0)
+  const samples = useMemo(() => state.config.samples ?? [], [state.config.samples])
+  const configText = useMemo(() => serialize(state.config), [state.config])
 
-  async function importFile(file: File) {
+  /** What would actually land on the disk, so the meter and the validator agree. */
+  const packFiles = useMemo(() => {
+    const files: { name: string; data: Uint8Array }[] = []
+    for (const sample of samples) {
+      const source = sources.get(sample.file)
+      if (!source || source.problem) continue
+      const audio = applyEncoding(source.audio, source.encoding)
+      files.push({ name: sample.file, data: encodeWav(audio, source.encoding.bitDepth, source.encoding.float) })
+    }
+    return files
+  }, [samples, sources])
+
+  const report = useMemo(() => {
+    const files: DiskFile[] = packFiles.map((f) => ({ name: f.name, bytes: f.data.byteLength }))
+    files.push({ name: 'config.json', bytes: new TextEncoder().encode(configText).byteLength })
+    return validate(state.config, { files })
+  }, [state.config, packFiles, configText])
+
+  const preset = state.config.presets[state.selected]
+  const configBytes = new TextEncoder().encode(configText).byteLength
+
+  async function addSample(file: File) {
+    setNote(undefined)
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer())
+      const { audio, format } = decodeWav(bytes)
+      const problem = checkPlayable(format)
+      const encoding = nativeEncoding(audio, format.float ? 16 : format.bitDepth, false)
+      const source: Source = { audio, format, encoding, bytes: encodedBytes(audio, encoding), problem }
+      setSources((current) => new Map(current).set(file.name, source))
+      dispatch({ type: 'add-sample', file: file.name, playmode: 'oneshot' })
+      setPlan(undefined)
+      if (problem) setNote(problem)
+    } catch (e) {
+      setNote(e instanceof WavError ? e.message : `Could not read ${file.name}.`)
+    }
+  }
+
+  function runFit() {
+    const slots = samples
+      .map((s) => ({ id: s.file, audio: sources.get(s.file)?.audio }))
+      .filter((s): s is { id: string; audio: NonNullable<typeof s.audio> } => Boolean(s.audio))
+    if (!slots.length) return
+
+    const next = fit(slots, LIMITS.storageBytes, configBytes)
+    setSources((current) => {
+      const map = new Map(current)
+      for (const slotPlan of next.slots) {
+        const source = map.get(slotPlan.id)
+        if (source) map.set(slotPlan.id, { ...source, encoding: slotPlan.encoding, bytes: slotPlan.bytes })
+      }
+      return map
+    })
+    setPlan(next)
+  }
+
+  async function importConfig(file: File) {
     const parsed = parseConfig(await file.text())
     if (parsed.value === undefined) {
-      alert(parsed.diagnostics[0]?.message ?? 'That file could not be read.')
+      setNote(parsed.diagnostics[0]?.message ?? 'That file could not be read.')
       return
     }
     dispatch({ type: 'load', config: parsed.value as Config })
-    if (parsed.repairs.length) {
-      // Repairs are reported, never silent — the file on disk is untouched.
-      alert(`Opened, after ${parsed.repairs.length} repair(s):\n\n${parsed.repairs.map((r) => r.description).join('\n')}`)
-    }
+    setNote(
+      parsed.repairs.length
+        ? `Opened after ${parsed.repairs.length} repair(s): ${parsed.repairs.map((r) => r.description).join(' ')}`
+        : `Opened ${file.name}.`,
+    )
   }
+
+  const blocked = report.diagnostics.some((d) => d.severity === 'error')
 
   return (
     <div className="min-h-dvh">
@@ -53,18 +119,25 @@ export function Bench() {
             className="data w-48 border-b border-rule bg-transparent px-1 py-0.5" />
         </div>
         <div className="label flex items-center gap-4">
-          <span>{disk.label} · {kb(used)} / {kb(LIMITS.storageBytes)}</span>
+          <span>{disk.label} · {kb(diskFiles.reduce((n, f) => n + f.bytes, 0))} on disk</span>
           <label className="cursor-pointer underline hover:text-orange">
-            import
+            import config
             <input type="file" accept=".json,application/json" className="sr-only"
               onChange={(e) => {
                 const file = e.target.files?.[0]
-                if (file) void importFile(file)
+                if (file) void importConfig(file)
                 e.target.value = ''
               }} />
           </label>
         </div>
       </header>
+
+      {note && (
+        <p className="data flex items-baseline justify-between gap-3 border-b border-rule bg-orange-soft px-4 py-2 text-orange">
+          {note}
+          <button type="button" onClick={() => setNote(undefined)} className="label underline">dismiss</button>
+        </p>
+      )}
 
       <main className="grid min-h-[calc(100dvh-49px)] gap-px bg-rule lg:grid-cols-[190px_minmax(0,1fr)_290px]">
         <section className="bg-paper p-4">
@@ -91,38 +164,56 @@ export function Bench() {
             )}
           </div>
 
-          <div className="label mt-6 mb-2">samples · white button</div>
+          <button type="button" onClick={() => setTab('samples')}
+            className="label mt-6 mb-2 block w-full text-left underline hover:text-orange">
+            samples · white button
+          </button>
           <div className="flex flex-col gap-1">
-            {(state.config.samples ?? []).map((s, i) => (
-              <div key={i} className="data flex justify-between border border-rule-soft px-2 py-1.5">
-                <span>{s.pos ?? i} {s.file}</span>
-                <span className="text-mute">{s.playmode?.slice(0, 4)}</span>
+            {samples.map((s, i) => (
+              <div key={s.file} className="data flex justify-between border border-rule-soft px-2 py-1.5">
+                <span className="truncate">{s.pos ?? i} {s.file}</span>
+                <span className="text-mute">{kb(sources.get(s.file)?.bytes ?? 0)}</span>
               </div>
             ))}
-            {!state.config.samples?.length && (
-              <p className="label leading-relaxed">
-                no samples declared, so the mic uses its four factory sounds. a SAMPLE row is still required.
-              </p>
-            )}
+            {!samples.length && <p className="label leading-relaxed">none — using the four factory sounds</p>}
           </div>
         </section>
 
         <section className="bg-paper p-4">
-          {preset ? (
-            <div className="flex max-w-3xl flex-col gap-5">
-              <div className="flex flex-wrap items-baseline gap-3">
-                <input aria-label="preset name" value={preset.name ?? ''}
-                  onChange={(e) => dispatch({ type: 'set-preset-field', field: 'name', value: e.target.value })}
-                  className="border-b border-rule bg-transparent py-0.5 text-lg font-medium tracking-tight" />
-                <input aria-label="preset comment" placeholder="what it does" value={preset.comment ?? ''}
-                  onChange={(e) => dispatch({ type: 'set-preset-field', field: 'comment', value: e.target.value })}
-                  className="label flex-1 border-b border-rule-soft bg-transparent py-0.5" />
+          <div className="mb-4 flex gap-4 border-b border-rule-soft">
+            {(['chain', 'samples'] as const).map((t) => (
+              <button key={t} type="button" onClick={() => setTab(t)}
+                className={`data -mb-px border-b-2 px-1 pb-2 ${
+                  tab === t ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
+                }`}>
+                {t}
+              </button>
+            ))}
+          </div>
+
+          {tab === 'chain' ? (
+            preset ? (
+              <div className="flex max-w-3xl flex-col gap-5">
+                <div className="flex flex-wrap items-baseline gap-3">
+                  <input aria-label="preset name" value={preset.name ?? ''}
+                    onChange={(e) => dispatch({ type: 'set-preset-field', field: 'name', value: e.target.value })}
+                    className="border-b border-rule bg-transparent py-0.5 text-lg font-medium tracking-tight" />
+                  <input aria-label="preset comment" placeholder="what it does" value={preset.comment ?? ''}
+                    onChange={(e) => dispatch({ type: 'set-preset-field', field: 'comment', value: e.target.value })}
+                    className="label flex-1 border-b border-rule-soft bg-transparent py-0.5" />
+                </div>
+                <Chain preset={preset} dispatch={dispatch} focus={focus} />
+                <Modulation preset={preset} dispatch={dispatch} />
               </div>
-              <Chain preset={preset} dispatch={dispatch} focus={focus} />
-              <Modulation preset={preset} dispatch={dispatch} />
-            </div>
+            ) : (
+              <p className="label">no presets. add one on the left.</p>
+            )
           ) : (
-            <p className="label">no presets. add one on the left.</p>
+            <div className="max-w-3xl">
+              <SampleBay samples={samples} sources={sources} budget={LIMITS.storageBytes}
+                configBytes={configBytes} plan={plan} dispatch={dispatch}
+                onDrop={(file) => void addSample(file)} onFit={runFit} />
+            </div>
           )}
         </section>
 
@@ -140,9 +231,8 @@ export function Bench() {
           <div>
             <div className="label mb-2">write</div>
             <Verdict report={report} onJump={setFocus} />
-            <button type="button" onClick={() => setWriting(true)}
-              className="data mt-2 w-full border border-orange bg-orange px-3 py-2 tracking-wider text-white disabled:opacity-40"
-              disabled={report.diagnostics.some((d) => d.severity === 'error')}>
+            <button type="button" onClick={() => setWriting(true)} disabled={blocked}
+              className="data mt-2 w-full border border-orange bg-orange px-3 py-2 tracking-wider text-white disabled:opacity-40">
               write to fx-mic
             </button>
           </div>
@@ -150,7 +240,7 @@ export function Bench() {
       </main>
 
       {writing && (
-        <WriteDialog disk={disk} config={state.config} report={report}
+        <WriteDialog disk={disk} config={state.config} report={report} files={packFiles}
           onClose={() => {
             setWriting(false)
             void refresh()

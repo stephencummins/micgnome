@@ -33,8 +33,9 @@ So the brief is two sentences:
 | `src/fxmic/serialize.ts` | canonical `config.json`, plus the handle-map curve | done |
 | `src/fxmic/store.ts` | one file-store interface over memory, OPFS and a real directory handle | done |
 | `src/fxmic/disk.ts` | the virtual fx-mic — 1 mb ceiling, eject→restart→boot, freeze, recovery, snapshot/restore | done |
-| `src/bench/` | the bench — preset slots, chain editor, modulation, handle map, the write ritual | done |
-| sample bay: drop a wav, budget meter, re-encode to fit | | next |
+| `src/fxmic/wav.ts` | wav decode/encode at 8/16/24-bit and 32-bit float, mono-fold, resample, silence detection | done |
+| `src/fxmic/fit.ts` | the fitter — gets four sounds into 1 mb and says what it traded | done |
+| `src/bench/` | the bench — preset slots, chain editor, modulation, handle map, sample bay, the write ritual | done |
 | Web Audio preview | | after the hardware lands |
 
 Nothing here has touched hardware yet — the unit arrives 14 Sep at the earliest.
@@ -91,6 +92,23 @@ that pointed at it rather than repointing it at the neighbour — a wrong target
 than an absent one. There is a test asserting that no single edit can produce a config
 the validator would reject.
 
+### The fitter
+
+1 mb is the real constraint of this device, not the json. Concessions are applied in a
+fixed order — cheapest in quality first — always to the largest unprotected slot:
+
+1. trim leading and trailing silence (free; losing it is not a quality trade)
+2. stereo → mono (halves the file; imperceptible on most sound effects)
+3. anything above 16-bit → 16-bit
+4. sample rate down one stop at a time: 96 → 48 → 44.1 → 32 → 22.05 → 16 → 11.025 → 8 khz
+5. 16-bit → 8-bit, last, because it is audibly grainy
+
+Deterministic and explainable, and it always says what it gave up: *"horn.wav: trimmed
+0.02 s of silence, stereo → mono. Left gull.wav alone. You got 346 kb back."* A slot can
+be given a priority so the sound you care about is protected until everything else is
+exhausted. The predicted byte count is the real one — a test asserts the plan's estimate
+matches what the encoder actually writes.
+
 ## Decisions
 
 - **Free, with a tip jar.** Not a paid product. The editor, validator, preview, import,
@@ -109,7 +127,7 @@ the validator would reject.
 ```sh
 npm install
 npm run dev
-npm test          # 50 tests, including TE's own documented example
+npm test          # 73 tests, including TE's own documented example
 npm run typecheck
 ```
 

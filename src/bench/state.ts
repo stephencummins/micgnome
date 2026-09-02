@@ -5,7 +5,8 @@
  */
 import { blankRow } from '../fxmic/serialize'
 import { effectByName } from '../fxmic/spec'
-import type { Config, EffectRow, Modulation, Preset } from '../fxmic/types'
+import type { Playmode } from '../fxmic/spec'
+import type { Config, EffectRow, Modulation, Preset, SampleRef } from '../fxmic/types'
 
 export type ModKind = 'handle' | 'shake' | 'lfo'
 
@@ -30,6 +31,9 @@ export type Action =
   | { type: 'set-param'; row: number; param: string; value: number | undefined }
   | { type: 'set-mod'; kind: ModKind; patch: Partial<Modulation> | undefined }
   | { type: 'set-trigger'; row: number | undefined }
+  | { type: 'add-sample'; file: string; playmode: Playmode }
+  | { type: 'remove-sample'; index: number }
+  | { type: 'set-playmode'; index: number; playmode: Playmode }
   | { type: 'load'; config: Config }
 
 export function reduce(state: BenchState, action: Action): BenchState {
@@ -67,9 +71,39 @@ export function reduce(state: BenchState, action: Action): BenchState {
       }
     }
 
+    case 'add-sample': {
+      const samples = state.config.samples ?? []
+      if (samples.length >= 4) return state
+      const next: SampleRef = { pos: nextFreeSampleSlot(samples), file: action.file, playmode: action.playmode }
+      return { ...state, config: { ...state.config, samples: [...samples, next] } }
+    }
+
+    case 'remove-sample': {
+      const samples = (state.config.samples ?? []).filter((_, i) => i !== action.index)
+      // An empty list is not the same as no list: omitting "samples" entirely is
+      // how the guide says to fall back to the mic's four factory sounds.
+      const config = { ...state.config }
+      if (samples.length) config.samples = samples
+      else delete config.samples
+      return { ...state, config }
+    }
+
+    case 'set-playmode': {
+      const samples = (state.config.samples ?? []).map((s, i) =>
+        i === action.index ? { ...s, playmode: action.playmode } : s,
+      )
+      return { ...state, config: { ...state.config, samples } }
+    }
+
     default:
       return { ...state, config: editPreset(state, (preset) => applyToPreset(preset, action)) }
   }
+}
+
+function nextFreeSampleSlot(samples: SampleRef[]): number {
+  const taken = new Set(samples.map((s) => s.pos).filter((p): p is number => p !== undefined))
+  for (let i = 0; i < 4; i++) if (!taken.has(i)) return i
+  return 0
 }
 
 function applyToPreset(preset: Preset, action: Action): Preset {
