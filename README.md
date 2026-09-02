@@ -1,5 +1,7 @@
 # Mic Gnome
 
+<img src="public/logo.jpg" alt="Mic Gnome — the fx-mic drawn as a gnome: grey hat, orange nose, beard" width="220" align="right" />
+
 A browser patch bay for the [Teenage Engineering EP–2350 fx-mic](https://teenage.engineering/guides/ep-2350).
 Hear it before you eject it.
 

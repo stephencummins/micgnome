@@ -9,6 +9,7 @@ import { validate } from '../fxmic/validate'
 import { checkPlayable, decodeWav, encodeWav, WavError } from '../fxmic/wav'
 import { Chain } from './Chain'
 import { HandleMap } from './HandleMap'
+import { Mark } from './Mark'
 import { Modulation } from './Modulation'
 import { SampleBay, type Source } from './SampleBay'
 import { Verdict } from './Verdict'
@@ -112,8 +113,11 @@ export function Bench() {
   return (
     <div className="min-h-dvh">
       <header className="sticky top-0 z-20 flex flex-wrap items-baseline justify-between gap-3 border-b border-rule bg-paper px-4 py-2.5">
-        <div className="flex items-baseline gap-3">
-          <b className="tracking-tight">mic gnome</b>
+        <div className="flex items-center gap-2.5">
+          <Mark />
+          <b className="tracking-tight">
+            mic <span className="text-orange">gnome</span>
+          </b>
           <input aria-label="pack name" value={state.config.name ?? ''}
             onChange={(e) => dispatch({ type: 'set-pack-name', name: e.target.value })}
             className="data w-48 border-b border-rule bg-transparent px-1 py-0.5" />

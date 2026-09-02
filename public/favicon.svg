@@ -1,5 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#ff4b00"/>
-  <rect x="9" y="6" width="14" height="15" rx="2" fill="#fff"/>
-  <circle cx="16" cy="25" r="2.5" fill="#fff"/>
+  <rect width="32" height="32" rx="6" fill="#f4f2ef"/>
+  <!-- Cropped to the head: the full device is 0.6 aspect and reads as a grey
+       sliver in a square. The hat and nose are what carry the identity at 16px. -->
+  <g transform="translate(2.6 2.4) scale(1.2)">
+    <path d="M0 21.5 h22 v6 h-22 z" fill="#fff" stroke="#b9b4ad" stroke-width="1"/>
+    <path d="M0 20.6 L9.4 0 h12.6 v20.6 z" fill="#8a8680"/>
+    <circle cx="11.3" cy="20.4" r="4.1" fill="#ff4b00"/>
+  </g>
 </svg>
