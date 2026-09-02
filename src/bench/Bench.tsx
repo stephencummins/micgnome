@@ -146,7 +146,8 @@ export function Bench() {
           <button type="button" onClick={() => setHowTo(true)} className="underline hover:text-orange">
             how to use
           </button>
-          <label className="cursor-pointer underline hover:text-orange">
+          <label className="cursor-pointer underline hover:text-orange"
+            title="Open a config.json you already have. You do not need one to start — Mic Gnome writes it for you.">
             import config
             <input type="file" accept=".json,application/json" className="sr-only"
               onChange={(e) => {

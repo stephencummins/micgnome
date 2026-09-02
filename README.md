@@ -80,7 +80,12 @@ editor UI only.
 
 Five steps, shown once on a first visit and available from **how to use** in the header
 at any time: build a chain, drop in sounds, wire up the handle, read the verdict, write
-and eject. The recovery instruction — hold white + grey during startup — is in step five
+and eject.
+
+It says up front where `config.json` comes from, because the obvious question on reading
+"the mic is configured by a config.json" is *where do I get one* — and the answer is that
+you don't. A new mic has none; it plays its factory sounds until it is given one. Mic
+Gnome generates the file. Import exists only for a config you already have. The recovery instruction — hold white + grey during startup — is in step five
 as well as on the write screen, because it is the sentence someone will be hunting for
 in a hurry.
 
