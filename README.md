@@ -93,7 +93,7 @@ favicon and a header mark both live. The vector is the same artwork with the typ
 
 ### The starter library
 
-`src/packs/library.ts`. Three packs, twelve presets, in a **library** tab that loads any
+`src/packs/library.ts`. Four packs, sixteen presets, in a **library** tab that loads any
 of them onto the bench.
 
 | pack | after | idea |
@@ -101,6 +101,7 @@ of them onto the bench.
 | PUNCH IN | OP&ndash;Z punch-in FX | four presets that are gestures, not settings — nothing at rest, extreme at full squeeze |
 | FOUR SHAPES | OP&ndash;Z step components | the same patch four ways so you can hear what each LFO shape does |
 | KO LO-FI | EP&ndash;133 K.O. II | grit, tape drag, pitch and spring, with the handle used as a performance fader |
+| SHORTWAVE | TE OB&ndash;4 | a voice arriving from a long way off: SSB drift, telegraphic echo, hollow room |
 
 Every pack is **fx-only** — no `samples` block, so per guide 7.5 the mic falls back to its
 four factory sounds. Three good consequences: nothing of Teenage Engineering's is
@@ -116,8 +117,16 @@ and zero warnings** — a shipped pack is the example everyone copies, so it has
 exemplary rather than merely legal. Each must round-trip through serialize → parse with no
 repairs, fill all four slots, give every preset a SAMPLE row with a matching trigger, and
 **not waste the handle**: no handle modulation may hit its ceiling before 90% travel.
-Between them they use at least five blocks and all four LFO shapes. DELAY, SSB, EQUALISER
-and HIGHPASS are still unclaimed — a to-do, not a failure.
+
+Building SHORTWAVE exposed a real flaw in the handle map: it plotted against the
+parameter's whole range, and SSB's frequency spans 40,000 hz while a musical shift is 150
+of them — the line was flat and told you nothing. It now scales to the travel, pads from
+the travel rather than the range, and prints the full range in the caption so nothing is
+hidden.
+Between them they must use **every one of the ten blocks** and all four LFO shapes, and
+demonstrate shake and handle-controls-LFO as well as ordinary handle modulation. The
+library is how someone learns what these things do; a block that appears nowhere is never
+heard.
 
 ### Type scale
 
@@ -235,7 +244,7 @@ yet, which is exactly why it is safe to put up now. The launch gate still stands
 ```sh
 npm install
 npm run dev
-npm test          # 101 tests, including TE's own documented example
+npm test          # 110 tests, including TE's own documented example
 npm run typecheck
 ```
 

@@ -177,6 +177,81 @@ export const LIBRARY: Pack[] = [
       ],
     },
   },
+
+  {
+    id: 'shortwave',
+    name: 'SHORTWAVE',
+    after: 'TE OB–4 and the radio it came from',
+    blurb:
+      'a voice arriving from a long way off. SSB shifts every frequency by a fixed number of hz rather than transposing them, which is why a few hundred hz sounds like a station drifting off its mark instead of a pitch change. thin it out, echo it, put it in a hollow room.',
+    handle: 'tunes the station in — or reaches through the interference',
+    verified: false,
+    config: {
+      name: 'SHORTWAVE',
+      presets: [
+        {
+          pos: 0,
+          name: 'TUNING',
+          comment: 'sitting off the station until you squeeze it in',
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'HIGHPASS', cutoff: 0.25 },
+            { effect: 'SSB', frequency: -150 },
+          ],
+          // Full squeeze lands the shift on exactly 0 hz: tuned in.
+          handle: { row: 2, param: 'frequency', depth: 150 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 1,
+          name: 'DRIFT',
+          comment: 'the station wanders; squeeze to make it wander faster',
+          list: [{ effect: 'SAMPLE' }, { effect: 'SSB', frequency: 0 }],
+          lfo: { row: 1, param: 'frequency', depth: 90, shape: 'sine', speed: 0.3 },
+          handle: { target: 'lfo', param: 'speed', depth: 4 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 2,
+          name: 'MORSE',
+          comment: 'thin, telegraphic, and it repeats — squeeze for more repeats',
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'EQUALISER', cutoff: 0.62, q: 0.85, gain: 0.7 },
+            {
+              effect: 'DELAY',
+              time: 0.45,
+              echo: 0.6,
+              'lowpass-cutoff': 0.5,
+              'wet-level': 0.5,
+              'dry-level': 0.9,
+            },
+          ],
+          handle: { row: 2, param: 'echo', depth: 0.4 },
+          shake: { row: 2, param: 'cross-feed', depth: 0.8 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 3,
+          name: 'DEAD AIR',
+          comment: 'hollow and far away; squeeze to bring the body back',
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'HIGHPASS', cutoff: 0.4 },
+            {
+              effect: 'REVERB',
+              time: 0.6,
+              'wet-level': 0.5,
+              'dry-level': 0.4,
+              'highpass-cutoff': 0.5,
+            },
+          ],
+          handle: { row: 1, param: 'cutoff', depth: -0.4 },
+          trigger: { row: 0 },
+        },
+      ],
+    },
+  },
 ]
 
 export const packById = (id: string) => LIBRARY.find((p) => p.id === id)

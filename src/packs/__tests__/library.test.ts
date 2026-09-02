@@ -86,15 +86,21 @@ describe('the library as a whole', () => {
     expect(new Set(LIBRARY.map((p) => p.name)).size).toBe(LIBRARY.length)
   })
 
-  it('between them, exercises most of the mic', () => {
+  it('between them, exercises every block on the mic', () => {
+    // The library is how someone learns what these ten things do. If a block
+    // appears nowhere, nobody ever hears it.
     const used = new Set(
       LIBRARY.flatMap((p) => p.config.presets.flatMap((preset) => preset.list.map((r) => r.effect))),
     )
-    // Not every block — DELAY, SSB, EQUALISER and HIGHPASS are still unclaimed,
-    // which is a to-do rather than a failure. But a starter library that only
-    // showed one or two would not be teaching anything.
-    expect(used.size).toBeGreaterThanOrEqual(5)
-    expect(EFFECTS.length).toBe(10)
+    const missing = EFFECTS.map((e) => e.name).filter((name) => !used.has(name))
+    expect(missing, `never demonstrated: ${missing.join(', ')}`).toEqual([])
+  })
+
+  it('uses both modulation sources the handle is not', () => {
+    const presets = LIBRARY.flatMap((p) => p.config.presets)
+    expect(presets.some((p) => p.shake)).toBe(true)
+    expect(presets.some((p) => p.lfo)).toBe(true)
+    expect(presets.some((p) => p.handle?.target === 'lfo')).toBe(true)
   })
 
   it('shows all four lfo shapes somewhere', () => {
