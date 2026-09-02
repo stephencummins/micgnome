@@ -31,12 +31,26 @@ So the brief is two sentences:
 | `src/fxmic/validate.ts` | the validator — errors where the guide is explicit, warnings where it is silent | done |
 | `src/fxmic/parse.ts` | the lenient importer — opens files the device would reject, reports every repair | done |
 | `src/fxmic/serialize.ts` | canonical `config.json`, plus the handle-map curve | done |
-| virtual fx-mic (OPFS fake disk) | | next |
+| `src/fxmic/store.ts` | one file-store interface over memory, OPFS and a real directory handle | done |
+| `src/fxmic/disk.ts` | the virtual fx-mic — 1 mb ceiling, eject→restart→boot, freeze, recovery, snapshot/restore | done |
 | chain editor, sample bay, handle map | | next |
 | Web Audio preview | | after the hardware lands |
 
 Nothing here has touched hardware yet — the unit arrives 14 Sep at the earliest.
 Until then everything runs against the virtual disk.
+
+### What the virtual mic does and does not model
+
+It models the 1 mb ceiling (refusing a write rather than truncating it), the
+eject→restart→boot cycle, the frozen state, the white + grey recovery, and
+snapshot/restore so "put it back how it was" is always one call away.
+
+Boot rules follow the guide and stop there. The guide says a syntax error stops the
+unit starting; it says nothing about what the firmware does with a value out of range
+or an unknown key. So **only a parse failure freezes the virtual mic** — everything
+else boots and is reported as a validator finding. A file Mic Gnome had to repair to
+open also counts as frozen, because the firmware cannot repair anything. Guessing
+harder than the manual would make the simulator lie.
 
 ### The rule about severities
 
@@ -76,7 +90,7 @@ editor UI only.
 ```sh
 npm install
 npm run dev
-npm test          # 26 tests, including TE's own documented example
+npm test          # 39 tests, including TE's own documented example
 npm run typecheck
 ```
 
