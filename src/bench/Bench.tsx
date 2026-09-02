@@ -132,6 +132,8 @@ export function Bench() {
         </div>
       </header>
 
+      <PreviewStrip />
+
       {note && (
         <p className="data flex items-baseline justify-between gap-3 border-b border-rule bg-orange-soft px-4 py-2 text-orange">
           {note}
@@ -247,6 +249,41 @@ export function Bench() {
           }} />
       )}
     </div>
+  )
+}
+
+/**
+ * The site is live before the hardware is. Everything on it writes to a
+ * simulated mic, and saying so plainly is cheaper than an email from someone
+ * who assumed otherwise. This comes out when the real-disk path lands.
+ */
+function PreviewStrip() {
+  const [hidden, setHidden] = useState(() => {
+    try {
+      return localStorage.getItem('micgnome.preview-dismissed') === '1'
+    } catch {
+      return false
+    }
+  })
+  if (hidden) return null
+  return (
+    <p className="label flex items-baseline justify-between gap-4 border-b border-rule bg-panel px-4 py-2 leading-relaxed">
+      <span>
+        preview — the mic here is a <b className="font-medium text-orange">simulation</b>, accurate to the guide but
+        not to the hardware. writing to a real fx-mic lands once the unit does.
+      </span>
+      <button type="button" className="shrink-0 underline hover:text-orange"
+        onClick={() => {
+          try {
+            localStorage.setItem('micgnome.preview-dismissed', '1')
+          } catch {
+            /* private window — hiding for this session is enough */
+          }
+          setHidden(true)
+        }}>
+        got it
+      </button>
+    </p>
   )
 }
 

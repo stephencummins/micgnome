@@ -122,6 +122,41 @@ matches what the encoder actually writes.
 - **Launch gate is hardware validation, not the calendar.** Do not ship a "write to your
   mic" button that has never written to a mic.
 
+## Deploy
+
+Cloudflare Pages, public, at **micgnome.stephen8n.com**. Nothing on the Mini and nothing
+in the tunnel — it is a static site and the Mini is forty apps behind one cloudflared.
+
+```sh
+npx wrangler login                                              # once, opens a browser
+npx wrangler pages project create micgnome --production-branch main   # once
+npm run deploy                                                  # build + deploy, every time
+```
+
+The Cloudflare API token in `~/secrets/api-keys/cloudflare.env` verifies fine but has **no
+Pages permission**, so it cannot do any of this — it needs the OAuth login above, or a new
+token with Pages:Edit.
+
+**Custom domain is dashboard work.** The Cloudflare API token in `~/secrets/api-keys/`
+has no DNS or Access scope, so it cannot do this and neither can a script using it:
+
+1. Pages → `micgnome` → Custom domains → add `micgnome.stephen8n.com`. Pages writes the
+   CNAME itself.
+2. **Do not** add a Cloudflare Access policy for this hostname. Public from day one is
+   the decision.
+3. **Do not** add `micgnome` to the tunnel ingress in `~/.cloudflared/config.yml`. That
+   record and the Pages custom domain both want the same name and would fight.
+
+`public/_headers` carries CSP, `nosniff`, `frame-ancestors 'none'` and a Permissions-Policy
+that leaves only the microphone open, for the preview engine later. `connect-src 'self'`
+is honest about the architecture: the app talks to your disk, not to a server.
+
+### Not yet a launch
+
+The deployed site writes to the **virtual** mic only — there is no real-disk code in it
+yet, which is exactly why it is safe to put up now. The launch gate still stands: no
+"write to your mic" button ships until it has written to a mic.
+
 ## Develop
 
 ```sh

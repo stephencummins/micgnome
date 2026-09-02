@@ -1,0 +1,15 @@
+# Cloudflare Pages reads this at deploy time.
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  # microphone stays open for the preview engine; nothing else is ever needed.
+  Permissions-Policy: microphone=(self), accelerometer=(), camera=(), geolocation=(), payment=()
+  # 'unsafe-inline' on style-src covers React's style attributes and Google Fonts.
+  # No connect-src beyond self: the app talks to your disk, not to a server.
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
