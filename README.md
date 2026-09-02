@@ -1,6 +1,6 @@
 # Mic Gnome
 
-<img src="public/logo.jpg" alt="Mic Gnome — the fx-mic drawn as a gnome: grey hat, orange nose, beard" width="220" align="right" />
+<img src="public/logo-tile.png" alt="Mic Gnome" width="150" align="right" />
 
 A browser patch bay for the [Teenage Engineering EP–2350 fx-mic](https://teenage.engineering/guides/ep-2350).
 Hear it before you eject it.
@@ -75,6 +75,21 @@ The guide publishes ranges but not device defaults. So the serializer only write
 parameters the user actually set — emitting a default we invented would quietly change
 how somebody's mic sounds. `ParamSpec.start` is Mic Gnome's starting value for the
 editor UI only.
+
+### Brand assets
+
+| file | what it is | used by |
+| --- | --- | --- |
+| `public/favicon.svg` | the mark drawn as a vector — cone hat, beard, orange nose | browser tab |
+| `src/bench/Mark.tsx` | the same mark, taking its greys from the theme | app header |
+| `public/logo-tile.png` | the square logo, wordmark included | README, `og:image` |
+| `public/apple-touch-icon.png` | the same tile at 180px | home-screen icon |
+| `public/device.png` | the device render | the help panel |
+
+The tab icon and the header mark are **drawn, not placed**, for two reasons that the
+raster cannot solve: the logo's beard is white on white, so the tile becomes a white box
+in dark mode; and the wordmark inside it is illegible below about 60px, which is where a
+favicon and a header mark both live. The vector is the same artwork with the type removed.
 
 ### Type scale
 

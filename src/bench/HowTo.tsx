@@ -31,7 +31,10 @@ export function HowTo({ onClose }: { onClose: () => void }) {
           <button type="button" onClick={onClose} className="label underline hover:text-orange">close</button>
         </div>
 
-        <div className="mt-3 flex flex-col gap-2">
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row-reverse sm:items-start">
+          <img src="/device.png" alt="Mic Gnome: the fx-mic drawn as a gnome, with a grey hat, orange nose and a beard"
+            width="118" height="215" className="mx-auto shrink-0 sm:mx-0" />
+          <div className="flex flex-col gap-2">
           <p className="label m-0 leading-relaxed">
             the EP&ndash;2350 fx-mic keeps its whole personality in one file: a <code>config.json</code> on the disk it
             mounts as over usb-c, next to up to four wav files. break that json and the mic will not start.
@@ -42,6 +45,7 @@ export function HowTo({ onClose }: { onClose: () => void }) {
             from whatever you do on this page. <b className="font-medium">import</b> in the header is only for a config
             you already have: one you made earlier, or somebody else&rsquo;s pack.
           </p>
+          </div>
         </div>
 
         <ol className="m-0 mt-4 flex list-none flex-col gap-3 p-0">
