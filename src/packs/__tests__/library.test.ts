@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { LIBRARY } from '../library'
+import { SIGIL_IDS, hasSigil } from '../../bench/Sigil'
 import { parseConfig } from '../../fxmic/parse'
 import { modulationCurve, serialize } from '../../fxmic/serialize'
 import { EFFECTS, LIMITS, effectByName } from '../../fxmic/spec'
@@ -81,6 +82,13 @@ async function urlSafe(text: string): Promise<string> {
 }
 
 describe('the library as a whole', () => {
+  it('gives every pack a sigil', () => {
+    // A fifth pack without one would ship a card that just looks broken.
+    const missing = LIBRARY.filter((p) => !hasSigil(p.id)).map((p) => p.id)
+    expect(missing, `no sigil drawn for: ${missing.join(', ')}`).toEqual([])
+    expect(SIGIL_IDS.filter((id) => !LIBRARY.some((p) => p.id === id))).toEqual([])
+  })
+
   it('has unique ids and names', () => {
     expect(new Set(LIBRARY.map((p) => p.id)).size).toBe(LIBRARY.length)
     expect(new Set(LIBRARY.map((p) => p.name)).size).toBe(LIBRARY.length)

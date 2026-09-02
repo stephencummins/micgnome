@@ -124,6 +124,13 @@ of them onto the bench.
 | KO LO-FI | EP&ndash;133 K.O. II | grit, tape drag, pitch and spring, with the handle used as a performance fader |
 | SHORTWAVE | TE OB&ndash;4 | a voice arriving from a long way off: SSB drift, telegraphic echo, hollow room |
 
+Each card leads with a **sigil** (`src/bench/Sigil.tsx`) that draws what the pack does
+rather than decorating it: PUNCH IN is the punch, FOUR SHAPES is the four shapes,
+KO LO-FI is a sine quantised onto a staircase, SHORTWAVE is a carrier drifting off its
+tuning line. Generated from the same maths that produces the waveform, in theme colours,
+so it survives dark mode and any size. A test fails if a pack has no sigil, or a sigil no
+pack.
+
 Every pack is **fx-only** — no `samples` block, so per guide 7.5 the mic falls back to its
 four factory sounds. Three good consequences: nothing of Teenage Engineering's is
 redistributed, a pack is under 2 kB rather than a megabyte, and anyone can try one without
@@ -292,7 +299,7 @@ yet, which is exactly why it is safe to put up now. The launch gate still stands
 ```sh
 npm install
 npm run dev
-npm test          # 110 tests, including TE's own documented example
+npm test          # 123 tests, including TE's own documented example
 npm run typecheck
 ```
 

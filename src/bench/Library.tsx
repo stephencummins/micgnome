@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LIBRARY, type Pack } from '../packs/library'
 import { serialize } from '../fxmic/serialize'
+import { Sigil } from './Sigil'
 import type { Action } from './state'
 import type { Preset } from '../fxmic/types'
 import { LFO_SHAPES, type LfoShape } from '../fxmic/spec'
@@ -39,12 +40,15 @@ function Card({ pack, dirty, dispatch }: { pack: Pack; dirty: boolean; dispatch:
 
   return (
     <div className="flex flex-col border border-rule bg-paper p-3">
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="data font-medium tracking-wide text-[15px] text-orange">{pack.name}</span>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Sigil pack={pack.id} />
+          <span className="data font-medium tracking-wide text-[15px] text-orange">{pack.name}</span>
+        </div>
         <span className="label shrink-0">after {pack.after}</span>
       </div>
 
-      <p className="label mt-2 leading-relaxed">{pack.blurb}</p>
+      <p className="label mt-3 leading-relaxed">{pack.blurb}</p>
 
       <ul className="m-0 mt-3 flex list-none flex-col gap-1 p-0">
         {pack.config.presets.map((preset) => (
