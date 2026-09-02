@@ -16,6 +16,8 @@ export interface BenchState {
   selected: number
   /** Handle position, 0 to 1, for the preview and the handle map. */
   handle: number
+  /** True once the pack has been edited, so loading a library pack can warn. */
+  dirty: boolean
 }
 
 export type Action =
@@ -39,16 +41,18 @@ export type Action =
 export function reduce(state: BenchState, action: Action): BenchState {
   switch (action.type) {
     case 'load':
-      return { ...state, config: action.config, selected: 0 }
+      // A freshly loaded pack is not "edited" — it is exactly what is on disk.
+      return { ...state, config: action.config, selected: 0, dirty: false }
 
     case 'select':
       return { ...state, selected: clampIndex(action.index, state.config.presets.length) }
 
     case 'set-handle':
+      // Moving the handle is performance, not editing; it changes no file.
       return { ...state, handle: Math.min(1, Math.max(0, action.value)) }
 
     case 'set-pack-name':
-      return { ...state, config: { ...state.config, name: action.name } }
+      return { ...state, dirty: true, config: { ...state.config, name: action.name } }
 
     case 'add-preset': {
       if (state.config.presets.length >= 4) return state
@@ -59,13 +63,14 @@ export function reduce(state: BenchState, action: Action): BenchState {
         trigger: { row: 0 },
       }
       const presets = [...state.config.presets, preset]
-      return { ...state, config: { ...state.config, presets }, selected: presets.length - 1 }
+      return { ...state, dirty: true, config: { ...state.config, presets }, selected: presets.length - 1 }
     }
 
     case 'remove-preset': {
       const presets = state.config.presets.filter((_, i) => i !== action.index)
       return {
         ...state,
+        dirty: true,
         config: { ...state.config, presets },
         selected: clampIndex(state.selected, presets.length),
       }
@@ -75,7 +80,7 @@ export function reduce(state: BenchState, action: Action): BenchState {
       const samples = state.config.samples ?? []
       if (samples.length >= 4) return state
       const next: SampleRef = { pos: nextFreeSampleSlot(samples), file: action.file, playmode: action.playmode }
-      return { ...state, config: { ...state.config, samples: [...samples, next] } }
+      return { ...state, dirty: true, config: { ...state.config, samples: [...samples, next] } }
     }
 
     case 'remove-sample': {
@@ -85,18 +90,18 @@ export function reduce(state: BenchState, action: Action): BenchState {
       const config = { ...state.config }
       if (samples.length) config.samples = samples
       else delete config.samples
-      return { ...state, config }
+      return { ...state, dirty: true, config }
     }
 
     case 'set-playmode': {
       const samples = (state.config.samples ?? []).map((s, i) =>
         i === action.index ? { ...s, playmode: action.playmode } : s,
       )
-      return { ...state, config: { ...state.config, samples } }
+      return { ...state, dirty: true, config: { ...state.config, samples } }
     }
 
     default:
-      return { ...state, config: editPreset(state, (preset) => applyToPreset(preset, action)) }
+      return { ...state, dirty: true, config: editPreset(state, (preset) => applyToPreset(preset, action)) }
   }
 }
 

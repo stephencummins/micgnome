@@ -91,6 +91,34 @@ raster cannot solve: the logo's beard is white on white, so the tile becomes a w
 in dark mode; and the wordmark inside it is illegible below about 60px, which is where a
 favicon and a header mark both live. The vector is the same artwork with the type removed.
 
+### The starter library
+
+`src/packs/library.ts`. Three packs, twelve presets, in a **library** tab that loads any
+of them onto the bench.
+
+| pack | after | idea |
+| --- | --- | --- |
+| PUNCH IN | OP&ndash;Z punch-in FX | four presets that are gestures, not settings — nothing at rest, extreme at full squeeze |
+| FOUR SHAPES | OP&ndash;Z step components | the same patch four ways so you can hear what each LFO shape does |
+| KO LO-FI | EP&ndash;133 K.O. II | grit, tape drag, pitch and spring, with the handle used as a performance fader |
+
+Every pack is **fx-only** — no `samples` block, so per guide 7.5 the mic falls back to its
+four factory sounds. Three good consequences: nothing of Teenage Engineering's is
+redistributed, a pack is under 2 kB rather than a megabyte, and anyone can try one without
+finding a wav first.
+
+They are homages assembled from the fx-mic's own ten blocks, not recreations of another
+device's DSP, and **none has been heard on hardware yet** — every card says so, and
+`verified` flips per pack once each has actually been played through a mic.
+
+The tests are the quality bar, not just a smoke check. Each pack must produce **zero errors
+and zero warnings** — a shipped pack is the example everyone copies, so it has to be
+exemplary rather than merely legal. Each must round-trip through serialize → parse with no
+repairs, fill all four slots, give every preset a SAMPLE row with a matching trigger, and
+**not waste the handle**: no handle modulation may hit its ceiling before 90% travel.
+Between them they use at least five blocks and all four LFO shapes. DELAY, SSB, EQUALISER
+and HIGHPASS are still unclaimed — a to-do, not a failure.
+
 ### Type scale
 
 `label` (12.5px) and `data` (13.5px) in `src/index.css` are the two utilities almost the
@@ -207,7 +235,7 @@ yet, which is exactly why it is safe to put up now. The launch gate still stands
 ```sh
 npm install
 npm run dev
-npm test          # 73 tests, including TE's own documented example
+npm test          # 101 tests, including TE's own documented example
 npm run typecheck
 ```
 

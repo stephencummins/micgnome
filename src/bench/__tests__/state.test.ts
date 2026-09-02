@@ -15,7 +15,7 @@ const config: Config = {
     },
   ],
 }
-const start: BenchState = { config, selected: 0, handle: 0 }
+const start: BenchState = { config, selected: 0, handle: 0, dirty: false }
 const preset = (s: BenchState) => s.config.presets[0]
 
 describe('editing a chain keeps every reference honest', () => {
@@ -102,7 +102,7 @@ describe('presets', () => {
   })
 
   it('gives a first SAMPLE row the trigger automatically', () => {
-    const bare: BenchState = { config: { name: 'B', presets: [{ list: [] }] }, selected: 0, handle: 0 }
+    const bare: BenchState = { config: { name: 'B', presets: [{ list: [] }] }, selected: 0, handle: 0, dirty: false }
     const next = reduce(bare, { type: 'add-row', effect: 'SAMPLE' })
     expect(preset(next).trigger?.row).toBe(0)
   })
