@@ -10,6 +10,7 @@ import { checkPlayable, decodeWav, encodeWav, WavError } from '../fxmic/wav'
 import { Chain } from './Chain'
 import { HandleMap } from './HandleMap'
 import { HowTo } from './HowTo'
+import { ThemeToggle } from './Theme'
 import { Library } from './Library'
 import { Mark } from './Mark'
 import { Modulation } from './Modulation'
@@ -144,6 +145,7 @@ export function Bench() {
         </div>
         <div className="label flex items-center gap-4">
           <span>{disk.label} · {kb(diskFiles.reduce((n, f) => n + f.bytes, 0))} on disk</span>
+          <ThemeToggle />
           <button type="button" onClick={() => setHowTo(true)} className="underline hover:text-orange">
             how to use
           </button>

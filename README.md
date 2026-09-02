@@ -156,6 +156,13 @@ whole UI is built from, so they set the scale. They were 10 and 11.5 and it was 
 territory next to the EP&ndash;2350 guide, which runs its body near 14px. A tool UI is denser
 than a manual, but not that much denser. Changing those two values moves everything.
 
+### Dark mode
+
+The palette has a dark variant and follows the system by default. **dark** / **light** in
+the header overrides that per browser (`src/bench/Theme.tsx`, one localStorage key,
+stamped on the root before first paint so there is no flash). Every glyph and colour
+token has a dark value, which is why the glyphs are drawn rather than placed.
+
 ### Getting started
 
 Five steps, shown once on a first visit and reachable afterwards from **how to use** in
