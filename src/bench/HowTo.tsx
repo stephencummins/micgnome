@@ -56,6 +56,16 @@ export function HowTo({ onClose }: { onClose: () => void }) {
           ))}
         </ol>
 
+        <p className="label mt-4 leading-relaxed">
+          everything here follows teenage engineering&rsquo;s own{' '}
+          <a href="https://teenage.engineering/guides/ep-2350" target="_blank" rel="noreferrer noopener"
+            className="text-orange underline">
+            EP&ndash;2350 user guide
+          </a>
+          . it is the authority on what the mic does &mdash; the effect list, the parameter ranges and the
+          recovery instruction all come from it. mic gnome is not affiliated with teenage engineering.
+        </p>
+
         <button type="button" onClick={onClose}
           className="data mt-4 w-full border border-orange bg-orange px-3 py-2 tracking-wider text-white">
           got it

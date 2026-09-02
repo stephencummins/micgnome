@@ -63,7 +63,7 @@ function Row({
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex items-baseline gap-3">
           <span className="data text-mute">{index}</span>
-          <span className="data font-medium tracking-wide">{row.effect}</span>
+          <span className="data font-medium tracking-wide text-[15px]">{row.effect}</span>
           {spec && <span className="label">{spec.blurb}</span>}
           {triggered && <span className="label text-orange">trigger</span>}
         </div>

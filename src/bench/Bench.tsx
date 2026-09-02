@@ -139,7 +139,7 @@ export function Bench() {
           </b>
           <input aria-label="pack name" value={state.config.name ?? ''}
             onChange={(e) => dispatch({ type: 'set-pack-name', name: e.target.value })}
-            className="data w-48 border-b border-rule bg-transparent px-1 py-0.5" />
+            className="data w-56 border-b border-rule bg-transparent px-1 py-0.5" />
         </div>
         <div className="label flex items-center gap-4">
           <span>{disk.label} · {kb(diskFiles.reduce((n, f) => n + f.bytes, 0))} on disk</span>
@@ -168,7 +168,7 @@ export function Bench() {
         </p>
       )}
 
-      <main className="grid min-h-[calc(100dvh-49px)] gap-px bg-rule lg:grid-cols-[190px_minmax(0,1fr)_290px]">
+      <main className="grid min-h-[calc(100dvh-49px)] gap-px bg-rule lg:grid-cols-[215px_minmax(0,1fr)_330px]">
         <section className="bg-paper p-4">
           <div className="label mb-2">presets · orange button</div>
           <div className="flex flex-col gap-1">

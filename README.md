@@ -76,6 +76,13 @@ parameters the user actually set — emitting a default we invented would quietl
 how somebody's mic sounds. `ParamSpec.start` is Mic Gnome's starting value for the
 editor UI only.
 
+### Type scale
+
+`label` (12.5px) and `data` (13.5px) in `src/index.css` are the two utilities almost the
+whole UI is built from, so they set the scale. They were 10 and 11.5 and it was squinting
+territory next to the EP&ndash;2350 guide, which runs its body near 14px. A tool UI is denser
+than a manual, but not that much denser. Changing those two values moves everything.
+
 ### Getting started
 
 Five steps, shown once on a first visit and reachable afterwards from **how to use** in

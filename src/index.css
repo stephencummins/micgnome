@@ -65,16 +65,24 @@ body {
 }
 
 /* The repeated furniture, so the markup stays readable. */
+/*
+ * Sized against the EP-2350 guide itself, which sets its body around 14px and
+ * its headings near 20. A tool UI is denser than a manual, but 10px labels were
+ * squinting territory — these are the two utilities most of the app is built
+ * from, so they carry the whole scale.
+ */
 @utility label {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.09em;
+  font-size: 12.5px;
+  line-height: 1.55;
+  letter-spacing: 0.045em;
   color: var(--color-mute);
 }
 
 @utility data {
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 13.5px;
+  line-height: 1.5;
   font-variant-numeric: tabular-nums;
 }
 
@@ -83,7 +91,7 @@ input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 18px;
+  height: 22px;
   background: transparent;
   cursor: pointer;
 }
@@ -97,16 +105,16 @@ input[type="range"]::-moz-range-track {
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 3px;
-  height: 15px;
-  margin-top: -6px;
+  width: 4px;
+  height: 18px;
+  margin-top: -7px;
   background: var(--color-orange);
   border: 0;
   border-radius: 0;
 }
 input[type="range"]::-moz-range-thumb {
-  width: 3px;
-  height: 15px;
+  width: 4px;
+  height: 18px;
   background: var(--color-orange);
   border: 0;
   border-radius: 0;
