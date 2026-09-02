@@ -17,13 +17,18 @@ import { Modulation } from './Modulation'
 import { SampleBay, type Source } from './SampleBay'
 import { Verdict } from './Verdict'
 import { WriteDialog } from './WriteDialog'
-import { reduce, type BenchState } from './state'
+import type { BenchState } from './state'
+import { historyReduce, initialHistory } from './history'
+import { decodePack, encodePack, shareUrl } from './share'
 
 const initial: BenchState = { config: blankConfig(), selected: 0, handle: 0, dirty: false }
 type Tab = 'chain' | 'samples' | 'library'
 
 export function Bench() {
-  const [state, dispatch] = useReducer(reduce, initial)
+  const [history, dispatch] = useReducer(historyReduce, initial, initialHistory)
+  const state = history.present
+  const canUndo = history.past.length > 0
+  const canRedo = history.future.length > 0
   const [disk] = useState(() => MicDisk.virtual())
   const [diskFiles, setDiskFiles] = useState<DiskFile[]>([])
   const [sources, setSources] = useState(new Map<string, Source>())
@@ -55,6 +60,65 @@ export function Bench() {
   useEffect(() => {
     void refresh()
   }, [refresh])
+
+  // A link with a pack in it opens with that pack on the bench — on arrival,
+  // and again if a new link is pasted into a tab that already has the bench up.
+  // The fragment is cleared afterwards so a reload does not throw away edits.
+  useEffect(() => {
+    let cancelled = false
+    async function openFromHash() {
+      const json = await decodePack(location.hash)
+      if (json === undefined || cancelled) return
+      const parsed = parseConfig(json)
+      if (parsed.value === undefined) {
+        setNote('That link had a pack in it, but it could not be read.')
+      } else {
+        dispatch({ type: 'load', config: parsed.value as Config })
+        setNote(
+          parsed.repairs.length
+            ? `Opened a shared pack after ${parsed.repairs.length} repair(s): ${parsed.repairs.map((r) => r.description).join(' ')}`
+            : `Opened a shared pack: ${(parsed.value as Config).name ?? 'untitled'}.`,
+        )
+      }
+      window.history.replaceState(null, '', location.pathname + location.search)
+    }
+    void openFromHash()
+    window.addEventListener('hashchange', openFromHash)
+    return () => {
+      cancelled = true
+      window.removeEventListener('hashchange', openFromHash)
+    }
+  }, [])
+
+  // Cmd/Ctrl+Z and Shift+Cmd/Ctrl+Z (or Ctrl+Y). Text fields keep their own
+  // undo, so the shortcut is left alone while one has focus.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (!(e.metaKey || e.ctrlKey)) return
+      const target = e.target as HTMLElement | null
+      const typing = target instanceof HTMLTextAreaElement
+        || (target instanceof HTMLInputElement && !['range', 'checkbox', 'file'].includes(target.type))
+      if (typing) return
+      const key = e.key.toLowerCase()
+      if (key === 'z' && e.shiftKey) dispatch({ type: 'redo' })
+      else if (key === 'z') dispatch({ type: 'undo' })
+      else if (key === 'y') dispatch({ type: 'redo' })
+      else return
+      e.preventDefault()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  async function share() {
+    const url = shareUrl(await encodePack(state.config))
+    try {
+      await navigator.clipboard.writeText(url)
+      setNote(`Link copied — ${url.length} characters, and the whole pack is in it. Anyone who opens it gets this bench.`)
+    } catch {
+      setNote(url)
+    }
+  }
 
   const samples = useMemo(() => state.config.samples ?? [], [state.config.samples])
   const configText = useMemo(() => serialize(state.config), [state.config])
@@ -145,6 +209,20 @@ export function Bench() {
         </div>
         <div className="label flex flex-wrap items-center gap-x-4 gap-y-1 whitespace-nowrap">
           <span>{disk.label} · {kb(diskFiles.reduce((n, f) => n + f.bytes, 0))} on disk</span>
+          <span className="flex items-center gap-2">
+            <button type="button" onClick={() => dispatch({ type: 'undo' })} disabled={!canUndo}
+              title="undo (⌘Z)" className="underline hover:text-orange disabled:no-underline disabled:opacity-40">
+              undo
+            </button>
+            <button type="button" onClick={() => dispatch({ type: 'redo' })} disabled={!canRedo}
+              title="redo (⇧⌘Z)" className="underline hover:text-orange disabled:no-underline disabled:opacity-40">
+              redo
+            </button>
+          </span>
+          <button type="button" onClick={() => void share()} title="copy a link that carries this whole pack"
+            className="underline hover:text-orange">
+            share
+          </button>
           <ThemeToggle />
           <button type="button" onClick={() => setHowTo(true)} className="underline hover:text-orange">
             how to use
@@ -190,7 +268,7 @@ export function Bench() {
             ))}
             {state.config.presets.length < LIMITS.presets && (
               <button type="button" onClick={() => dispatch({ type: 'add-preset' })}
-                className="data border border-dashed border-rule px-2 py-1.5 hover:border-orange hover:text-orange">
+                className="data border border-dashed border-orange/60 px-2 py-1.5 text-orange hover:border-orange hover:bg-orange-soft">
                 + preset
               </button>
             )}
@@ -261,7 +339,7 @@ export function Bench() {
             <input type="range" min={0} max={1} step={0.01} value={state.handle}
               aria-label="handle position"
               onChange={(e) => dispatch({ type: 'set-handle', value: Number(e.target.value) })} />
-            <div className="data text-right">{Math.round(state.handle * 100)}%</div>
+            <div className="data text-right text-orange">{Math.round(state.handle * 100)}%</div>
           </div>
 
           {preset && <HandleMap preset={preset} handle={state.handle} />}
@@ -281,7 +359,7 @@ export function Bench() {
           wants the recovery instruction is the moment they are least able to hunt. */}
       <button type="button" onClick={() => setHowTo(true)} title="How to use Mic Gnome"
         aria-label="How to use Mic Gnome"
-        className="fixed bottom-4 right-4 z-30 flex h-10 w-10 items-center justify-center border border-rule bg-paper text-base shadow-[0_1px_6px_rgba(0,0,0,0.08)] hover:border-orange hover:text-orange">
+        className="fixed bottom-4 right-4 z-30 flex h-10 w-10 items-center justify-center border border-orange bg-paper text-base text-orange shadow-[0_1px_6px_rgba(0,0,0,0.08)] hover:bg-orange hover:text-white">
         <span aria-hidden className="font-mono">?</span>
       </button>
 

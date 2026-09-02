@@ -46,7 +46,7 @@ function Block({
           <SourceGlyph kind={kind} size={17} className="text-orange" />
           <span>{kind} — {blurb}</span>
         </span>
-        <button type="button" className="data border border-rule px-2 hover:border-orange hover:text-orange"
+        <button type="button" className="data border border-orange/60 px-2 text-orange hover:border-orange hover:bg-orange-soft"
           onClick={() => dispatch({ type: 'set-mod', kind, patch: { row: 0, param: params[0]?.name, depth: 0.5 } })}>
           add
         </button>

@@ -40,7 +40,7 @@ function Card({ pack, dirty, dispatch }: { pack: Pack; dirty: boolean; dispatch:
   return (
     <div className="flex flex-col border border-rule bg-paper p-3">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="data font-medium tracking-wide text-[15px]">{pack.name}</span>
+        <span className="data font-medium tracking-wide text-[15px] text-orange">{pack.name}</span>
         <span className="label shrink-0">after {pack.after}</span>
       </div>
 
@@ -77,7 +77,7 @@ function Card({ pack, dirty, dispatch }: { pack: Pack; dirty: boolean; dispatch:
           </span>
         ) : (
           <button type="button" onClick={() => (dirty ? setConfirming(true) : load())}
-            className="data shrink-0 border border-ink px-3 py-1 tracking-wider hover:border-orange hover:text-orange">
+            className="data shrink-0 border border-orange px-3 py-1 tracking-wider text-orange hover:bg-orange hover:text-white">
             load
           </button>
         )}

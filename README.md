@@ -156,6 +156,26 @@ whole UI is built from, so they set the scale. They were 10 and 11.5 and it was 
 territory next to the EP&ndash;2350 guide, which runs its body near 14px. A tool UI is denser
 than a manual, but not that much denser. Changing those two values moves everything.
 
+### Undo
+
+`src/bench/history.ts` wraps the bench reducer and snapshots the config before every edit.
+**undo** / **redo** in the header, ⌘Z and ⇧⌘Z (Ctrl+Z / Ctrl+Y). Two things are deliberately
+not edits and never enter the history: selecting a preset and moving the handle — they change
+what you are looking at, not what would be written to the mic. A slider drag arrives as dozens
+of actions and folds into one step while it keeps hitting the same parameter inside a second,
+so undo takes the whole drag back rather than one pixel of it. Loading a library pack is an
+edit, so undo brings the previous bench back. A hundred steps are kept.
+
+### A pack as a link
+
+`src/bench/share.ts`. **share** in the header copies a URL with the entire pack in its fragment:
+JSON, deflate-raw, base64url — a library pack comes to about 150 characters. No server, nothing
+stored, and the fragment never leaves the browser, so Cloudflare's logs never see it. Opening
+the link puts the pack on the bench through the same lenient parser as file import, so a link
+somebody edited by hand gets repaired and reported rather than refused, and the fragment is
+then cleared so a reload cannot quietly discard edits. This is the read-only gallery without
+the gallery.
+
 ### Dark mode
 
 The palette has a dark variant and follows the system by default. **dark** / **light** in

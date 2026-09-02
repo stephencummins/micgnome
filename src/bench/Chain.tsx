@@ -16,7 +16,7 @@ export function Chain({
   return (
     <div className="flex flex-col gap-2">
       <div className="label flex items-center gap-2">
-        <Glyph name="chain" size={15} /> chain · audio falls through top to bottom
+        <Glyph name="chain" size={15} className="text-orange" /> chain · audio falls through top to bottom
       </div>
 
       {preset.list.length === 0 && (
@@ -27,7 +27,7 @@ export function Chain({
 
       {/* The spine: audio enters at the top and falls out of the bottom. */}
       {preset.list.length > 0 && (
-        <div className="relative flex flex-col gap-2 pl-5 before:absolute before:top-0 before:bottom-0 before:left-[7px] before:w-px before:bg-rule">
+        <div className="relative flex flex-col gap-2 pl-5 before:absolute before:top-0 before:bottom-0 before:left-[7px] before:w-px before:bg-orange/50">
           {preset.list.map((row, i) => (
             <Row
               key={i}
@@ -40,7 +40,7 @@ export function Chain({
             />
           ))}
           <svg aria-hidden className="absolute -bottom-1.5 left-[3px]" width="9" height="6" viewBox="0 0 9 6">
-            <path d="M0 0h9L4.5 6z" fill="var(--color-rule)" />
+            <path d="M0 0h9L4.5 6z" fill="var(--color-orange)" opacity="0.6" />
           </svg>
         </div>
       )}
@@ -73,11 +73,11 @@ function Row({
 
   return (
     <div className="relative border border-rule bg-paper p-3">
-      <span aria-hidden className="absolute top-4 -left-4 h-2 w-2 rounded-full border border-rule bg-paper" />
+      <span aria-hidden className="absolute top-4 -left-4 h-2 w-2 rounded-full border border-orange bg-paper" />
       <div className="flex items-baseline justify-between gap-3">
         {/* Wraps, so on a phone the blurb drops under the name instead of forcing the page wider. */}
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-0.5">
-          <span className="data text-mute">{index}</span>
+          <span className="data text-orange">{index}</span>
           <EffectGlyph name={row.effect} size={20} className="self-center" />
           <span className="data font-medium tracking-wide text-[15px]">{row.effect}</span>
           {spec && <span className="label">{spec.blurb}</span>}
