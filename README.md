@@ -130,24 +130,30 @@ Cloudflare Pages, public, at **micgnome.stephen8n.com**. Nothing on the Mini and
 in the tunnel — it is a static site and the Mini is forty apps behind one cloudflared.
 
 ```sh
-npx wrangler login                                              # once, opens a browser
-npx wrangler pages project create micgnome --production-branch main   # once
-npm run deploy                                                  # build + deploy, every time
+npx wrangler login   # once per machine, opens a browser
+npm run deploy       # build + deploy
 ```
 
+Live at **https://micgnome.pages.dev** and, once its DNS record exists,
+**micgnome.stephen8n.com**.
+
 The Cloudflare API token in `~/secrets/api-keys/cloudflare.env` verifies fine but has **no
-Pages permission**, so it cannot do any of this — it needs the OAuth login above, or a new
-token with Pages:Edit.
+Pages permission and no DNS scope**, so it cannot deploy and cannot touch DNS. The OAuth
+login above covers Pages; DNS still does not.
 
-**Custom domain is dashboard work.** The Cloudflare API token in `~/secrets/api-keys/`
-has no DNS or Access scope, so it cannot do this and neither can a script using it:
+### The custom domain
 
-1. Pages → `micgnome` → Custom domains → add `micgnome.stephen8n.com`. Pages writes the
-   CNAME itself.
-2. **Do not** add a Cloudflare Access policy for this hostname. Public from day one is
-   the decision.
-3. **Do not** add `micgnome` to the tunnel ingress in `~/.cloudflared/config.yml`. That
-   record and the Pages custom domain both want the same name and would fight.
+`micgnome.stephen8n.com` is attached to the Pages project already, but sits at **pending**
+until one DNS record exists. Neither wrangler's OAuth scopes nor the stored API token can
+write DNS, so this is the one dashboard step:
+
+    CNAME   micgnome   →   micgnome.pages.dev   (proxied)
+
+Cloudflare issues the certificate on its own once that resolves. Two standing rules:
+
+- **No Cloudflare Access policy** on this hostname. Public from day one is the decision.
+- **Never** add `micgnome` to the tunnel ingress in `~/.cloudflared/config.yml`. That
+  record and the Pages custom domain want the same name and would fight.
 
 `public/_headers` carries CSP, `nosniff`, `frame-ancestors 'none'` and a Permissions-Policy
 that leaves only the microphone open, for the preview engine later. `connect-src 'self'`
