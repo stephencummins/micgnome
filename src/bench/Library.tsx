@@ -99,7 +99,7 @@ function Strip({ preset }: { preset: Preset }) {
     <span className="ml-auto flex shrink-0 items-center gap-1 self-start pt-0.5"
       title={[preset.list.map((r) => r.effect).join(' → '), sources.join(' + ')].filter(Boolean).join(' · ')}>
       {preset.list.map((r, i) => (
-        <EffectGlyph key={i} name={r.effect} size={14} className="text-mute" />
+        <EffectGlyph key={i} name={r.effect} size={14} />
       ))}
       {sources.length > 0 && <span aria-hidden className="mx-0.5 h-3 w-px bg-rule" />}
       {sources.map((k) =>

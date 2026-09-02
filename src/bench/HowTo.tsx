@@ -64,7 +64,7 @@ export function HowTo({ onClose }: { onClose: () => void }) {
             <li key={step.title} className="flex gap-3 border-b border-rule-soft pb-3">
               <span className="flex w-7 shrink-0 flex-col items-center gap-1.5">
                 <span className="data text-orange">{i + 1}</span>
-                <span className="text-mute">{STEP_GLYPHS[i]}</span>
+                <span className="text-orange">{STEP_GLYPHS[i]}</span>
               </span>
               <span>
                 <b className="data block font-medium">{step.title}</b>

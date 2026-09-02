@@ -43,7 +43,7 @@ function Block({
     return (
       <div className="flex items-center justify-between border border-rule-soft px-2 py-1.5">
         <span className="label flex items-center gap-2">
-          <SourceGlyph kind={kind} size={17} />
+          <SourceGlyph kind={kind} size={17} className="text-orange" />
           <span>{kind} — {blurb}</span>
         </span>
         <button type="button" className="data border border-rule px-2 hover:border-orange hover:text-orange"

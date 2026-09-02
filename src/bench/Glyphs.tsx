@@ -5,8 +5,10 @@
  * Drawn, not placed, for the same reasons as the mark — they take their colour
  * from the text around them, so they survive dark mode and stay crisp at 14px.
  * The style follows the guide's own line drawings: one-pixel strokes, no fills,
- * nothing decorative. Orange is reserved for the modulation sources, because
- * those are the things that move.
+ * nothing decorative. Each effect block carries the colour of its family —
+ * filters blue, time and space teal, pitch violet, drive magenta — and orange
+ * is reserved for the modulation sources, because those are the things that
+ * move. SAMPLE stays in ink: it is the sound, not something done to it.
  */
 import type { LfoShape } from '../fxmic/spec'
 import type { ModKind } from './state'
@@ -84,8 +86,24 @@ const EFFECT_PATHS: Record<string, React.ReactNode> = {
   ),
 }
 
+const FAMILY: Record<string, string> = {
+  LOWPASS: 'text-filter',
+  HIGHPASS: 'text-filter',
+  EQUALISER: 'text-filter',
+  DELAY: 'text-space',
+  REVERB: 'text-space',
+  HARMONY: 'text-pitch',
+  SSB: 'text-pitch',
+  DIST: 'text-drive',
+  RING: 'text-drive',
+}
+
+/** The family colour for a block, or nothing for SAMPLE and unknowns. Exported so a row can borrow it. */
+export const familyClass = (name: string): string => FAMILY[name] ?? ''
+
 export function EffectGlyph({ name, size = 16, className }: { name: string; size?: number; className?: string }) {
   const path = EFFECT_PATHS[name]
+  className = `${FAMILY[name] ?? ''} ${className ?? ''}`
   if (!path) {
     // an effect this mic does not have — a box with a question, so the
     // chain still lines up and the problem is visible

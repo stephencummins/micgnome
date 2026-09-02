@@ -18,6 +18,13 @@
   --color-orange-soft: #fff0e9;
   --color-pass: #1f7a4d;
   --color-pass-soft: #e9f4ee;
+
+  /* The four families of effect block, for their glyphs only. Orange stays
+   * reserved for the things that move. */
+  --color-filter: #1d6fd6;
+  --color-space: #0f8a7a;
+  --color-pitch: #7a4fd8;
+  --color-drive: #c2257a;
 }
 
 @layer theme {
@@ -33,6 +40,10 @@
       --color-orange-soft: #2a1409;
       --color-pass: #4fb883;
       --color-pass-soft: #0f2419;
+      --color-filter: #6aa7ff;
+      --color-space: #3fc4b0;
+      --color-pitch: #b394ff;
+      --color-drive: #ff5fae;
     }
   }
   :root[data-theme="dark"] {
@@ -46,6 +57,10 @@
     --color-orange-soft: #2a1409;
     --color-pass: #4fb883;
     --color-pass-soft: #0f2419;
+    --color-filter: #6aa7ff;
+    --color-space: #3fc4b0;
+    --color-pitch: #b394ff;
+    --color-drive: #ff5fae;
   }
 }
 

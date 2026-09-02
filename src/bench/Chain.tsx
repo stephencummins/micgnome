@@ -77,7 +77,7 @@ function Row({
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex items-baseline gap-3">
           <span className="data text-mute">{index}</span>
-          <EffectGlyph name={row.effect} size={20} className="self-center text-mute" />
+          <EffectGlyph name={row.effect} size={20} className="self-center" />
           <span className="data font-medium tracking-wide text-[15px]">{row.effect}</span>
           {spec && <span className="label">{spec.blurb}</span>}
           {triggered && <span className="label text-orange">trigger</span>}
@@ -177,7 +177,7 @@ function AddBlock({ preset, dispatch }: { preset: Preset; dispatch: (a: Action) 
             onClick={() => dispatch({ type: 'add-row', effect: effect.name })}
             className="data flex items-center gap-1.5 border border-rule px-2 py-1 hover:border-orange hover:text-orange disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-rule disabled:hover:text-ink"
           >
-            <EffectGlyph name={effect.name} size={15} className="opacity-70" />
+            <EffectGlyph name={effect.name} size={15} />
             {effect.name}
           </button>
         )

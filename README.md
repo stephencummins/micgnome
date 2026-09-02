@@ -97,13 +97,15 @@ favicon and a header mark both live. The vector is the same artwork with the typ
 source, so a chain can be read by shape before it is read by name. They sit on every
 chain row and add-block button, on the modulation panel (the LFO shape picker is four
 waveforms rather than a dropdown), at the end of every library preset as a strip —
-blocks in grey, then a rule, then whatever moves them in orange — and beside each of
+blocks in their family colour, then a rule, then whatever moves them in orange — and beside each of
 the five steps.
 
 Drawn, not placed, for the same reason as the mark: they take `currentColor` from the
 text around them, so they survive dark mode and stay crisp at 14px. One-pixel strokes,
 no fills, nothing decorative, after the guide's own line drawings. Orange is reserved
-for the movers. An effect the mic does not have gets a dashed box with a question mark,
+for the movers, and each block carries the colour of its family: filters blue, time and
+space teal, pitch violet, drive magenta. SAMPLE stays in ink, because it is the sound
+rather than something done to it. An effect the mic does not have gets a dashed box with a question mark,
 so the chain still lines up and the problem stays visible.
 
 The chain also has a spine now — a hairline down the left with a dot per row and an
