@@ -33,7 +33,8 @@ So the brief is two sentences:
 | `src/fxmic/serialize.ts` | canonical `config.json`, plus the handle-map curve | done |
 | `src/fxmic/store.ts` | one file-store interface over memory, OPFS and a real directory handle | done |
 | `src/fxmic/disk.ts` | the virtual fx-mic — 1 mb ceiling, eject→restart→boot, freeze, recovery, snapshot/restore | done |
-| chain editor, sample bay, handle map | | next |
+| `src/bench/` | the bench — preset slots, chain editor, modulation, handle map, the write ritual | done |
+| sample bay: drop a wav, budget meter, re-encode to fit | | next |
 | Web Audio preview | | after the hardware lands |
 
 Nothing here has touched hardware yet — the unit arrives 14 Sep at the earliest.
@@ -72,6 +73,24 @@ parameters the user actually set — emitting a default we invented would quietl
 how somebody's mic sounds. `ParamSpec.start` is Mic Gnome's starting value for the
 editor UI only.
 
+### The bench
+
+Three panes: presets and samples on the left, the chain in the middle, performance and
+the write button on the right. The validator's verdict sits directly above the write
+button and never behind a tab — you cannot ship a file you have not been told is broken.
+
+Two details that carry a rule each:
+
+**Unset is not zero.** A parameter you have never touched shows `· unset` and stays out
+of the file. The slider still sits at a sensible starting position so you can see the
+range, but moving it is what writes it.
+
+**Editing never leaves a dangling reference.** Reordering a row remaps every modulation
+and trigger so they still point at the same effect. Deleting a row *drops* modulation
+that pointed at it rather than repointing it at the neighbour — a wrong target is worse
+than an absent one. There is a test asserting that no single edit can produce a config
+the validator would reject.
+
 ## Decisions
 
 - **Free, with a tip jar.** Not a paid product. The editor, validator, preview, import,
@@ -90,7 +109,7 @@ editor UI only.
 ```sh
 npm install
 npm run dev
-npm test          # 39 tests, including TE's own documented example
+npm test          # 50 tests, including TE's own documented example
 npm run typecheck
 ```
 

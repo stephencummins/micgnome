@@ -91,9 +91,12 @@ describe('the 1 mb ceiling', () => {
 
   it('says how much to free up, in the message', async () => {
     const mic = MicDisk.inMemory({ capacityBytes: 1024 })
-    const error = await mic.write('big.wav', new Uint8Array(4096)).catch((e) => e as DiskFullError)
-    expect(error.message).toMatch(/4 kb needed, 1 kb free/)
-    expect(error.message).toMatch(/mono|sample rate/)
+    const error = await mic
+      .write('big.wav', new Uint8Array(4096))
+      .then(() => undefined)
+      .catch((e: unknown) => e as DiskFullError)
+    expect(error?.message).toMatch(/4 kb needed, 1 kb free/)
+    expect(error?.message).toMatch(/mono|sample rate/)
   })
 })
 
