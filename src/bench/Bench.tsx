@@ -9,6 +9,7 @@ import { validate } from '../fxmic/validate'
 import { checkPlayable, decodeWav, encodeWav, WavError } from '../fxmic/wav'
 import { Chain } from './Chain'
 import { HandleMap } from './HandleMap'
+import { HowTo } from './HowTo'
 import { Mark } from './Mark'
 import { Modulation } from './Modulation'
 import { SampleBay, type Source } from './SampleBay'
@@ -29,6 +30,24 @@ export function Bench() {
   const [writing, setWriting] = useState(false)
   const [focus, setFocus] = useState<string>()
   const [note, setNote] = useState<string>()
+  // Shown unprompted the first time only. Someone landing here cold has no idea
+  // what an fx-mic config is; someone on their fifth visit does not need telling.
+  const [howTo, setHowTo] = useState(() => {
+    try {
+      return localStorage.getItem('micgnome.how-to-seen') !== '1'
+    } catch {
+      return true
+    }
+  })
+
+  const closeHowTo = () => {
+    try {
+      localStorage.setItem('micgnome.how-to-seen', '1')
+    } catch {
+      /* private window — not showing it again this session is enough */
+    }
+    setHowTo(false)
+  }
 
   const refresh = useCallback(async () => setDiskFiles(await disk.files()), [disk])
   useEffect(() => {
@@ -124,6 +143,9 @@ export function Bench() {
         </div>
         <div className="label flex items-center gap-4">
           <span>{disk.label} · {kb(diskFiles.reduce((n, f) => n + f.bytes, 0))} on disk</span>
+          <button type="button" onClick={() => setHowTo(true)} className="underline hover:text-orange">
+            how to use
+          </button>
           <label className="cursor-pointer underline hover:text-orange">
             import config
             <input type="file" accept=".json,application/json" className="sr-only"
@@ -244,6 +266,8 @@ export function Bench() {
           </div>
         </section>
       </main>
+
+      {howTo && <HowTo onClose={closeHowTo} />}
 
       {writing && (
         <WriteDialog disk={disk} config={state.config} report={report} files={packFiles}

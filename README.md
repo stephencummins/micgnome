@@ -76,6 +76,14 @@ parameters the user actually set — emitting a default we invented would quietl
 how somebody's mic sounds. `ParamSpec.start` is Mic Gnome's starting value for the
 editor UI only.
 
+### Getting started
+
+Five steps, shown once on a first visit and available from **how to use** in the header
+at any time: build a chain, drop in sounds, wire up the handle, read the verdict, write
+and eject. The recovery instruction — hold white + grey during startup — is in step five
+as well as on the write screen, because it is the sentence someone will be hunting for
+in a hurry.
+
 ### The bench
 
 Three panes: presets and samples on the left, the chain in the middle, performance and
