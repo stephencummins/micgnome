@@ -75,7 +75,8 @@ function Row({
     <div className="relative border border-rule bg-paper p-3">
       <span aria-hidden className="absolute top-4 -left-4 h-2 w-2 rounded-full border border-rule bg-paper" />
       <div className="flex items-baseline justify-between gap-3">
-        <div className="flex items-baseline gap-3">
+        {/* Wraps, so on a phone the blurb drops under the name instead of forcing the page wider. */}
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-0.5">
           <span className="data text-mute">{index}</span>
           <EffectGlyph name={row.effect} size={20} className="self-center" />
           <span className="data font-medium tracking-wide text-[15px]">{row.effect}</span>

@@ -19,7 +19,7 @@ import { Verdict } from './Verdict'
 import { WriteDialog } from './WriteDialog'
 import { reduce, type BenchState } from './state'
 
-const initial: BenchState = { config: blankConfig('PIER AT NIGHT'), selected: 0, handle: 0, dirty: false }
+const initial: BenchState = { config: blankConfig(), selected: 0, handle: 0, dirty: false }
 type Tab = 'chain' | 'samples' | 'library'
 
 export function Bench() {
@@ -143,7 +143,7 @@ export function Bench() {
             onChange={(e) => dispatch({ type: 'set-pack-name', name: e.target.value })}
             className="data w-56 border-b border-rule bg-transparent px-1 py-0.5" />
         </div>
-        <div className="label flex items-center gap-4">
+        <div className="label flex flex-wrap items-center gap-x-4 gap-y-1 whitespace-nowrap">
           <span>{disk.label} · {kb(diskFiles.reduce((n, f) => n + f.bytes, 0))} on disk</span>
           <ThemeToggle />
           <button type="button" onClick={() => setHowTo(true)} className="underline hover:text-orange">
