@@ -2,6 +2,7 @@ import { EFFECTS, effectByName } from '../fxmic/spec'
 import type { EffectRow, Preset } from '../fxmic/types'
 import type { Action } from './state'
 import { paramDisplay, paramValue } from './state'
+import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
 
 export function Chain({
   preset,
@@ -14,7 +15,9 @@ export function Chain({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="label">chain · audio falls through top to bottom</div>
+      <div className="label flex items-center gap-2">
+        <Glyph name="chain" size={15} /> chain · audio falls through top to bottom
+      </div>
 
       {preset.list.length === 0 && (
         <p className="label border border-dashed border-rule px-3 py-4">
@@ -22,19 +25,29 @@ export function Chain({
         </p>
       )}
 
-      {preset.list.map((row, i) => (
-        <Row
-          key={i}
-          row={row}
-          index={i}
-          last={i === preset.list.length - 1}
-          preset={preset}
-          dispatch={dispatch}
-          focus={focus}
-        />
-      ))}
+      {/* The spine: audio enters at the top and falls out of the bottom. */}
+      {preset.list.length > 0 && (
+        <div className="relative flex flex-col gap-2 pl-5 before:absolute before:top-0 before:bottom-0 before:left-[7px] before:w-px before:bg-rule">
+          {preset.list.map((row, i) => (
+            <Row
+              key={i}
+              row={row}
+              index={i}
+              last={i === preset.list.length - 1}
+              preset={preset}
+              dispatch={dispatch}
+              focus={focus}
+            />
+          ))}
+          <svg aria-hidden className="absolute -bottom-1.5 left-[3px]" width="9" height="6" viewBox="0 0 9 6">
+            <path d="M0 0h9L4.5 6z" fill="var(--color-rule)" />
+          </svg>
+        </div>
+      )}
 
-      <AddBlock preset={preset} dispatch={dispatch} />
+      <div className={preset.list.length > 0 ? 'pl-5' : ''}>
+        <AddBlock preset={preset} dispatch={dispatch} />
+      </div>
     </div>
   )
 }
@@ -59,10 +72,12 @@ function Row({
   const triggered = preset.trigger?.row === index
 
   return (
-    <div className="border border-rule bg-paper p-3">
+    <div className="relative border border-rule bg-paper p-3">
+      <span aria-hidden className="absolute top-4 -left-4 h-2 w-2 rounded-full border border-rule bg-paper" />
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex items-baseline gap-3">
           <span className="data text-mute">{index}</span>
+          <EffectGlyph name={row.effect} size={20} className="self-center text-mute" />
           <span className="data font-medium tracking-wide text-[15px]">{row.effect}</span>
           {spec && <span className="label">{spec.blurb}</span>}
           {triggered && <span className="label text-orange">trigger</span>}
@@ -94,9 +109,12 @@ function Row({
               <label key={param.name}
                 className={`block ${focus === path ? 'outline outline-orange' : ''}`}>
                 <span className="flex items-baseline justify-between gap-2">
-                  <span className={`label ${modulated.length ? 'text-orange' : ''}`}>
+                  <span className={`label flex items-center gap-1 ${modulated.length ? 'text-orange' : ''}`}>
                     {param.name}
-                    {modulated.length > 0 && ` ← ${modulated.join(' + ')}`}
+                    {modulated.length > 0 && <span className="sr-only">moved by {modulated.join(' and ')}</span>}
+                    {modulated.map((k) => (
+                      <SourceGlyph key={k} kind={k} size={14} className="ml-0.5" />
+                    ))}
                   </span>
                   <span className="data">
                     {value}
@@ -157,8 +175,9 @@ function AddBlock({ preset, dispatch }: { preset: Preset; dispatch: (a: Action) 
             disabled={blocked}
             title={blocked ? `${effect.name} can only be used once per chain` : effect.blurb}
             onClick={() => dispatch({ type: 'add-row', effect: effect.name })}
-            className="data border border-rule px-2 py-1 hover:border-orange hover:text-orange disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-rule disabled:hover:text-ink"
+            className="data flex items-center gap-1.5 border border-rule px-2 py-1 hover:border-orange hover:text-orange disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-rule disabled:hover:text-ink"
           >
+            <EffectGlyph name={effect.name} size={15} className="opacity-70" />
             {effect.name}
           </button>
         )

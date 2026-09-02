@@ -1,6 +1,7 @@
 import { LFO_SHAPES, effectByName } from '../fxmic/spec'
 import type { Preset } from '../fxmic/types'
 import type { Action, ModKind } from './state'
+import { LfoGlyph, SourceGlyph } from './Glyphs'
 
 const KINDS: { kind: ModKind; blurb: string }[] = [
   { kind: 'handle', blurb: 'squeeze the handle, 0 to 100%' },
@@ -41,7 +42,10 @@ function Block({
   if (!mod) {
     return (
       <div className="flex items-center justify-between border border-rule-soft px-2 py-1.5">
-        <span className="label">{kind} — {blurb}</span>
+        <span className="label flex items-center gap-2">
+          <SourceGlyph kind={kind} size={17} />
+          <span>{kind} — {blurb}</span>
+        </span>
         <button type="button" className="data border border-rule px-2 hover:border-orange hover:text-orange"
           onClick={() => dispatch({ type: 'set-mod', kind, patch: { row: 0, param: params[0]?.name, depth: 0.5 } })}>
           add
@@ -53,7 +57,10 @@ function Block({
   return (
     <div className="border border-orange bg-orange-soft/40 p-2">
       <div className="flex items-baseline justify-between">
-        <span className="data font-medium text-orange">{kind}</span>
+        <span className="data flex items-center gap-2 font-medium text-orange">
+          <SourceGlyph kind={kind} size={18} />
+          {kind}
+        </span>
         <button type="button" className="label underline hover:text-orange"
           onClick={() => dispatch({ type: 'set-mod', kind, patch: undefined })}>
           remove
@@ -96,9 +103,22 @@ function Block({
 
         {kind === 'lfo' && (
           <>
-            <Select label="shape" value={(preset.lfo?.shape as string) ?? ''}
-              options={LFO_SHAPES.map((s) => ({ value: s, label: s }))}
-              onChange={(v) => dispatch({ type: 'set-mod', kind, patch: { shape: v } as never })} />
+            <span className="label flex items-center gap-1" role="radiogroup" aria-label="lfo shape">
+              shape
+              {LFO_SHAPES.map((s) => {
+                const on = preset.lfo?.shape === s
+                return (
+                  <button key={s} type="button" role="radio" aria-checked={on} title={s}
+                    onClick={() => dispatch({ type: 'set-mod', kind, patch: { shape: s } as never })}
+                    className={`flex h-7 w-9 items-center justify-center border ${
+                      on ? 'border-orange bg-orange-soft text-orange' : 'border-rule bg-paper text-mute hover:border-orange hover:text-orange'
+                    }`}>
+                    <LfoGlyph shape={s} size={20} />
+                  </button>
+                )
+              })}
+              <span className="data ml-1">{preset.lfo?.shape ?? '—'}</span>
+            </span>
             <label className="label flex items-center gap-1">
               speed
               <input type="number" step="0.5" min="0" value={preset.lfo?.speed ?? ''}

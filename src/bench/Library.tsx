@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { LIBRARY, type Pack } from '../packs/library'
 import { serialize } from '../fxmic/serialize'
 import type { Action } from './state'
+import type { Preset } from '../fxmic/types'
+import { LFO_SHAPES, type LfoShape } from '../fxmic/spec'
+import { EffectGlyph, LfoGlyph, SourceGlyph } from './Glyphs'
 
 /**
  * The starter library. Read-only for now: these load onto the bench, and
@@ -48,13 +51,15 @@ function Card({ pack, dirty, dispatch }: { pack: Pack; dirty: boolean; dispatch:
           <li key={preset.pos} className="data flex gap-2 border-b border-rule-soft pb-1">
             <span className="text-mute">{preset.pos}</span>
             <span className="w-24 shrink-0 font-medium">{preset.name}</span>
-            <span className="label">{preset.comment}</span>
+            <span className="label flex-1">{preset.comment}</span>
+            <Strip preset={preset} />
           </li>
         ))}
       </ul>
 
-      <p className="label mt-3 m-0">
-        <span className="text-orange">handle</span> {pack.handle}
+      <p className="label mt-3 m-0 flex items-start gap-1.5">
+        <SourceGlyph kind="handle" size={15} className="mt-0.5 text-orange" />
+        <span><span className="text-orange">handle</span> {pack.handle}</span>
       </p>
 
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-rule-soft pt-3">
@@ -78,5 +83,32 @@ function Card({ pack, dirty, dispatch }: { pack: Pack; dirty: boolean; dispatch:
         )}
       </div>
     </div>
+  )
+}
+
+/**
+ * A preset as a row of shapes: the blocks the audio falls through, then a rule,
+ * then whatever moves them. Orange for the movers, because the library is where
+ * you learn what the handle does before you read a word.
+ */
+function Strip({ preset }: { preset: Preset }) {
+  const sources = (['handle', 'shake', 'lfo'] as const).filter((k) => preset[k])
+  const shape = preset.lfo?.shape
+  const lfoShape = LFO_SHAPES.includes(shape as LfoShape) ? (shape as LfoShape) : undefined
+  return (
+    <span className="ml-auto flex shrink-0 items-center gap-1 self-start pt-0.5"
+      title={[preset.list.map((r) => r.effect).join(' → '), sources.join(' + ')].filter(Boolean).join(' · ')}>
+      {preset.list.map((r, i) => (
+        <EffectGlyph key={i} name={r.effect} size={14} className="text-mute" />
+      ))}
+      {sources.length > 0 && <span aria-hidden className="mx-0.5 h-3 w-px bg-rule" />}
+      {sources.map((k) =>
+        k === 'lfo' && lfoShape ? (
+          <LfoGlyph key={k} shape={lfoShape} size={14} className="text-orange" />
+        ) : (
+          <SourceGlyph key={k} kind={k} size={14} className="text-orange" />
+        ),
+      )}
+    </span>
   )
 }

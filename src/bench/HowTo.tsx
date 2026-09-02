@@ -1,3 +1,5 @@
+import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
+
 const STEPS: { title: string; body: string }[] = [
   {
     title: 'build a chain',
@@ -19,6 +21,15 @@ const STEPS: { title: string; body: string }[] = [
     title: 'write and eject',
     body: 'mic gnome generates the config.json and encodes your wavs, backs up whatever is already on the disk so putting it back is one click, then writes. eject and wait for the restart — do not pull the cable. if a mic ever refuses to start, hold the white + grey buttons during startup to get the disk back and fix the file.',
   },
+]
+
+/** One drawing per step, the same ones the bench itself uses, so the panel teaches the vocabulary. */
+const STEP_GLYPHS = [
+  <Glyph key="chain" name="chain" size={22} />,
+  <EffectGlyph key="sample" name="SAMPLE" size={22} />,
+  <SourceGlyph key="handle" kind="handle" size={22} />,
+  <Glyph key="tick" name="tick" size={22} />,
+  <Glyph key="eject" name="eject" size={22} />,
 ]
 
 export function HowTo({ onClose }: { onClose: () => void }) {
@@ -51,7 +62,10 @@ export function HowTo({ onClose }: { onClose: () => void }) {
         <ol className="m-0 mt-4 flex list-none flex-col gap-3 p-0">
           {STEPS.map((step, i) => (
             <li key={step.title} className="flex gap-3 border-b border-rule-soft pb-3">
-              <span className="data shrink-0 text-orange">{i + 1}</span>
+              <span className="flex w-7 shrink-0 flex-col items-center gap-1.5">
+                <span className="data text-orange">{i + 1}</span>
+                <span className="text-mute">{STEP_GLYPHS[i]}</span>
+              </span>
               <span>
                 <b className="data block font-medium">{step.title}</b>
                 <span className="label block leading-relaxed">{step.body}</span>

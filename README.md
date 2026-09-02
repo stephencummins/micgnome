@@ -91,6 +91,25 @@ raster cannot solve: the logo's beard is white on white, so the tile becomes a w
 in dark mode; and the wordmark inside it is illegible below about 60px, which is where a
 favicon and a header mark both live. The vector is the same artwork with the type removed.
 
+### The glyphs
+
+`src/bench/Glyphs.tsx`. One small drawing per effect block, LFO shape and modulation
+source, so a chain can be read by shape before it is read by name. They sit on every
+chain row and add-block button, on the modulation panel (the LFO shape picker is four
+waveforms rather than a dropdown), at the end of every library preset as a strip —
+blocks in grey, then a rule, then whatever moves them in orange — and beside each of
+the five steps.
+
+Drawn, not placed, for the same reason as the mark: they take `currentColor` from the
+text around them, so they survive dark mode and stay crisp at 14px. One-pixel strokes,
+no fills, nothing decorative, after the guide's own line drawings. Orange is reserved
+for the movers. An effect the mic does not have gets a dashed box with a question mark,
+so the chain still lines up and the problem stays visible.
+
+The chain also has a spine now — a hairline down the left with a dot per row and an
+arrowhead at the bottom — because "audio falls through top to bottom" is a sentence,
+and a line is faster.
+
 ### The starter library
 
 `src/packs/library.ts`. Four packs, sixteen presets, in a **library** tab that loads any
