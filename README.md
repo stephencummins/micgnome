@@ -78,8 +78,10 @@ editor UI only.
 
 ### Getting started
 
-Five steps, shown once on a first visit and available from **how to use** in the header
-at any time: build a chain, drop in sounds, wire up the handle, read the verdict, write
+Five steps, shown once on a first visit and reachable afterwards from **how to use** in
+the header or the **?** button pinned bottom-right. Two ways in on purpose: the header
+link is easy to miss, and the moment someone wants the recovery instruction is the moment
+they are least inclined to hunt for it. The steps are: build a chain, drop in sounds, wire up the handle, read the verdict, write
 and eject.
 
 It says up front where `config.json` comes from, because the obvious question on reading

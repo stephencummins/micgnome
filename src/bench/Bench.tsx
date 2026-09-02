@@ -268,6 +268,14 @@ export function Bench() {
         </section>
       </main>
 
+      {/* Always reachable. The header link is easy to miss, and the moment someone
+          wants the recovery instruction is the moment they are least able to hunt. */}
+      <button type="button" onClick={() => setHowTo(true)} title="How to use Mic Gnome"
+        aria-label="How to use Mic Gnome"
+        className="fixed bottom-4 right-4 z-30 flex h-10 w-10 items-center justify-center border border-rule bg-paper text-base shadow-[0_1px_6px_rgba(0,0,0,0.08)] hover:border-orange hover:text-orange">
+        <span aria-hidden className="font-mono">?</span>
+      </button>
+
       {howTo && <HowTo onClose={closeHowTo} />}
 
       {writing && (
