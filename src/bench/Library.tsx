@@ -41,11 +41,12 @@ function Card({ pack, dirty, dispatch }: { pack: Pack; dirty: boolean; dispatch:
   return (
     <div className="flex flex-col border border-rule bg-paper p-3">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <Sigil pack={pack.id} />
           <span className="data font-medium tracking-wide text-[15px] text-orange">{pack.name}</span>
         </div>
-        <span className="label shrink-0">after {pack.after}</span>
+        {/* Wraps, right-aligned: the name and sigil keep their width, the attribution gives. */}
+        <span className="label min-w-0 text-right">after {pack.after}</span>
       </div>
 
       <p className="label mt-3 leading-relaxed">{pack.blurb}</p>
