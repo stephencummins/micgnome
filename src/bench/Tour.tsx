@@ -1,9 +1,11 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
+import { STEP_TAB, type StepStatus } from './progress'
 
 /**
- * Six tiles, one screen each: the shortest path from landing here cold to a
- * mic that starts. The full guide (HowTo) is one link away and says why.
+ * Six steps, docked beside the bench so they can be followed while doing
+ * them, lighting up as each is actually done. The full guide (HowTo) is one
+ * link away and says why.
  */
 export interface Step {
   title: string
@@ -29,7 +31,7 @@ export const STEPS: Step[] = [
     body: 'the mic\u2019s handle is a lever you squeeze while you talk. here you pick one setting for it to change, such as how much echo. the graph on the right shows what happens as you squeeze harder. shaking the mic, and a slow automatic wobble, are set up the same way.',
   },
   {
-    title: 'your own sounds (optional)',
+    title: 'your own sounds',
     where: 'samples tab',
     body: 'skip this and the mic uses the four sounds built into it. if you want your own, drop sound files here (wav files, up to four). together they must fit in about 1 mb, which is not much; mic gnome shrinks them to fit and tells you what it changed.',
   },
@@ -45,7 +47,7 @@ export const STEPS: Step[] = [
   },
 ]
 
-const TILE_GLYPHS: ReactNode[] = [
+export const TILE_GLYPHS: ReactNode[] = [
   <Glyph key="library" name="library" size={22} />,
   <Glyph key="chain" name="chain" size={22} />,
   <SourceGlyph key="handle" kind="handle" size={22} />,
@@ -64,14 +66,14 @@ const rule = { fill: 'none', stroke: 'var(--color-rule)', strokeWidth: 1 }
 function Frame({ children, label }: { children: ReactNode; label: string }) {
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label}
-      className="block h-auto w-full max-w-[240px] shrink-0">
+      className="block h-auto w-full max-w-[260px] shrink-0">
       <rect x="0.5" y="0.5" width={W - 1} height={H - 1} fill="var(--color-panel)" stroke="var(--color-rule-soft)" />
       {children}
     </svg>
   )
 }
 
-const PICTURES: ReactNode[] = [
+export const PICTURES: ReactNode[] = [
   // Four cards; one of them chosen.
   <Frame key="0" label="a grid of pack cards, one selected">
     {[0, 1, 2, 3].map((i) => {
@@ -179,83 +181,72 @@ const PICTURES: ReactNode[] = [
   </Frame>,
 ]
 
-export function Tour({ onClose, onGuide }: { onClose: () => void; onGuide: () => void }) {
-  const [step, setStep] = useState(0)
-  const last = step === STEPS.length - 1
-  const current = STEPS[step]
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') setStep((s) => Math.min(s + 1, STEPS.length - 1))
-      else if (e.key === 'ArrowLeft') setStep((s) => Math.max(s - 1, 0))
-      else if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+export function Guide({
+  status,
+  tab,
+  onClose,
+  onFullGuide,
+}: {
+  status: StepStatus[]
+  /** The bench tab in view, so the guide opens the step that matches it. */
+  tab: string
+  onClose: () => void
+  onFullGuide: () => void
+}) {
+  const current = status.indexOf('current')
+  const tabStep = STEP_TAB.findIndex((t, i) => t === tab && status[i] !== 'done')
+  const auto = tabStep >= 0 ? tabStep : current >= 0 ? current : STEPS.length - 1
+  const [picked, setPicked] = useState<number>()
+  // A fresh reason to move (a tab change, a step completed) beats a manual pick.
+  useEffect(() => setPicked(undefined), [auto])
+  const open = picked ?? auto
+  const doneCount = status.filter((s) => s === 'done').length
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4 sm:p-10 sm:pt-16">
-      <div role="dialog" aria-modal="true" aria-label="mic gnome in six steps"
-        className="w-full max-w-3xl border border-rule bg-paper p-5">
-        <div className="flex items-baseline justify-between border-b border-ink pb-2">
-          <h2 className="m-0 text-lg font-medium tracking-tight">mic gnome in six steps</h2>
+    <div className="flex h-full flex-col" aria-label="how it works">
+      <div className="mb-3 flex items-baseline justify-between border-b border-rule-soft pb-2">
+        <span className="data font-medium">how it works</span>
+        <span className="flex items-baseline gap-3">
+          <span className="label">{doneCount} of {STEPS.length}</span>
           <button type="button" onClick={onClose} className="label underline hover:text-orange">close</button>
-        </div>
-
-        {/* The tiles: progress and navigation in one strip. */}
-        <ol className="m-0 mt-4 grid list-none grid-cols-6 gap-1.5 p-0" aria-label="steps">
-          {STEPS.map((s, i) => {
-            const on = i === step
-            const done = i < step
-            return (
-              <li key={s.title}>
-                <button type="button" onClick={() => setStep(i)} aria-current={on ? 'step' : undefined}
-                  className={`flex h-full w-full flex-col items-center gap-1.5 border px-1 py-2.5 text-center transition-colors sm:items-start sm:px-3 sm:text-left ${
-                    on ? 'border-orange bg-orange-soft text-orange' : done ? 'border-rule text-ink hover:border-orange' : 'border-rule-soft text-mute hover:border-rule hover:text-ink'
-                  }`}>
-                  <span className="flex items-center gap-2">
-                    <span className="data">{i + 1}</span>
-                    <span className={on ? 'text-orange' : done ? 'text-ink' : 'text-mute'}>{TILE_GLYPHS[i]}</span>
-                  </span>
-                  <span className="data hidden leading-tight sm:block">{s.title}</span>
-                </button>
-              </li>
-            )
-          })}
-        </ol>
-
-        {/* The step itself. */}
-        <div className="mt-4 flex flex-col gap-4 border border-rule-soft p-4 sm:min-h-[212px] sm:flex-row sm:items-start sm:gap-6">
-          {PICTURES[step]}
-          <div className="min-w-0 flex-1">
-            <p className="label m-0">step {step + 1} of {STEPS.length} · {current.where}</p>
-            <h3 className="data m-0 mt-1 text-[15px] font-medium">{current.title}</h3>
-            <p className="label m-0 mt-2 leading-relaxed">{current.body}</p>
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <button type="button" onClick={() => setStep((s) => Math.max(s - 1, 0))} disabled={step === 0}
-            className="data border border-rule px-3 py-2 tracking-wider hover:border-orange disabled:opacity-30 disabled:hover:border-rule">
-            back
-          </button>
-          {last ? (
-            <button type="button" onClick={onClose}
-              className="data border border-orange bg-orange px-4 py-2 tracking-wider text-white">
-              start
-            </button>
-          ) : (
-            <button type="button" onClick={() => setStep((s) => s + 1)}
-              className="data border border-orange bg-orange px-4 py-2 tracking-wider text-white">
-              next
-            </button>
-          )}
-          <button type="button" onClick={onGuide} className="label ml-auto underline hover:text-orange">
-            the full guide →
-          </button>
-        </div>
+        </span>
       </div>
+
+      <ol className="m-0 flex list-none flex-col gap-1.5 p-0" aria-label="steps">
+        {STEPS.map((s, i) => {
+          const st = status[i]
+          const isOpen = i === open
+          const tone =
+            st === 'done' ? 'text-pass' : st === 'current' ? 'text-orange' : st === 'optional' ? 'text-mute' : 'text-mute'
+          const border =
+            isOpen ? 'border-orange' : st === 'done' ? 'border-pass/40' : 'border-rule-soft hover:border-rule'
+          return (
+            <li key={s.title} className={`border ${border} ${isOpen ? 'bg-paper' : ''}`}>
+              <button type="button" onClick={() => setPicked(i)} aria-expanded={isOpen}
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left">
+                <span className={`data w-4 shrink-0 ${tone}`}>{st === 'done' ? '✓' : i + 1}</span>
+                <span className={`shrink-0 ${tone}`}>{TILE_GLYPHS[i]}</span>
+                <span className={`data min-w-0 flex-1 leading-tight ${st === 'done' ? 'text-mute line-through decoration-pass/50' : st === 'current' ? 'text-ink' : 'text-mute'}`}>
+                  {s.title}
+                </span>
+                {st === 'current' && <span className="label shrink-0 text-orange">now</span>}
+                {st === 'optional' && <span className="label shrink-0">optional</span>}
+              </button>
+              {isOpen && (
+                <div className="border-t border-rule-soft px-3 pb-3 pt-3">
+                  {PICTURES[i]}
+                  <p className="label m-0 mt-3">{s.where}</p>
+                  <p className="label m-0 mt-1 leading-relaxed text-ink">{s.body}</p>
+                </div>
+              )}
+            </li>
+          )
+        })}
+      </ol>
+
+      <button type="button" onClick={onFullGuide} className="label mt-4 self-start underline hover:text-orange">
+        the full guide →
+      </button>
     </div>
   )
 }

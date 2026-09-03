@@ -9,10 +9,13 @@ export function Downloads({
   configText,
   files,
   blocked,
+  onDownload,
 }: {
   configText: string
   files: { name: string; data: Uint8Array }[]
   blocked: boolean
+  /** config.json was downloaded — the pack is on its way to a mic. */
+  onDownload?: () => void
 }) {
   const links = useMemo(
     () => [
@@ -38,7 +41,8 @@ export function Downloads({
             <li key={l.name} className="data text-mute line-through">{l.name}</li>
           ) : (
             <li key={l.name}>
-              <a href={l.url} download={l.name} className="data text-orange underline hover:no-underline">
+              <a href={l.url} download={l.name} className="data text-orange underline hover:no-underline"
+                onClick={() => l.name === 'config.json' && onDownload?.()}>
                 {l.name} ↓
               </a>
             </li>

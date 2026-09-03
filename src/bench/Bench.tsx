@@ -10,7 +10,8 @@ import { checkPlayable, decodeWav, encodeWav, WavError } from '../fxmic/wav'
 import { Chain } from './Chain'
 import { HandleMap } from './HandleMap'
 import { HowTo } from './HowTo'
-import { Tour } from './Tour'
+import { Guide } from './Tour'
+import { stepStatuses } from './progress'
 import { ThemeToggle } from './Theme'
 import { Library } from './Library'
 import { Mark } from './Mark'
@@ -41,22 +42,26 @@ export function Bench() {
   const [note, setNote] = useState<string>()
   // Shown unprompted the first time only. Someone landing here cold has no idea
   // what an fx-mic config is; someone on their fifth visit does not need telling.
-  // The five-step tour is what opens; the full guide sits one link behind it.
-  const [help, setHelp] = useState<'tour' | 'guide' | null>(() => {
+  // "how it works" docks beside the bench on a first visit; the full guide is a
+  // modal one link behind it.
+  const [guideOpen, setGuideOpen] = useState(() => {
     try {
-      return localStorage.getItem('micgnome.how-to-seen') !== '1' ? 'tour' : null
+      return localStorage.getItem('micgnome.how-to-seen') !== '1'
     } catch {
-      return 'tour'
+      return true
     }
   })
+  const [fullGuide, setFullGuide] = useState(false)
+  const [written, setWritten] = useState(false)
+  const [downloaded, setDownloaded] = useState(false)
 
-  const closeHelp = () => {
+  const closeGuide = () => {
     try {
       localStorage.setItem('micgnome.how-to-seen', '1')
     } catch {
       /* private window — not showing it again this session is enough */
     }
-    setHelp(null)
+    setGuideOpen(false)
   }
 
   const refresh = useCallback(async () => setDiskFiles(await disk.files()), [disk])
@@ -145,6 +150,10 @@ export function Bench() {
   }, [state.config, packFiles, configText])
 
   const preset = state.config.presets[state.selected]
+  const progress = useMemo(() => stepStatuses(state.config, { written, downloaded }), [state.config, written, downloaded])
+  const guide = (
+    <Guide status={progress} tab={tab} onClose={closeGuide} onFullGuide={() => setFullGuide(true)} />
+  )
   const configBytes = new TextEncoder().encode(configText).byteLength
 
   async function addSample(file: File) {
@@ -227,7 +236,7 @@ export function Bench() {
             share
           </button>
           <ThemeToggle />
-          <button type="button" onClick={() => setHelp('tour')} className="underline hover:text-orange">
+          <button type="button" onClick={() => setGuideOpen((o) => !o)} className="underline hover:text-orange">
             how to use
           </button>
           <label className="cursor-pointer underline hover:text-orange"
@@ -256,7 +265,9 @@ export function Bench() {
         </p>
       )}
 
-      <main className="grid min-h-[calc(100dvh-49px)] gap-px bg-rule lg:grid-cols-[215px_minmax(0,1fr)_330px]">
+      <main className={`grid min-h-[calc(100dvh-49px)] gap-px bg-rule ${
+        guideOpen ? 'lg:grid-cols-[215px_minmax(0,1fr)_330px_300px]' : 'lg:grid-cols-[215px_minmax(0,1fr)_330px]'
+      }`}>
         <section className="bg-paper p-4">
           <div className="label mb-2">presets · orange button</div>
           <div className="flex flex-col gap-1">
@@ -299,15 +310,33 @@ export function Bench() {
         <section className="bg-paper p-4">
           <div className="mb-4 flex gap-4 border-b border-rule-soft">
             {(['chain', 'samples', 'library'] as const).map((t) => (
-              <button key={t} type="button" onClick={() => setTab(t)}
+              <button key={t} type="button"
+                onClick={() => {
+                  setTab(t)
+                  // Below the desktop breakpoint the guide sits where the tab content
+                  // goes, so choosing a tab means "show me the tab", not both.
+                  if (guideOpen && !window.matchMedia('(min-width: 64rem)').matches) closeGuide()
+                }}
                 className={`data -mb-px border-b-2 px-1 pb-2 ${
                   tab === t ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
                 }`}>
                 {t}
               </button>
             ))}
+            <button type="button" onClick={() => (guideOpen ? closeGuide() : setGuideOpen(true))}
+              aria-pressed={guideOpen}
+              className={`data -mb-px ml-auto border-b-2 px-1 pb-2 ${
+                guideOpen ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
+              }`}>
+              how it works
+            </button>
           </div>
 
+          {/* Below the desktop breakpoint there is no room beside the bench, so the
+              guide takes the tab area instead. */}
+          {guideOpen && <div className="lg:hidden">{guide}</div>}
+
+          <div className={guideOpen ? 'hidden lg:block' : ''}>
           {tab === 'library' ? (
             <Library dirty={state.dirty} dispatch={dispatch} />
           ) : tab === 'chain' ? (
@@ -334,6 +363,7 @@ export function Bench() {
                 onDrop={(file) => void addSample(file)} onFit={runFit} />
             </div>
           )}
+          </div>
         </section>
 
         <section className="flex flex-col gap-4 bg-paper p-4">
@@ -354,24 +384,32 @@ export function Bench() {
               className="data mt-2 w-full border border-orange bg-orange px-3 py-2 tracking-wider text-white disabled:opacity-40">
               write to {disk.label}
             </button>
-            <Downloads configText={configText} files={packFiles} blocked={blocked} />
+            <Downloads configText={configText} files={packFiles} blocked={blocked} onDownload={() => setDownloaded(true)} />
           </div>
         </section>
+
+        {guideOpen && <aside className="hidden bg-paper p-4 lg:block">{guide}</aside>}
       </main>
 
       {/* Always reachable. The header link is easy to miss, and the moment someone
           wants the recovery instruction is the moment they are least able to hunt. */}
-      <button type="button" onClick={() => setHelp('tour')} title="How to use Mic Gnome"
+      <button type="button" onClick={() => setGuideOpen((o) => !o)} title="How to use Mic Gnome"
         aria-label="How to use Mic Gnome"
         className="fixed bottom-4 right-4 z-30 flex h-10 w-10 items-center justify-center border border-orange bg-paper text-base text-orange shadow-[0_1px_6px_rgba(0,0,0,0.08)] hover:bg-orange hover:text-white">
         <span aria-hidden className="font-mono">?</span>
       </button>
 
-      {help === 'tour' && <Tour onClose={closeHelp} onGuide={() => setHelp('guide')} />}
-      {help === 'guide' && <HowTo onClose={closeHelp} onTour={() => setHelp('tour')} />}
+      {fullGuide && (
+        <HowTo onClose={() => setFullGuide(false)}
+          onTour={() => {
+            setFullGuide(false)
+            setGuideOpen(true)
+          }} />
+      )}
 
       {writing && (
         <WriteDialog disk={disk} config={state.config} report={report} files={packFiles}
+          onWritten={() => setWritten(true)}
           onClose={() => {
             setWriting(false)
             void refresh()

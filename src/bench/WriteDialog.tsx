@@ -19,6 +19,7 @@ export function WriteDialog({
   report,
   files,
   onClose,
+  onWritten,
 }: {
   disk: MicDisk
   config: Config
@@ -26,6 +27,8 @@ export function WriteDialog({
   /** The sample wavs, already encoded exactly as the budget meter counted them. */
   files: { name: string; data: Uint8Array }[]
   onClose: () => void
+  /** The virtual mic came back up with this pack. */
+  onWritten?: () => void
 }) {
   const [stage, setStage] = useState<Stage>('confirm')
   const [backup, setBackup] = useState<Snapshot>()
@@ -53,6 +56,7 @@ export function WriteDialog({
       const restart = await disk.eject()
       setResult(restart)
       setStage(restart.booted ? 'done' : 'failed')
+      if (restart.booted) onWritten?.()
     } catch (e) {
       setError(
         e instanceof DiskFullError
