@@ -18,6 +18,7 @@ import { Modulation } from './Modulation'
 import { SampleBay, type Source } from './SampleBay'
 import { Verdict } from './Verdict'
 import { WriteDialog } from './WriteDialog'
+import { Downloads } from './Downloads'
 import type { BenchState } from './state'
 import { historyReduce, initialHistory } from './history'
 import { decodePack, encodePack, shareUrl } from './share'
@@ -351,8 +352,9 @@ export function Bench() {
             <Verdict report={report} onJump={setFocus} />
             <button type="button" onClick={() => setWriting(true)} disabled={blocked}
               className="data mt-2 w-full border border-orange bg-orange px-3 py-2 tracking-wider text-white disabled:opacity-40">
-              write to fx-mic
+              write to {disk.label}
             </button>
+            <Downloads configText={configText} files={packFiles} blocked={blocked} />
           </div>
         </section>
       </main>
@@ -397,7 +399,8 @@ function PreviewStrip() {
     <p className="label flex items-baseline justify-between gap-4 border-b border-rule bg-panel px-4 py-2 leading-relaxed">
       <span>
         preview — the mic here is a <b className="font-medium text-orange">simulation</b>, accurate to the guide but
-        not to the hardware. writing to a real fx-mic lands once the unit does.
+        not to the hardware. to put a pack on a real fx-mic, download the files under the write button and drop
+        them onto its disk.
       </span>
       <button type="button" className="shrink-0 underline hover:text-orange"
         onClick={() => {

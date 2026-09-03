@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
 
 /**
- * Five tiles, one screen each: the shortest path from landing here cold to a
+ * Six tiles, one screen each: the shortest path from landing here cold to a
  * mic that starts. The full guide (HowTo) is one link away and says why.
  */
 export interface Step {
@@ -16,27 +16,32 @@ export const STEPS: Step[] = [
   {
     title: 'pick a pack',
     where: 'library tab',
-    body: 'eight packs are ready to go. load one and it fills the four preset slots on the orange button. or start from NEW PACK and build your own from an empty chain.',
+    body: 'a pack is a ready-made set of four sound settings for the mic, a bit like the picture modes on a camera. the library has eight already made. press load on one and it is yours: use it as it is, or change it. you do not have to build anything.',
   },
   {
-    title: 'build the chain',
+    title: 'see what is in it',
     where: 'chain tab',
-    body: 'add blocks; audio falls through them top to bottom. the SAMPLE row is where the button sound comes in — put it last to keep it clean, earlier to run it through the blocks above.',
+    body: 'each of the four settings is a list of effects your voice passes through, top to bottom, like water through pipes. click a block to adjust it, or add and remove blocks. the block called SAMPLE is where the mic\u2019s button sounds (the horn, the applause) join in.',
   },
   {
-    title: 'make it move',
+    title: 'make the squeeze do something',
     where: 'modulation, under the chain',
-    body: 'give the handle, a shake or an lfo one parameter on one row. the map on the right plots the squeeze from 0 to 100% and marks where the value hits its rail and the rest of the travel does nothing.',
+    body: 'the mic\u2019s handle is a lever you squeeze while you talk. here you pick one setting for it to change, such as how much echo. the graph on the right shows what happens as you squeeze harder. shaking the mic, and a slow automatic wobble, are set up the same way.',
   },
   {
-    title: 'add sounds, or don’t',
+    title: 'your own sounds (optional)',
     where: 'samples tab',
-    body: 'with no wavs the mic plays its four built-in sounds: horn, applause, bell and the censor beep. drop up to four wavs for your own. all four share 1 mb, and the fitter trims and folds until they fit, then says what it traded.',
+    body: 'skip this and the mic uses the four sounds built into it. if you want your own, drop sound files here (wav files, up to four). together they must fit in about 1 mb, which is not much; mic gnome shrinks them to fit and tells you what it changed.',
   },
   {
-    title: 'write and eject',
+    title: 'check it works',
     where: 'write, on the right',
-    body: 'safe to write means nothing blocks: errors block, warnings never do. write, then eject the disk and wait for the mic to restart. if a mic ever will not start, hold white + grey while powering on and the disk comes back.',
+    body: 'the box under write tells you if anything is wrong. red errors must be fixed, because that kind of mistake stops the mic switching on. then press write: that writes to a pretend mic inside your browser, and if the pretend one starts up, the real one will too.',
+  },
+  {
+    title: 'put it on the mic',
+    where: 'the cable, then the links under write',
+    body: 'take the bottom cover off the mic, plug it into your computer with a usb-c cable (the phone-charger kind) and push the handle so it is switched on. a drive called fx-mic disk appears, just like a memory stick. click the download links under write, drag those files from your downloads folder onto fx-mic disk, then eject it the way you would a memory stick. the mic restarts with your pack. if it ever will not start, hold the white + grey buttons while switching it on and the disk comes back so you can fix or delete config.json.',
   },
 ]
 
@@ -45,6 +50,7 @@ const TILE_GLYPHS: ReactNode[] = [
   <Glyph key="chain" name="chain" size={22} />,
   <SourceGlyph key="handle" kind="handle" size={22} />,
   <EffectGlyph key="sample" name="SAMPLE" size={22} />,
+  <Glyph key="tick" name="tick" size={22} />,
   <Glyph key="eject" name="eject" size={22} />,
 ]
 
@@ -141,18 +147,35 @@ const PICTURES: ReactNode[] = [
     <text x="22" y="96" fontFamily="var(--font-mono)" fontSize="8.5" fill="var(--color-mute)">1 mb, shared by all four</text>
   </Frame>,
 
-  // The tick, then the eject.
-  <Frame key="4" label="a tick for the verdict, then the eject symbol">
-    <rect x="18" y="22" width="126" height="24" fill="var(--color-pass-soft)" stroke="var(--color-pass)" />
-    <polyline points="26,34 32,40 42,28" fill="none" stroke="var(--color-pass)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    <text x="50" y="38" fontFamily="var(--font-mono)" fontSize="9" letterSpacing="0.04em" fill="var(--color-pass)">safe to write</text>
-    <rect x="18" y="58" width="126" height="24" fill="var(--color-orange)" />
-    <text x="81" y="74" textAnchor="middle" fontFamily="var(--font-mono)" fontSize="9" letterSpacing="0.06em" fill="#fff">write to fx-mic</text>
-    <line x1="160" y1="34" x2="180" y2="34" {...rule} />
-    <polyline points="180,34 194,34" {...stroke} strokeWidth={1.4} />
-    <polyline points="186,30 194,34 186,38" {...stroke} strokeWidth={1.4} />
-    <path d="M200 62l10 12h-20z" {...stroke} />
-    <line x1="190" y1="80" x2="220" y2="80" {...stroke} />
+  // The verdict, the button, and the virtual mic coming back up.
+  <Frame key="4" label="a green tick saying safe to write, the write button, and the virtual mic restarting">
+    <polyline points="24,36 31,43 43,27" fill="none" stroke="var(--color-pass)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <text x="52" y="39" fontFamily="var(--font-mono)" fontSize="9" letterSpacing="0.04em" fill="var(--color-pass)">safe to write</text>
+    <rect x="22" y="56" width="84" height="24" fill="var(--color-orange)" />
+    <text x="64" y="72" textAnchor="middle" fontFamily="var(--font-mono)" fontSize="9" letterSpacing="0.06em" fill="#fff">write</text>
+    <line x1="118" y1="68" x2="146" y2="68" {...stroke} strokeWidth={1.4} />
+    <polyline points="140,63 146,68 140,73" {...stroke} strokeWidth={1.4} />
+    <rect x="158" y="20" width="62" height="72" rx="8" fill="var(--color-paper)" stroke="var(--color-rule)" />
+    <circle cx="189" cy="44" r="9" fill="none" stroke="var(--color-orange)" strokeWidth="1.6" />
+    <polyline points="184,44 188,48 195,40" fill="none" stroke="var(--color-orange)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <text x="189" y="70" textAnchor="middle" fontFamily="var(--font-mono)" fontSize="8" fill="var(--color-mute)">virtual</text>
+    <text x="189" y="81" textAnchor="middle" fontFamily="var(--font-mono)" fontSize="8" fill="var(--color-mute)">booted</text>
+  </Frame>,
+
+  // The mic on its cable, the disk it becomes, and the files dropping in.
+  <Frame key="5" label="the mic connected by a cable to a disk called fx-mic disk, with config.json and a wav on it, then eject">
+    <rect x="22" y="18" width="30" height="72" rx="8" fill="var(--color-paper)" stroke="var(--color-rule)" />
+    <circle cx="37" cy="34" r="6" fill="none" stroke="var(--color-rule)" />
+    <rect x="34" y="52" width="6" height="26" rx="1" fill="var(--color-orange)" opacity="0.8" />
+    <path d="M52 84h18c6 0 6-30 12-30h14" {...rule} strokeDasharray="3 3" />
+    <rect x="96" y="30" width="96" height="50" fill="var(--color-paper)" stroke="var(--color-orange)" />
+    <text x="102" y="42" fontFamily="var(--font-mono)" fontSize="8" letterSpacing="0.04em" fill="var(--color-orange)">fx-mic disk</text>
+    <text x="102" y="58" fontFamily="var(--font-mono)" fontSize="8.5" fill="var(--color-ink)">config.json</text>
+    <text x="102" y="71" fontFamily="var(--font-mono)" fontSize="8.5" fill="var(--color-ink)">1.wav</text>
+    <line x1="150" y1="14" x2="150" y2="26" {...stroke} strokeWidth={1.4} />
+    <polyline points="145,21 150,26 155,21" {...stroke} strokeWidth={1.4} />
+    <path d="M214 46l9 12h-18z" {...stroke} strokeWidth={1.4} />
+    <line x1="205" y1="64" x2="223" y2="64" {...stroke} strokeWidth={1.4} />
   </Frame>,
 ]
 
@@ -172,16 +195,16 @@ export function Tour({ onClose, onGuide }: { onClose: () => void; onGuide: () =>
   }, [onClose])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4 sm:items-center sm:p-10">
-      <div role="dialog" aria-modal="true" aria-label="mic gnome in five steps"
-        className="w-full max-w-2xl border border-rule bg-paper p-5">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4 sm:p-10 sm:pt-16">
+      <div role="dialog" aria-modal="true" aria-label="mic gnome in six steps"
+        className="w-full max-w-3xl border border-rule bg-paper p-5">
         <div className="flex items-baseline justify-between border-b border-ink pb-2">
-          <h2 className="m-0 text-lg font-medium tracking-tight">mic gnome in five steps</h2>
+          <h2 className="m-0 text-lg font-medium tracking-tight">mic gnome in six steps</h2>
           <button type="button" onClick={onClose} className="label underline hover:text-orange">close</button>
         </div>
 
         {/* The tiles: progress and navigation in one strip. */}
-        <ol className="m-0 mt-4 grid list-none grid-cols-5 gap-1.5 p-0" aria-label="steps">
+        <ol className="m-0 mt-4 grid list-none grid-cols-6 gap-1.5 p-0" aria-label="steps">
           {STEPS.map((s, i) => {
             const on = i === step
             const done = i < step
@@ -203,7 +226,7 @@ export function Tour({ onClose, onGuide }: { onClose: () => void; onGuide: () =>
         </ol>
 
         {/* The step itself. */}
-        <div className="mt-4 flex flex-col gap-4 border border-rule-soft p-4 sm:min-h-[176px] sm:flex-row sm:items-start sm:gap-6">
+        <div className="mt-4 flex flex-col gap-4 border border-rule-soft p-4 sm:min-h-[212px] sm:flex-row sm:items-start sm:gap-6">
           {PICTURES[step]}
           <div className="min-w-0 flex-1">
             <p className="label m-0">step {step + 1} of {STEPS.length} · {current.where}</p>

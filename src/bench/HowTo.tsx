@@ -18,8 +18,8 @@ const STEPS: { title: string; body: string }[] = [
     body: 'errors block the write — an unknown effect, a value out of range, modulation pointing at a row that is not there. warnings never block: they are the places the guide itself is silent, and refusing a config that works would be worse.',
   },
   {
-    title: 'write and eject',
-    body: 'mic gnome generates the config.json and encodes your wavs, backs up whatever is already on the disk so putting it back is one click, then writes. eject and wait for the restart — do not pull the cable. if a mic ever refuses to start, hold the white + grey buttons during startup to get the disk back and fix the file.',
+    title: 'prove it boots, then put it on the mic',
+    body: 'write to the virtual fx-mic first: it backs up what was there, writes the files, ejects and boots the config the way the mic would, so a file that would stop a mic is caught here. then the real one: take the lower lid off, connect a usb-c cable to your computer, push the handle so the mic is on, and a disk called fx-mic disk appears. download config.json and your wavs from under the write button, drop them onto that disk, eject it the way you would a memory stick and wait for the restart — do not pull the cable. if a mic ever refuses to start, hold the white + grey buttons during startup to get the disk back and fix the file.',
   },
 ]
 
@@ -41,7 +41,7 @@ export function HowTo({ onClose, onTour }: { onClose: () => void; onTour?: () =>
           <h2 className="m-0 text-lg font-medium tracking-tight">the full guide</h2>
           <span className="flex gap-3">
             {onTour && (
-              <button type="button" onClick={onTour} className="label underline hover:text-orange">← five steps</button>
+              <button type="button" onClick={onTour} className="label underline hover:text-orange">← the steps</button>
             )}
             <button type="button" onClick={onClose} className="label underline hover:text-orange">close</button>
           </span>
