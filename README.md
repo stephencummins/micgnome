@@ -114,7 +114,7 @@ and a line is faster.
 
 ### The starter library
 
-`src/packs/library.ts`. Six packs, twenty-four presets, in a **library** tab that loads any
+`src/packs/library.ts`. Seven packs, twenty-eight presets, in a **library** tab that loads any
 of them onto the bench.
 
 | pack | after | idea |
@@ -125,6 +125,7 @@ of them onto the bench.
 | SHORTWAVE | TE OB&ndash;4 | a voice arriving from a long way off: SSB drift, telegraphic echo, hollow room |
 | TAPE HEAD | OP&ndash;1 | doubling, an octave underneath, tape wow, saturation ridden across the middle |
 | XY RACK | OP&ndash;XY | the three of its six published effects the library did not already have, plus a phaser |
+| HOUSE MIC | no device | the working pack: host, tannoy, mc and a fader, with the built-in sounds playing dry |
 
 Each card leads with a **sigil** (`src/bench/Sigil.tsx`) that draws what the pack does
 rather than decorating it: PUNCH IN is the punch, FOUR SHAPES is the four shapes,
@@ -138,8 +139,12 @@ four factory sounds. Three good consequences: nothing of Teenage Engineering's i
 redistributed, a pack is under 2 kB rather than a megabyte, and anyone can try one without
 finding a wav first.
 
-They are homages assembled from the fx-mic's own ten blocks, not recreations of another
-device's DSP, and **none has been heard on hardware yet** — every card says so, and
+Six are homages assembled from the fx-mic's own ten blocks, not recreations of another
+device's DSP. The seventh, HOUSE MIC, is the first pack that is not a demonstration: four
+jobs a mic does at an actual event, using the four sounds already in it. It is also the
+only pack that puts the SAMPLE row at the **end** of a chain, which per guide 7.5 is how
+the built-in sounds play dry — so the censor beep is a beep whatever the voice is doing,
+which is the whole point of a censor beep. **None has been heard on hardware yet** — every card says so, and
 `verified` flips per pack once each has actually been played through a mic.
 
 The tests are the quality bar, not just a smoke check. Each pack must produce **zero errors

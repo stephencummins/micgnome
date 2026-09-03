@@ -7,8 +7,10 @@
  * few hundred bytes rather than a megabyte, and anyone can try one without
  * finding a wav first.
  *
- * These are homages assembled from the fx-mic's own ten blocks. They are not
- * recreations of another device's DSP, and none of them has been heard on
+ * Most are homages assembled from the fx-mic's own ten blocks. They are not
+ * recreations of another device's DSP. HOUSE MIC is the exception: not a
+ * homage but a working pack, and the only one that puts SAMPLE at the end of
+ * a chain so the built-in sounds play dry. None of them has been heard on
  * hardware yet — the unit arrives 14 Sep 2026. `verified` flips to true per
  * pack once each has actually been played through a mic.
  */
@@ -391,6 +393,75 @@ export const LIBRARY: Pack[] = [
           // 0.2 to exactly 1.0: the room reaches its largest at full squeeze
           // and not a step before it.
           handle: { row: 1, param: 'time', depth: 0.8 },
+          trigger: { row: 0 },
+        },
+      ],
+    },
+  },
+
+  {
+    id: 'house-mic',
+    name: 'HOUSE MIC',
+    after: 'no device — a night\u2019s work',
+    blurb:
+      'the first pack here that is not a demonstration. four jobs a mic does at an actual event, using the four sounds already in it: a clean host, a station tannoy, an mc with a room behind them, and a fader. in three of the four the SAMPLE row sits at the end of the chain, so the censor beep, horn, bell and applause come out clean whatever the voice is doing.',
+    handle: 'is a working control per slot — presence, grit, the tail on a shout, the fader',
+    verified: false,
+    config: {
+      name: 'HOUSE MIC',
+      presets: [
+        {
+          pos: 0,
+          name: 'HOST',
+          comment: 'rumble cut, a little presence; squeeze for more cut-through. the sounds play clean after the eq.',
+          // SAMPLE last: per guide 7.5 the sample goes through nothing, so the
+          // censor beep is a beep and the horn is a horn.
+          list: [
+            { effect: 'HIGHPASS', cutoff: 0.1 },
+            { effect: 'EQUALISER', cutoff: 0.62, q: 0.35, gain: 0.25 },
+            { effect: 'SAMPLE' },
+          ],
+          handle: { row: 1, param: 'gain', depth: 0.5 },
+          trigger: { row: 2 },
+        },
+        {
+          pos: 1,
+          name: 'TANNOY',
+          comment: 'a horn speaker on a concourse; squeeze to push the voice harder into it',
+          // DIST carries its own band limits, so the horn is one block rather
+          // than three. The room is small and thin, like the place it is in.
+          list: [
+            { effect: 'DIST', amount: 3, mix: 0.35, 'lowpass-cutoff': 0.55, 'highpass-cutoff': 0.3 },
+            { effect: 'REVERB', time: 0.35, 'wet-level': 0.3, 'dry-level': 1.0, 'highpass-cutoff': 0.3 },
+            { effect: 'SAMPLE' },
+          ],
+          handle: { row: 0, param: 'mix', depth: 0.5 },
+          trigger: { row: 2 },
+        },
+        {
+          pos: 2,
+          name: 'HYPE',
+          comment: 'slapback and a hall for an mc; squeeze to let the last word run on, shake for a splash',
+          // The one preset where the sounds go through the room: an air horn
+          // fired here comes back off the same walls as the voice.
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'DELAY', time: 0.12, echo: 0.25, 'wet-level': 0.4, 'dry-level': 1.0 },
+            { effect: 'REVERB', time: 0.55, 'wet-level': 0.35, 'dry-level': 1.0, 'highpass-cutoff': 0.2 },
+          ],
+          handle: { row: 1, param: 'echo', depth: 0.5 },
+          shake: { row: 2, param: 'wet-level', depth: 0.5 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 3,
+          name: 'FADER',
+          comment: 'the voice untouched; the sounds are silent until you squeeze, and the handle is their fader',
+          // Level starts at zero and the handle takes it to exactly 1.0, so
+          // nothing fires by accident and applause can be brought up under a
+          // line and pulled away again.
+          list: [{ effect: 'SAMPLE', level: 0.0 }],
+          handle: { row: 0, param: 'level', depth: 1.0 },
           trigger: { row: 0 },
         },
       ],

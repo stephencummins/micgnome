@@ -129,6 +129,34 @@ const DRAWINGS: Record<string, () => Drawing> = {
     }
   },
 
+  // A voice, and the censor beep covering a word of it: the voice stops, a
+  // dense tone takes its place, the voice carries on. The one sigil that is
+  // about the sample rather than the fx.
+  'house-mic': () => {
+    const voice = (from: number, to: number): [number, number][] =>
+      Array.from({ length: 41 }, (_, t) => {
+        const x = from + (t * (to - from)) / 40
+        return [x, MID - 5 * Math.sin(x / 2.1) * Math.sin(x / 7.3) - 2 * Math.sin(x / 1.3)]
+      })
+    // Twelve points across the gap, not a hundred: drawn any denser the tone
+    // fills into a solid block and stops reading as a waveform.
+    const beep: [number, number][] = Array.from({ length: 13 }, (_, t) => {
+      const x = 58 + (t * 24) / 12
+      return [x, MID - 13 * (t % 2 ? 1 : -1)]
+    })
+    return {
+      guides: [
+        { d: `M58 ${MID - 16} V${MID + 16}`, accent: true },
+        { d: `M82 ${MID - 16} V${MID + 16}`, accent: true },
+      ],
+      lines: [
+        { points: points(voice(6, 56)), width: 1.6 },
+        { points: points(beep), width: 1.4 },
+        { points: points(voice(84, 102)), width: 1.6 },
+      ],
+    }
+  },
+
   // A carrier wandering either side of the station it is hunting.
   shortwave: () => ({
     guides: [{ d: `M${W / 2} 7 V${H - 7}`, accent: true }],
