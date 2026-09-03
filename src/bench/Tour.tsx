@@ -186,6 +186,7 @@ export function Guide({
   tab,
   onClose,
   onFullGuide,
+  onGoTo,
 }: {
   status: StepStatus[]
   /** The bench tab in view, so the guide opens the step that matches it. */
