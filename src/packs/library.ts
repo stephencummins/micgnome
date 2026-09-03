@@ -319,6 +319,83 @@ export const LIBRARY: Pack[] = [
       ],
     },
   },
+
+  {
+    id: 'xy-rack',
+    name: 'XY RACK',
+    after: 'OP–XY',
+    blurb:
+      'the OP–XY publishes its six effects: chorus, delay, distortion, lofi, phaser and reverb. three of those already live elsewhere in this library, so this pack takes the ones that did not — a moving notch, a band squeezed to a telephone, repeats you can warp, and a room that grows.',
+    handle: 'sweeps, narrows, warps or enlarges — one continuous studio control per slot',
+    verified: false,
+    config: {
+      name: 'XY RACK',
+      presets: [
+        {
+          pos: 0,
+          name: 'PHASER',
+          comment: 'a notch wandering up and down the voice; squeeze to sweep it faster',
+          // No allpass on this mic, so a phaser is approximated by sweeping a
+          // deep EQ notch — which is the part of a phaser you actually hear.
+          list: [{ effect: 'SAMPLE' }, { effect: 'EQUALISER', cutoff: 0.35, q: 0.75, gain: -0.7 }],
+          lfo: { row: 1, param: 'cutoff', depth: 0.4, shape: 'sine', speed: 0.7 },
+          handle: { target: 'lfo', param: 'speed', depth: 5 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 1,
+          name: 'LOFI',
+          comment: 'squeezed from both ends into a telephone; squeeze to narrow it further',
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'HIGHPASS', cutoff: 0.3 },
+            { effect: 'LOWPASS', cutoff: 0.45 },
+            { effect: 'DIST', amount: 4, mix: 0.4 },
+          ],
+          handle: { row: 2, param: 'cutoff', depth: -0.35 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 2,
+          name: 'PING PONG',
+          comment: 'repeats thrown left to right; squeeze to stretch them and warp the pitch',
+          list: [
+            { effect: 'SAMPLE' },
+            {
+              effect: 'DELAY',
+              time: 0.35,
+              echo: 0.55,
+              'cross-feed': 0.9,
+              'wet-level': 0.55,
+              'dry-level': 1.0,
+            },
+          ],
+          handle: { row: 1, param: 'time', depth: 0.6 },
+          shake: { row: 1, param: 'echo', depth: 0.4 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 3,
+          name: 'ROOM GROWS',
+          comment: 'a small room that opens into a hall as you squeeze',
+          list: [
+            { effect: 'SAMPLE' },
+            {
+              effect: 'REVERB',
+              time: 0.2,
+              'wet-level': 0.45,
+              'dry-level': 1.0,
+              'highpass-cutoff': 0.15,
+            },
+          ],
+          // 0.2 to exactly 1.0: the room reaches its largest at full squeeze
+          // and not a step before it.
+          handle: { row: 1, param: 'time', depth: 0.8 },
+          trigger: { row: 0 },
+        },
+      ],
+    },
+  },
 ]
 
 export const packById = (id: string) => LIBRARY.find((p) => p.id === id)

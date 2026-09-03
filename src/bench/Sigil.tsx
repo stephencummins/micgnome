@@ -111,6 +111,24 @@ const DRAWINGS: Record<string, () => Drawing> = {
     }
   },
 
+  // A response curve with a deep notch, and a ghost of where the notch sweeps
+  // to — the part of a phaser you actually hear.
+  'xy-rack': () => {
+    const notch = (centre: number, depth: number): [number, number][] =>
+      Array.from({ length: 97 }, (_, t) => {
+        const x = 6 + (t * (W - 12)) / 96
+        const d = (x - centre) / 11
+        return [x, MID - 11 + depth * Math.exp(-d * d)]
+      })
+    return {
+      guides: [],
+      lines: [
+        { points: points(notch(74, 26)), width: 1.4, faint: true },
+        { points: points(notch(40, 30)), width: 1.8 },
+      ],
+    }
+  },
+
   // A carrier wandering either side of the station it is hunting.
   shortwave: () => ({
     guides: [{ d: `M${W / 2} 7 V${H - 7}`, accent: true }],

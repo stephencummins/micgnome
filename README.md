@@ -114,7 +114,7 @@ and a line is faster.
 
 ### The starter library
 
-`src/packs/library.ts`. Five packs, twenty presets, in a **library** tab that loads any
+`src/packs/library.ts`. Six packs, twenty-four presets, in a **library** tab that loads any
 of them onto the bench.
 
 | pack | after | idea |
@@ -124,6 +124,7 @@ of them onto the bench.
 | KO LO-FI | EP&ndash;133 K.O. II | grit, tape drag, pitch and spring, with the handle used as a performance fader |
 | SHORTWAVE | TE OB&ndash;4 | a voice arriving from a long way off: SSB drift, telegraphic echo, hollow room |
 | TAPE HEAD | OP&ndash;1 | doubling, an octave underneath, tape wow, saturation ridden across the middle |
+| XY RACK | OP&ndash;XY | the three of its six published effects the library did not already have, plus a phaser |
 
 Each card leads with a **sigil** (`src/bench/Sigil.tsx`) that draws what the pack does
 rather than decorating it: PUNCH IN is the punch, FOUR SHAPES is the four shapes,
@@ -300,7 +301,7 @@ yet, which is exactly why it is safe to put up now. The launch gate still stands
 ```sh
 npm install
 npm run dev
-npm test          # 131 tests, including TE's own documented example
+npm test          # 139 tests, including TE's own documented example
 npm run typecheck
 ```
 
