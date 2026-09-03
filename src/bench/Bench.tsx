@@ -151,8 +151,15 @@ export function Bench() {
 
   const preset = state.config.presets[state.selected]
   const progress = useMemo(() => stepStatuses(state.config, { written, downloaded }), [state.config, written, downloaded])
+  const chooseTab = (t: Tab) => {
+    setTab(t)
+    // Below the desktop breakpoint the guide sits where the tab content goes,
+    // so choosing a tab means "show me the tab", not both.
+    if (guideOpen && !window.matchMedia('(min-width: 64rem)').matches) closeGuide()
+  }
   const guide = (
-    <Guide status={progress} tab={tab} onClose={closeGuide} onFullGuide={() => setFullGuide(true)} />
+    <Guide status={progress} tab={tab} onClose={closeGuide} onFullGuide={() => setFullGuide(true)}
+      onGoTo={(t) => chooseTab(t as Tab)} />
   )
   const configBytes = new TextEncoder().encode(configText).byteLength
 
@@ -335,13 +342,7 @@ export function Bench() {
         <section className="bg-paper p-4">
           <div className="mb-4 flex gap-4 border-b border-rule-soft">
             {(['chain', 'samples', 'library'] as const).map((t) => (
-              <button key={t} type="button"
-                onClick={() => {
-                  setTab(t)
-                  // Below the desktop breakpoint the guide sits where the tab content
-                  // goes, so choosing a tab means "show me the tab", not both.
-                  if (guideOpen && !window.matchMedia('(min-width: 64rem)').matches) closeGuide()
-                }}
+              <button key={t} type="button" onClick={() => chooseTab(t)}
                 className={`data -mb-px border-b-2 px-1 pb-2 ${
                   tab === t ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
                 }`}>

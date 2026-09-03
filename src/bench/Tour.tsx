@@ -37,7 +37,7 @@ export const STEPS: Step[] = [
   },
   {
     title: 'check it works',
-    where: 'write, on the right',
+    where: 'write, on the left',
     body: 'the box under write tells you if anything is wrong. red errors must be fixed, because that kind of mistake stops the mic switching on. then press write: that writes to a pretend mic inside your browser, and if the pretend one starts up, the real one will too.',
   },
   {
@@ -192,6 +192,8 @@ export function Guide({
   tab: string
   onClose: () => void
   onFullGuide: () => void
+  /** Switch the bench to a tab — the step's "where" line is a link to it. */
+  onGoTo: (tab: string) => void
 }) {
   const current = status.indexOf('current')
   const tabStep = STEP_TAB.findIndex((t, i) => t === tab && status[i] !== 'done')
@@ -235,7 +237,14 @@ export function Guide({
               {isOpen && (
                 <div className="border-t border-rule-soft px-3 pb-3 pt-3">
                   {PICTURES[i]}
-                  <p className="label m-0 mt-3">{s.where}</p>
+                  {STEP_TAB[i] ? (
+                    <button type="button" onClick={() => onGoTo(STEP_TAB[i]!)}
+                      className="label mt-3 block underline hover:text-orange">
+                      {s.where} →
+                    </button>
+                  ) : (
+                    <p className="label m-0 mt-3">{s.where}</p>
+                  )}
                   <p className="label m-0 mt-1 leading-relaxed text-ink">{s.body}</p>
                 </div>
               )}
