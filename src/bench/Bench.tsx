@@ -266,7 +266,7 @@ export function Bench() {
       )}
 
       <main className={`grid min-h-[calc(100dvh-49px)] gap-px bg-rule ${
-        guideOpen ? 'lg:grid-cols-[215px_minmax(0,1fr)_330px_300px]' : 'lg:grid-cols-[215px_minmax(0,1fr)_330px]'
+        guideOpen ? 'lg:grid-cols-[270px_minmax(0,1fr)_300px]' : 'lg:grid-cols-[270px_minmax(0,1fr)]'
       }`}>
         <section className="bg-paper p-4">
           <div className="label mb-2">presets · orange button</div>
@@ -304,6 +304,31 @@ export function Bench() {
               </div>
             ))}
             {!samples.length && <p className="label leading-relaxed">none — using the four factory sounds</p>}
+          </div>
+
+          {/* The handle and the write panel live down here rather than in a column
+              of their own: together they are shorter than the preset list on most
+              packs, and the column they used to take is better spent on the guide. */}
+          <div className="mt-6 flex flex-col gap-4 border-t border-rule-soft pt-4">
+          <div>
+            <div className="label mb-2">handle</div>
+            <input type="range" min={0} max={1} step={0.01} value={state.handle}
+              aria-label="handle position"
+              onChange={(e) => dispatch({ type: 'set-handle', value: Number(e.target.value) })} />
+            <div className="data text-right text-orange">{Math.round(state.handle * 100)}%</div>
+          </div>
+
+          {preset && <HandleMap preset={preset} handle={state.handle} />}
+
+          <div>
+            <div className="label mb-2">write</div>
+            <Verdict report={report} onJump={setFocus} />
+            <button type="button" onClick={() => setWriting(true)} disabled={blocked}
+              className="data mt-2 w-full border border-orange bg-orange px-3 py-2 tracking-wider text-white disabled:opacity-40">
+              write to {disk.label}
+            </button>
+            <Downloads configText={configText} files={packFiles} blocked={blocked} onDownload={() => setDownloaded(true)} />
+          </div>
           </div>
         </section>
 
@@ -366,27 +391,6 @@ export function Bench() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-4 bg-paper p-4">
-          <div>
-            <div className="label mb-2">handle</div>
-            <input type="range" min={0} max={1} step={0.01} value={state.handle}
-              aria-label="handle position"
-              onChange={(e) => dispatch({ type: 'set-handle', value: Number(e.target.value) })} />
-            <div className="data text-right text-orange">{Math.round(state.handle * 100)}%</div>
-          </div>
-
-          {preset && <HandleMap preset={preset} handle={state.handle} />}
-
-          <div>
-            <div className="label mb-2">write</div>
-            <Verdict report={report} onJump={setFocus} />
-            <button type="button" onClick={() => setWriting(true)} disabled={blocked}
-              className="data mt-2 w-full border border-orange bg-orange px-3 py-2 tracking-wider text-white disabled:opacity-40">
-              write to {disk.label}
-            </button>
-            <Downloads configText={configText} files={packFiles} blocked={blocked} onDownload={() => setDownloaded(true)} />
-          </div>
-        </section>
 
         {guideOpen && <aside className="hidden bg-paper p-4 lg:block">{guide}</aside>}
       </main>
