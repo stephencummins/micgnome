@@ -15,7 +15,7 @@ export function Library({ dirty, dispatch }: { dirty: boolean; dispatch: (a: Act
   return (
     <div className="flex flex-col gap-4">
       <p className="label m-0 max-w-prose leading-relaxed">
-        packs built from the fx-mic&rsquo;s own ten blocks, borrowing ideas from other boxes. none carries a
+        packs built from the fx-mic&rsquo;s own ten blocks, most borrowing ideas from other boxes. none carries a
         wav &mdash; they drive the mic&rsquo;s four factory sounds, so they are a few hundred bytes and you can
         try any of them without finding a sample first.
       </p>
