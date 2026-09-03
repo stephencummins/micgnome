@@ -11,7 +11,16 @@ import { EffectGlyph, LfoGlyph, SourceGlyph } from './Glyphs'
  * The starter library. Read-only for now: these load onto the bench, and
  * uploading your own comes later, once there is something worth moderating.
  */
-export function Library({ dirty, dispatch }: { dirty: boolean; dispatch: (a: Action) => void }) {
+export function Library({
+  dirty,
+  dispatch,
+  onSubmit,
+}: {
+  dirty: boolean
+  dispatch: (a: Action) => void
+  /** Open a prefilled GitHub issue carrying the pack on the bench. */
+  onSubmit: () => void
+}) {
   return (
     <div className="flex flex-col gap-4">
       <p className="label m-0 max-w-prose leading-relaxed">
@@ -24,6 +33,23 @@ export function Library({ dirty, dispatch }: { dirty: boolean; dispatch: (a: Act
         {LIBRARY.map((pack) => (
           <Card key={pack.id} pack={pack} dirty={dirty} dispatch={dispatch} />
         ))}
+      </div>
+
+      {/* The library is read-only on purpose until there is something to
+          moderate, so offering a pack is a hand-off to a person, not an upload. */}
+      <div className="max-w-prose border border-dashed border-rule p-3">
+        <p className="data m-0 font-medium">made something good?</p>
+        <p className="label m-0 mt-1 leading-relaxed">
+          send in the pack that is on the bench right now. it opens a short form on GitHub with your pack already
+          filled in &mdash; say what it is after and what the handle does, then press <b className="font-medium">submit
+          new issue</b>. you need a free GitHub account for that; if you would rather not, press <b className="font-medium">share</b>{' '}
+          at the top and send the link to whoever pointed you here. packs that make the library better get added
+          for everyone, with your name on the card if you want it there.
+        </p>
+        <button type="button" onClick={onSubmit}
+          className="data mt-3 border border-orange px-3 py-1.5 tracking-wider text-orange hover:bg-orange hover:text-white">
+          send it in
+        </button>
       </div>
     </div>
   )

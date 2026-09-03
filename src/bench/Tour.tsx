@@ -3,7 +3,7 @@ import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
 import { STEP_TAB, type StepStatus } from './progress'
 
 /**
- * Six steps, docked beside the bench so they can be followed while doing
+ * Seven steps, docked beside the bench so they can be followed while doing
  * them, lighting up as each is actually done. The full guide (HowTo) is one
  * link away and says why.
  */
@@ -45,6 +45,11 @@ export const STEPS: Step[] = [
     where: 'the cable, then the links under write',
     body: 'take the bottom cover off the mic, plug it into your computer with a usb-c cable (the small oval plug on most new phones and laptops, not the older iphone one) and push the handle so it is switched on. a drive called fx-mic disk appears, just like a memory stick. click the download links under write, drag those files from your downloads folder onto fx-mic disk, then eject it the way you would a memory stick. the mic restarts with your pack. if it ever will not start, hold the white + grey buttons while switching it on and the disk comes back so you can fix or delete config.json.',
   },
+  {
+    title: 'make it yours, send it in',
+    where: 'library tab',
+    body: 'nothing here is locked. rename the pack at the top left, add presets with + preset (the mic holds four), and give each its own chain and squeeze. when it is something other people should have, press share for a link that carries the whole pack, or send it in from the bottom of the library tab and it may be added for everyone.',
+  },
 ]
 
 export const TILE_GLYPHS: ReactNode[] = [
@@ -54,6 +59,7 @@ export const TILE_GLYPHS: ReactNode[] = [
   <EffectGlyph key="sample" name="SAMPLE" size={22} />,
   <Glyph key="tick" name="tick" size={22} />,
   <Glyph key="eject" name="eject" size={22} />,
+  <Glyph key="file" name="file" size={22} />,
 ]
 
 /* ---------- one drawing per step, in the sigil's language ---------- */
@@ -178,6 +184,21 @@ export const PICTURES: ReactNode[] = [
     <polyline points="145,21 150,26 155,21" {...stroke} strokeWidth={1.4} />
     <path d="M214 46l9 12h-18z" {...stroke} strokeWidth={1.4} />
     <line x1="205" y1="64" x2="223" y2="64" {...stroke} strokeWidth={1.4} />
+  </Frame>,
+
+  // Your card, with your name on it, on its way to the shelf with the others.
+  <Frame key="6" label="a pack card of your own, with an arrow carrying it towards the library">
+    <rect x="18" y="26" width="104" height="56" fill="var(--color-paper)" stroke="var(--color-orange)" strokeWidth="1.4" />
+    <polyline {...stroke} strokeWidth={1.4}
+      points={Array.from({ length: 33 }, (_, t) => `${26 + t * 1.6},${44 - 7 * Math.sin(t / 2.6) * Math.cos(t / 9)}`).join(' ')} />
+    <text x="26" y="72" fontFamily="var(--font-mono)" fontSize="8.5" letterSpacing="0.06em" fill="var(--color-orange)">YOUR PACK</text>
+    <line x1="132" y1="54" x2="158" y2="54" {...stroke} strokeWidth={1.4} />
+    <polyline points="152,49 158,54 152,59" {...stroke} strokeWidth={1.4} />
+    {[0, 1, 2, 3].map((i) => (
+      <rect key={i} x={170 + (i % 2) * 26} y={30 + Math.floor(i / 2) * 26} width="22" height="20"
+        fill="var(--color-paper)" stroke="var(--color-rule)" />
+    ))}
+    <rect x="170" y="82" width="48" height="4" fill="var(--color-rule)" />
   </Frame>,
 ]
 

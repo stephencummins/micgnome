@@ -12,6 +12,7 @@ import { HandleMap } from './HandleMap'
 import { HowTo } from './HowTo'
 import { Guide } from './Tour'
 import { stepStatuses } from './progress'
+import { submitUrl } from './submit'
 import { ThemeToggle } from './Theme'
 import { Library } from './Library'
 import { Mark } from './Mark'
@@ -54,6 +55,7 @@ export function Bench() {
   const [fullGuide, setFullGuide] = useState(false)
   const [written, setWritten] = useState(false)
   const [downloaded, setDownloaded] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
   const closeGuide = () => {
     try {
@@ -150,7 +152,15 @@ export function Bench() {
   }, [state.config, packFiles, configText])
 
   const preset = state.config.presets[state.selected]
-  const progress = useMemo(() => stepStatuses(state.config, { written, downloaded }), [state.config, written, downloaded])
+  const progress = useMemo(
+    () => stepStatuses(state.config, { written, downloaded, submitted }),
+    [state.config, written, downloaded, submitted],
+  )
+  async function submit() {
+    const link = shareUrl(await encodePack(state.config))
+    window.open(submitUrl(state.config, link), '_blank', 'noopener')
+    setSubmitted(true)
+  }
   const chooseTab = (t: Tab) => {
     setTab(t)
     // Below the desktop breakpoint the guide sits where the tab content goes,
@@ -364,7 +374,7 @@ export function Bench() {
 
           <div className={guideOpen ? 'hidden lg:block' : ''}>
           {tab === 'library' ? (
-            <Library dirty={state.dirty} dispatch={dispatch} />
+            <Library dirty={state.dirty} dispatch={dispatch} onSubmit={() => void submit()} />
           ) : tab === 'chain' ? (
             preset ? (
               <div className="flex max-w-3xl flex-col gap-5">
