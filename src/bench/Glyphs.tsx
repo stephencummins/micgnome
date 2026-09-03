@@ -163,6 +163,12 @@ export function SourceGlyph({ kind, size = 16, className }: { kind: ModKind; siz
 /* ---------- the rest of the furniture ---------- */
 
 const MISC_PATHS = {
+  // four cards, the library
+  library: (
+    <>
+      <path d="M3 4h8v7H3zM13 4h8v7h-8zM3 13h8v7H3zM13 13h8v7h-8z" />
+    </>
+  ),
   // three blocks, one falling into the next
   chain: (
     <>

@@ -32,14 +32,19 @@ const STEP_GLYPHS = [
   <Glyph key="eject" name="eject" size={22} />,
 ]
 
-export function HowTo({ onClose }: { onClose: () => void }) {
+export function HowTo({ onClose, onTour }: { onClose: () => void; onTour?: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4 sm:p-10">
-      <div role="dialog" aria-modal="true" aria-label="how to use mic gnome"
+      <div role="dialog" aria-modal="true" aria-label="the full guide to mic gnome"
         className="w-full max-w-xl border border-rule bg-paper p-5">
         <div className="flex items-baseline justify-between border-b border-ink pb-2">
-          <h2 className="m-0 text-lg font-medium tracking-tight">five steps</h2>
-          <button type="button" onClick={onClose} className="label underline hover:text-orange">close</button>
+          <h2 className="m-0 text-lg font-medium tracking-tight">the full guide</h2>
+          <span className="flex gap-3">
+            {onTour && (
+              <button type="button" onClick={onTour} className="label underline hover:text-orange">← five steps</button>
+            )}
+            <button type="button" onClick={onClose} className="label underline hover:text-orange">close</button>
+          </span>
         </div>
 
         <div className="mt-4 flex flex-col gap-4 sm:flex-row-reverse sm:items-start">

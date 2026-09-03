@@ -10,6 +10,7 @@ import { checkPlayable, decodeWav, encodeWav, WavError } from '../fxmic/wav'
 import { Chain } from './Chain'
 import { HandleMap } from './HandleMap'
 import { HowTo } from './HowTo'
+import { Tour } from './Tour'
 import { ThemeToggle } from './Theme'
 import { Library } from './Library'
 import { Mark } from './Mark'
@@ -39,21 +40,22 @@ export function Bench() {
   const [note, setNote] = useState<string>()
   // Shown unprompted the first time only. Someone landing here cold has no idea
   // what an fx-mic config is; someone on their fifth visit does not need telling.
-  const [howTo, setHowTo] = useState(() => {
+  // The five-step tour is what opens; the full guide sits one link behind it.
+  const [help, setHelp] = useState<'tour' | 'guide' | null>(() => {
     try {
-      return localStorage.getItem('micgnome.how-to-seen') !== '1'
+      return localStorage.getItem('micgnome.how-to-seen') !== '1' ? 'tour' : null
     } catch {
-      return true
+      return 'tour'
     }
   })
 
-  const closeHowTo = () => {
+  const closeHelp = () => {
     try {
       localStorage.setItem('micgnome.how-to-seen', '1')
     } catch {
       /* private window — not showing it again this session is enough */
     }
-    setHowTo(false)
+    setHelp(null)
   }
 
   const refresh = useCallback(async () => setDiskFiles(await disk.files()), [disk])
@@ -224,7 +226,7 @@ export function Bench() {
             share
           </button>
           <ThemeToggle />
-          <button type="button" onClick={() => setHowTo(true)} className="underline hover:text-orange">
+          <button type="button" onClick={() => setHelp('tour')} className="underline hover:text-orange">
             how to use
           </button>
           <label className="cursor-pointer underline hover:text-orange"
@@ -357,13 +359,14 @@ export function Bench() {
 
       {/* Always reachable. The header link is easy to miss, and the moment someone
           wants the recovery instruction is the moment they are least able to hunt. */}
-      <button type="button" onClick={() => setHowTo(true)} title="How to use Mic Gnome"
+      <button type="button" onClick={() => setHelp('tour')} title="How to use Mic Gnome"
         aria-label="How to use Mic Gnome"
         className="fixed bottom-4 right-4 z-30 flex h-10 w-10 items-center justify-center border border-orange bg-paper text-base text-orange shadow-[0_1px_6px_rgba(0,0,0,0.08)] hover:bg-orange hover:text-white">
         <span aria-hidden className="font-mono">?</span>
       </button>
 
-      {howTo && <HowTo onClose={closeHowTo} />}
+      {help === 'tour' && <Tour onClose={closeHelp} onGuide={() => setHelp('guide')} />}
+      {help === 'guide' && <HowTo onClose={closeHelp} onTour={() => setHelp('tour')} />}
 
       {writing && (
         <WriteDialog disk={disk} config={state.config} report={report} files={packFiles}
