@@ -252,6 +252,73 @@ export const LIBRARY: Pack[] = [
       ],
     },
   },
+
+  {
+    id: 'tape-head',
+    name: 'TAPE HEAD',
+    after: 'OP–1',
+    blurb:
+      'the machine people reach for to make a voice sound like a record rather than a recording. doubling, an octave underneath, tape wow, and saturation you ride across the middle. the only pack that puts an lfo on the delay time and on the sample speed, which is where wobble actually comes from.',
+    handle: 'deepens the wobble, or drags the tone across the middle',
+    verified: false,
+    config: {
+      name: 'TAPE HEAD',
+      presets: [
+        {
+          pos: 0,
+          name: 'CHORUS',
+          comment: 'a very short delay, wobbling; squeeze to wobble faster',
+          list: [
+            { effect: 'SAMPLE' },
+            {
+              effect: 'DELAY',
+              time: 0.06,
+              echo: 0.15,
+              'cross-feed': 0.6,
+              'wet-level': 0.5,
+              'dry-level': 1.0,
+            },
+          ],
+          lfo: { row: 1, param: 'time', depth: 0.04, shape: 'sine', speed: 1.2 },
+          handle: { target: 'lfo', param: 'speed', depth: 6 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 1,
+          name: 'SHADOW',
+          comment: 'squeeze to pull a double an octave underneath you',
+          list: [{ effect: 'SAMPLE' }, { effect: 'HARMONY', pitch: 1.0, 'dry-level': 0.7 }],
+          // 1.0 down to exactly 0.5 — an octave, landing on the parameter floor
+          // at full squeeze and not a step before it.
+          handle: { row: 1, param: 'pitch', depth: -0.5 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 2,
+          name: 'WOW',
+          comment: 'tape that never quite runs true; squeeze for more of it',
+          list: [{ effect: 'SAMPLE', speed: 1.0 }],
+          lfo: { row: 0, param: 'speed', depth: 0.06, shape: 'sine', speed: 0.8 },
+          // The handle deepens the wobble rather than speeding it up — the one
+          // preset here where it reaches the lfo's depth instead of its rate.
+          handle: { target: 'lfo', param: 'depth', depth: 0.25 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 3,
+          name: 'SATURATE',
+          comment: 'warm grit, and a tone control that crosses the middle as you squeeze',
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'DIST', amount: 5, mix: 0.7, 'lowpass-cutoff': 0.7 },
+            { effect: 'EQUALISER', cutoff: 0.35, q: 0.4, gain: -0.4 },
+          ],
+          handle: { row: 2, param: 'gain', depth: 1.0 },
+          trigger: { row: 0 },
+        },
+      ],
+    },
+  },
 ]
 
 export const packById = (id: string) => LIBRARY.find((p) => p.id === id)

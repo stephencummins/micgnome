@@ -14,8 +14,8 @@ const MID = H / 2
 interface Drawing {
   /** Faint structural lines: cell dividers, quantisation grid, the tuning mark. */
   guides: { d: string; accent?: boolean }[]
-  /** The waveform itself. */
-  lines: { points: string; width: number }[]
+  /** The waveform itself. `faint` is the second voice in a doubled pair. */
+  lines: { points: string; width: number; faint?: boolean }[]
 }
 
 const points = (pts: [number, number][]) => pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
@@ -92,6 +92,25 @@ const DRAWINGS: Record<string, () => Drawing> = {
     }
   },
 
+  // Two voices, drifting in and out of each other: the doubling a chorus makes.
+  'tape-head': () => {
+    // Slightly different rates, so the two voices converge and diverge across
+    // the width — a chorus is two copies beating against each other, and drawing
+    // them in step just looks like one line with a shadow.
+    const trace = (rate: number, amp: number, phase = 0): [number, number][] =>
+      Array.from({ length: 97 }, (_, t) => [
+        6 + (t * (W - 12)) / 96,
+        MID - amp * Math.sin(t / rate + phase),
+      ])
+    return {
+      guides: [],
+      lines: [
+        { points: points(trace(6.2, 9, 1.9)), width: 1.4, faint: true },
+        { points: points(trace(7.9, 12)), width: 1.8 },
+      ],
+    }
+  },
+
   // A carrier wandering either side of the station it is hunting.
   shortwave: () => ({
     guides: [{ d: `M${W / 2} 7 V${H - 7}`, accent: true }],
@@ -129,7 +148,7 @@ export function Sigil({ pack }: { pack: string }) {
       ))}
       {lines.map((l, i) => (
         <polyline key={i} points={l.points} fill="none" stroke="var(--color-orange)"
-          strokeWidth={l.width} strokeLinejoin="round" />
+          strokeWidth={l.width} strokeLinejoin="round" opacity={l.faint ? 0.42 : 1} />
       ))}
     </svg>
   )
