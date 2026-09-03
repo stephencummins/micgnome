@@ -10,7 +10,9 @@
  * Most are homages assembled from the fx-mic's own ten blocks. They are not
  * recreations of another device's DSP. HOUSE MIC is the exception: not a
  * homage but a working pack, and the only one that puts SAMPLE at the end of
- * a chain so the built-in sounds play dry. None of them has been heard on
+ * a chain so the built-in sounds play dry. Y CABLE is the other: the only pack
+ * that uses BUS, and therefore the only one resting on a guess about routing
+ * rather than on documented behaviour. None of them has been heard on
  * hardware yet — the unit arrives 14 Sep 2026. `verified` flips to true per
  * pack once each has actually been played through a mic.
  */
@@ -462,6 +464,81 @@ export const LIBRARY: Pack[] = [
           // line and pulled away again.
           list: [{ effect: 'SAMPLE', level: 0.0 }],
           handle: { row: 0, param: 'level', depth: 1.0 },
+          trigger: { row: 0 },
+        },
+      ],
+    },
+  },
+
+  {
+    id: 'y-cable',
+    name: 'Y CABLE',
+    after: 'guide \u00a77.10, the one line it gives BUS',
+    blurb:
+      'the guide spends one line on BUS: parallel paths, keeping the dry signal clean while distorting a copy. this is the only pack that uses it, so it is the only pack built on a guess. the reading taken: rows with no BUS are the voice, rows on a bus are a copy summed back in alongside it, so every bus row here carries wet only. if the firmware reads it otherwise, these collapse to fully wet serial chains, which is itself the test to run on the 14th.',
+    handle: 'works the copy, never the voice \u2014 dirt, tail, pitch, echo on the branch only',
+    verified: false,
+    config: {
+      name: 'Y CABLE',
+      presets: [
+        {
+          pos: 0,
+          name: 'DIRT COPY',
+          comment: 'the guide\u2019s own example: the voice stays clean while a copy is distorted beside it; squeeze for more dirt',
+          // mix 1.0 so the branch carries only the distorted copy; the clean
+          // voice comes down the untagged path. The branch has its own lowpass
+          // so the dirt sits under the voice rather than over it.
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'DIST', amount: 8, mix: 1.0, 'lowpass-cutoff': 0.5, BUS: 2 },
+          ],
+          handle: { row: 1, param: 'amount', depth: 30 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 1,
+          name: 'SEND ROOM',
+          comment: 'a reverb on a send, the way a desk does it; squeeze to bring the tail up under the voice',
+          // dry-level 0.0 is the whole idea: the bus is tail only, the voice is
+          // untouched. 0.6 to exactly 1.0 across the squeeze.
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'REVERB', time: 0.7, 'wet-level': 0.6, 'dry-level': 0.0, 'highpass-cutoff': 0.25, BUS: 2 },
+          ],
+          handle: { row: 1, param: 'wet-level', depth: 0.4 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 2,
+          name: 'THREE WAYS',
+          comment: 'the voice in the middle, an octave above on one bus, a metal ghost on the other; squeeze drags the octave down through unison to an octave below',
+          // Both buses at once: this is the preset that tells you whether 1
+          // and 2 are two branches or something else. HARMONY carries no dry,
+          // RING is full mix, so each bus is one added voice.
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'HARMONY', pitch: 2.0, 'dry-level': 0.0, BUS: 1 },
+            { effect: 'RING', frequency: 55, mix: 1.0, BUS: 2 },
+          ],
+          // 2.0 to exactly 0.5: an octave up at rest, unison halfway, an
+          // octave down at full squeeze, and the floor is reached at the end.
+          handle: { row: 1, param: 'pitch', depth: -1.5 },
+          shake: { row: 2, param: 'frequency', depth: 400 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 3,
+          name: 'WOBBLE ECHO',
+          comment: 'the echoes wobble and the voice does not; squeeze for more repeats',
+          // An lfo on a delay time makes the whole voice seasick in a serial
+          // chain. On a bus it wobbles only the repeats, which is the thing a
+          // parallel path can do that a serial one cannot.
+          list: [
+            { effect: 'SAMPLE' },
+            { effect: 'DELAY', time: 0.3, echo: 0.45, 'wet-level': 0.5, 'dry-level': 0.0, 'highpass-cutoff': 0.2, BUS: 2 },
+          ],
+          lfo: { row: 1, param: 'time', depth: 0.12, shape: 'sine', speed: 0.6 },
+          handle: { row: 1, param: 'echo', depth: 0.45 },
           trigger: { row: 0 },
         },
       ],

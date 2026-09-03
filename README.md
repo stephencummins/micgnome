@@ -114,7 +114,7 @@ and a line is faster.
 
 ### The starter library
 
-`src/packs/library.ts`. Seven packs, twenty-eight presets, in a **library** tab that loads any
+`src/packs/library.ts`. Eight packs, thirty-two presets, in a **library** tab that loads any
 of them onto the bench.
 
 | pack | after | idea |
@@ -126,6 +126,7 @@ of them onto the bench.
 | TAPE HEAD | OP&ndash;1 | doubling, an octave underneath, tape wow, saturation ridden across the middle |
 | XY RACK | OP&ndash;XY | the three of its six published effects the library did not already have, plus a phaser |
 | HOUSE MIC | no device | the working pack: host, tannoy, mc and a fader, with the built-in sounds playing dry |
+| Y CABLE | guide &sect;7.10 | the only pack that uses BUS: a clean voice with a copy mangled beside it, four ways |
 
 Each card leads with a **sigil** (`src/bench/Sigil.tsx`) that draws what the pack does
 rather than decorating it: PUNCH IN is the punch, FOUR SHAPES is the four shapes,
@@ -144,7 +145,13 @@ device's DSP. The seventh, HOUSE MIC, is the first pack that is not a demonstrat
 jobs a mic does at an actual event, using the four sounds already in it. It is also the
 only pack that puts the SAMPLE row at the **end** of a chain, which per guide 7.5 is how
 the built-in sounds play dry — so the censor beep is a beep whatever the voice is doing,
-which is the whole point of a censor beep. **None has been heard on hardware yet** — every card says so, and
+which is the whole point of a censor beep. The eighth, Y CABLE, is the only pack that uses
+`BUS`, and so the only one resting on a guess: the guide gives parallel routing a single line
+and never says how buses sum. The reading taken is that untagged rows are the voice and a bus
+row is a copy summed back in, so every bus row carries wet only (a test enforces it). If the
+firmware reads it otherwise these collapse to fully wet serial chains — which is exactly the
+thing to find out first when the mic arrives. Chain rows and library strips now show a row's
+bus. **None has been heard on hardware yet** — every card says so, and
 `verified` flips per pack once each has actually been played through a mic.
 
 The tests are the quality bar, not just a smoke check. Each pack must produce **zero errors

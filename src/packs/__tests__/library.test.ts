@@ -118,6 +118,19 @@ describe('the library as a whole', () => {
     expect([...shapes].sort()).toEqual(['random', 'sawtooth', 'sine', 'square'])
   })
 
+  it('puts something on a bus, so the last line of the config format is heard too', () => {
+    const rows = LIBRARY.flatMap((p) => p.config.presets.flatMap((preset) => preset.list))
+    const buses = new Set(rows.map((r) => r.BUS).filter((b): b is number => b !== undefined))
+    expect([...buses].sort()).toEqual([...LIMITS.busValues])
+    // A bus row that still carries dry doubles the voice with itself. The
+    // reading the library takes is: a bus is a copy, and a copy is wet only.
+    for (const r of rows) {
+      if (r.BUS === undefined) continue
+      const dry = r['dry-level'] ?? (r.mix === undefined ? undefined : 1 - (r.mix as number))
+      expect(dry, `${r.effect} on bus ${r.BUS} carries dry`).toBe(0)
+    }
+  })
+
   it('uses every playmode-free path — no pack needs a wav to work', () => {
     for (const pack of LIBRARY) expect(pack.config.samples).toBeUndefined()
   })

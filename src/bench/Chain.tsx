@@ -82,6 +82,12 @@ function Row({
           <span className="data font-medium tracking-wide text-[15px]">{row.effect}</span>
           {spec && <span className="label">{spec.blurb}</span>}
           {triggered && <span className="label text-orange">trigger</span>}
+          {row.BUS !== undefined && (
+            <span className="label border border-rule px-1 leading-snug"
+              title="parallel path — guide 7.10 gives BUS one line and never says how buses sum">
+              bus {row.BUS}
+            </span>
+          )}
         </div>
         <div className="flex gap-1">
           <IconButton label="move up" disabled={index === 0}

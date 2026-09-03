@@ -101,9 +101,17 @@ function Strip({ preset }: { preset: Preset }) {
   const lfoShape = LFO_SHAPES.includes(shape as LfoShape) ? (shape as LfoShape) : undefined
   return (
     <span className="ml-auto flex shrink-0 items-center gap-1 self-start pt-0.5"
-      title={[preset.list.map((r) => r.effect).join(' → '), sources.join(' + ')].filter(Boolean).join(' · ')}>
+      title={[
+        preset.list.map((r) => (r.BUS === undefined ? r.effect : `${r.effect} (bus ${r.BUS})`)).join(' → '),
+        sources.join(' + '),
+      ].filter(Boolean).join(' · ')}>
       {preset.list.map((r, i) => (
-        <EffectGlyph key={i} name={r.effect} size={14} />
+        <span key={i} className="relative inline-flex">
+          <EffectGlyph name={r.effect} size={14} />
+          {r.BUS !== undefined && (
+            <span aria-hidden className="label absolute -right-1 -bottom-1 text-[8px] leading-none">{r.BUS}</span>
+          )}
+        </span>
       ))}
       {sources.length > 0 && <span aria-hidden className="mx-0.5 h-3 w-px bg-rule" />}
       {sources.map((k) =>

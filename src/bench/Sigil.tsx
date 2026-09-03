@@ -157,6 +157,29 @@ const DRAWINGS: Record<string, () => Drawing> = {
     }
   },
 
+  // One wire in, a fork, two wires out and back together: the top one clean,
+  // the bottom one mangled. The guide's one line on BUS, drawn.
+  'y-cable': () => {
+    const x0 = 6, xa = 30, xb = 44, xc = 64, xd = 78, x1 = W - 6
+    const lift = 12
+    const dirty: [number, number][] = [[xa, MID], [xb, MID + lift]]
+    const bumps = [3, -4, 5, -3, 4, -5, 3, -2, 4]
+    bumps.forEach((h, i) => dirty.push([xb + ((i + 1) * (xc - xb)) / (bumps.length + 1), MID + lift + h]))
+    dirty.push([xc, MID + lift], [xd, MID])
+    return {
+      guides: [
+        { d: `M${xa} ${MID - 4} V${MID + 4}`, accent: true },
+        { d: `M${xd} ${MID - 4} V${MID + 4}`, accent: true },
+      ],
+      lines: [
+        { points: points([[x0, MID], [xa, MID]]), width: 1.8 },
+        { points: points([[xa, MID], [xb, MID - lift], [xc, MID - lift], [xd, MID]]), width: 1.8 },
+        { points: points(dirty), width: 1.4 },
+        { points: points([[xd, MID], [x1, MID]]), width: 1.8 },
+      ],
+    }
+  },
+
   // A carrier wandering either side of the station it is hunting.
   shortwave: () => ({
     guides: [{ d: `M${W / 2} 7 V${H - 7}`, accent: true }],
