@@ -38,6 +38,8 @@ So the brief is two sentences:
 | `src/fxmic/wav.ts` | wav decode/encode at 8/16/24-bit and 32-bit float, mono-fold, resample, silence detection | done |
 | `src/fxmic/fit.ts` | the fitter — gets four sounds into 1 mb and says what it traded | done |
 | `src/bench/` | the bench — preset slots, chain editor, modulation, handle map, sample bay, the write ritual | done |
+| `src/bench/Tour.tsx`, `HowTo.tsx`, `progress.ts` | the guide — seven steps docked beside the bench that light up as they are done, and the full guide behind them | done |
+| `src/bench/Downloads.tsx`, `submit.ts` | the way out — files to drop on a real fx-mic disk, and "send it in" as a pre-filled GitHub issue | done |
 | Web Audio preview | | after the hardware lands |
 
 Nothing here has touched hardware yet — the unit arrives 14 Sep at the earliest.
@@ -206,23 +208,56 @@ token has a dark value, which is why the glyphs are drawn rather than placed.
 
 ### Getting started
 
-Five steps, shown once on a first visit and reachable afterwards from **how to use** in
-the header or the **?** button pinned bottom-right. Two ways in on purpose: the header
-link is easy to miss, and the moment someone wants the recovery instruction is the moment
-they are least inclined to hunt for it. The steps are: build a chain, drop in sounds, wire up the handle, read the verdict, write
-and eject.
+`src/bench/Tour.tsx`, `src/bench/HowTo.tsx`, `src/bench/progress.ts`. Two layers.
 
-It says up front where `config.json` comes from, because the obvious question on reading
-"the mic is configured by a config.json" is *where do I get one* — and the answer is that
-you don't. A new mic has none; it plays its factory sounds until it is given one. Mic
-Gnome generates the file. Import exists only for a config you already have. The recovery instruction — hold white + grey during startup — is in step five
-as well as on the write screen, because it is the sentence someone will be hunting for
-in a hurry.
+**how it works** is a seven-step panel that docks in a third column beside the bench, open
+by itself on a first visit and afterwards from the tab strip, the **?** button pinned
+bottom-right, or **how to use** in the header. Two ways in on purpose: the header link is
+easy to miss, and the moment someone wants the recovery instruction is the moment they are
+least inclined to hunt for it. The steps are: pick a pack, see what is in it, make the
+squeeze do something, your own sounds, check it works, put it on the mic, make it yours and
+send it in. Each has a drawing in the same language as the bench's own glyphs, a line
+saying *where* it happens that is a link to that tab, and a plain-English body written for
+someone who has never opened a JSON file.
+
+The panel lights up as things are actually done rather than asking. `stepStatuses` reads
+the bench: a library pack loaded or a chain built, a handle/shake/LFO assigned, samples
+present, the virtual write succeeded, `config.json` downloaded, a pack sent in. Own sounds
+and send-it-in are optional and never hold the "now" marker. The open step follows the tab
+in view, so switching to *samples* opens the samples step unless it is already done. Below
+the desktop breakpoint the panel takes the tab area, so picking a tab closes it.
+
+**the full guide** is a modal one link behind the panel. It says up front where
+`config.json` comes from, because the obvious question on reading "the mic is configured
+by a config.json" is *where do I get one* — and the answer is that you don't. A new mic has
+none; it plays its factory sounds until it is given one. Mic Gnome generates the file.
+Import exists only for a config you already have. The recovery instruction — hold white +
+grey during startup — is in the last step of both layers as well as on the write screen,
+because it is the sentence someone will be hunting for in a hurry.
+
+### Reaching a real mic
+
+`src/bench/Downloads.tsx`. Nothing in the deployed site writes to hardware. Under the write
+button sit download links for `config.json` and every wav in the pack; the instruction
+beside them is the memory-stick one — plug in over USB-C, a drive called *fx-mic disk*
+appears, drag the files on, eject. The links are struck through while the verdict has
+errors, because this is the file that stops a mic booting. Downloading `config.json` is
+what marks step six done.
+
+### Send it in
+
+`src/bench/submit.ts`. The library is read-only, so offering a pack is a hand-off, not an
+upload: **send it in** at the bottom of the library tab opens a pre-filled GitHub issue
+(label `pack`) with three prompts — what the pack is after, what the handle does, anything
+heard on a real mic — plus the share link, which carries the whole pack on its own. The
+serialized JSON is included as well when the URL stays short enough for GitHub to accept.
+A person reads it and adds the pack for everyone, or does not.
 
 ### The bench
 
-Three panes: presets and samples on the left, the chain in the middle, performance and
-the write button on the right. The validator's verdict sits directly above the write
+Two columns, three when the guide is open: presets, samples, the handle map, the verdict
+and the write button down the left; the tabs — library, chain, samples — in the middle;
+**how it works** on the right. The validator's verdict sits directly above the write
 button and never behind a tab — you cannot ship a file you have not been told is broken.
 
 Two details that carry a rule each:
@@ -313,7 +348,7 @@ yet, which is exactly why it is safe to put up now. The launch gate still stands
 ```sh
 npm install
 npm run dev
-npm test          # 139 tests, including TE's own documented example
+npm test          # 168 tests, including TE's own documented example
 npm run typecheck
 ```
 
