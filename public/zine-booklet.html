@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fx-mic pocket manual — booklet</title>
+<style>
+  @page { size: 5.5in 8.5in; margin: 0; }
+
+  :root {
+    --ink: #111110; --mute: #6e6a64; --rule: #d9d6d1; --paper: #fff;
+    --orange: #ff4b00; --filter: #1d6fd6; --space: #0f8a7a; --pitch: #7a4fd8; --drive: #c2257a;
+    --sans: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  h1 { font-size: 19pt; letter-spacing: -0.01em; margin: 0 0 2px; }
+  h2 {
+    font-size: 8pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute);
+    margin: 26px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--rule);
+    break-after: avoid;
+  }
+  h3 { font: 600 10.5pt/1.3 var(--mono); margin: 0 0 2px; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+  p { margin: 0 0 8px; }
+  .lede { color: var(--mute); }
+  .recover { border: 1.5px solid var(--orange); padding: 8px 10px; margin: 0 0 12px; }
+  .recover b { color: var(--orange); }
+  .danger { border: 1.5px solid var(--drive); padding: 8px 10px; margin: 0 0 12px; }
+  .danger b { color: var(--drive); }
+  .block { padding-left: 8px; margin: 0 0 13px; border-left: 2px solid var(--rule); }
+  .fam-filter { border-left-color: var(--filter); } .fam-filter h3 { color: var(--filter); }
+  .fam-space  { border-left-color: var(--space); }  .fam-space h3  { color: var(--space); }
+  .fam-pitch  { border-left-color: var(--pitch); }  .fam-pitch h3  { color: var(--pitch); }
+  .fam-drive  { border-left-color: var(--drive); }  .fam-drive h3  { color: var(--drive); }
+  .blurb { color: var(--mute); font-size: 9pt; margin-bottom: 4px; }
+  .mark {
+    font: 400 6.5pt/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase;
+    border: 1px solid currentColor; padding: 2px 4px; color: var(--mute);
+  }
+  .mark.field { color: var(--orange); }
+  table { width: 100%; border-collapse: collapse; font: 400 8.5pt/1.45 var(--mono); }
+  td { vertical-align: top; padding: 1px 6px 1px 0; border-top: 1px solid #f0eeeb; }
+  .params { table-layout: fixed; }
+  .params col:nth-child(1) { width: 52%; }
+  .params col:nth-child(2) { width: 48%; }
+  .params tr.note td {
+    border-top: 0; padding: 0 0 3px 0;
+    font-family: var(--sans); font-size: 7.5pt; line-height: 1.35; color: var(--mute);
+  }
+  td.k { white-space: nowrap; overflow-wrap: break-word; }
+  td.r { white-space: nowrap; color: var(--mute); text-align: right; }
+  td.n { color: var(--mute); font-family: var(--sans); font-size: 8pt; }
+  pre {
+    font: 400 8.5pt/1.5 var(--mono); background: #f6f5f3; padding: 10px 12px; margin: 0;
+    overflow-x: auto; break-inside: avoid;
+  }
+  ul { margin: 0; padding-left: 1.1em; }
+  li { margin-bottom: 5px; }
+  .rules li { margin-bottom: 7px; }
+  .rules b { font-family: var(--mono); font-weight: 600; }
+  .src { color: var(--mute); font-size: 8pt; }
+  .tip a, a.tip { color: var(--orange); }
+
+  body {
+    margin: 0; background: #e8e5e1; color: var(--ink);
+    font: 400 9pt/1.45 var(--sans); -webkit-text-size-adjust: 100%;
+  }
+  .page {
+    width: 5.5in; height: 8.5in; padding: 0.42in 0.4in 0.5in;
+    background: var(--paper); position: relative;
+    margin: 0 auto 14px; break-after: page;
+  }
+  .page:last-child { break-after: auto; }
+  h2 { margin-top: 0; }
+  .page h2 ~ h2 { margin-top: 18px; }
+  .folio {
+    position: absolute; left: 0; right: 0; bottom: 0.2in;
+    text-align: center; font: 400 7pt var(--mono); color: var(--mute);
+  }
+  .cover { height: 100%; display: flex; flex-direction: column; justify-content: center; }
+  .cover h1 { font-size: 30pt; line-height: 1.05; margin-bottom: 14px; }
+  .cover .sub { color: var(--mute); margin: 0 0 4px; max-width: 3.6in; }
+  .cover .foot { margin-top: auto; font: 600 9pt var(--mono); color: var(--orange); }
+  .back { margin-top: 16px; padding-top: 8px; border-top: 1px solid var(--rule); font-size: 8pt; color: var(--mute); }
+  .block { font-size: 8.5pt; }
+  /* On screen an over-wide <pre> scrolls; on paper it is simply cut off. Smaller
+     type buys the width back, and pre-wrap guarantees a long line wraps rather
+     than disappearing off the trim edge. */
+  pre { font-size: 7pt; line-height: 1.45; white-space: pre-wrap; overflow-x: visible; }
+  @media print {
+    body { background: none; }
+    /* Only in print: on screen an overflowing page must be visible, not clipped,
+       or a page that no longer fits would look finished. */
+    .page { margin: 0; overflow: hidden; box-shadow: none; }
+    a { color: inherit; text-decoration: none; }
+  }
+  @media screen {
+    .page { box-shadow: 0 1px 4px rgba(0,0,0,0.18); outline: 1px solid var(--rule); }
+    body { padding: 14px 0; }
+  }
+</style>
+</head><body>
+<section class="page"><div class="cover">
+       <h1>fx-mic<br>pocket manual</h1>
+       <p class="sub">EP&ndash;2350 &mdash; the fx-mic, and the TING that ships with the EP&ndash;40 RIDDIM</p>
+       <p class="sub">every block, range and rule, on paper</p>
+       <p class="foot">micgnome.stephen8n.com</p>
+     </div></section>
+<section class="page"><h2>first, the way back</h2>
+     <p class="recover"><b>If the mic will not start.</b> connect it to a computer and hold the white + grey buttons during startup to get the disk back, then fix or delete config.json.</p>
+     <p class="danger"><b>Mind your ears.</b> The socket is a stereo line output &mdash;
+   8 dBu, 2 VRMS max, 98 dBA SNR. Designed for a K.O. II or an audio mixer, not for headphones directly — at 2 VRMS it can be very loud.</p>
+     <p class="lede">Every block, range and rule the EP&ndash;2350 understands, on paper, because a web page is no help with the lid off and a text editor open. Generated from the same source Mic Gnome validates against, so it cannot quietly disagree with the tool.</p>
+     <h2>the shape of the file</h2>
+     <pre>{
+  &quot;name&quot;: &quot;MY PACK&quot;,
+  &quot;comment&quot;: &quot;yours to modify and pass on&quot;,
+  &quot;presets&quot;: [
+    {
+      &quot;pos&quot;: 0,
+      &quot;name&quot;: &quot;PRESET ONE&quot;,
+      &quot;comment&quot;: &quot;what it is for&quot;,
+      &quot;list&quot;: [
+        { &quot;effect&quot;: &quot;DIST&quot;, &quot;amount&quot;: 10.0 },
+        { &quot;effect&quot;: &quot;SAMPLE&quot; },
+        { &quot;effect&quot;: &quot;REVERB&quot;, &quot;time&quot;: 0.4 }
+      ],
+      &quot;handle&quot;:  { &quot;row&quot;: 0, &quot;param&quot;: &quot;amount&quot;, &quot;depth&quot;: 20.0 },
+      &quot;shake&quot;:   { &quot;row&quot;: 2, &quot;param&quot;: &quot;time&quot;,   &quot;depth&quot;: 0.5 },
+      &quot;trigger&quot;: { &quot;row&quot;: 1 }
+    }
+  ]
+}</pre>
+     <p class="lede">Four presets go in <b>presets</b>, one per slot on the orange button.
+     Inside each, <b>list</b> is the chain, top to bottom. The three lines under it are the
+     only things that move: the handle you squeeze, the shake of the mic, and the sample
+     button. Each names a <b>row</b> &mdash; a position in that list, counting from zero.</p><div class="folio">2</div></section>
+<section class="page"><h2>the 11 blocks &mdash; 1</h2><section class="block fam-space">
+    <h3>DELAY<span class="mark once">once per chain</span></h3>
+    <p class="blurb">standard echo</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">time</td><td class="r">0 &ndash; 1.1</td></tr><tr class="note"><td colspan="2">decay — note the ceiling is 1.1, not 1.0</td></tr><tr><td class="k">echo</td><td class="r">0 &ndash; 1</td></tr><tr class="note"><td colspan="2">feedback</td></tr><tr><td class="k">cross-feed</td><td class="r">0 &ndash; 1</td></tr><tr class="note"><td colspan="2">mixes left and right echoes</td></tr><tr><td class="k">lowpass-cutoff</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">highpass-cutoff</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">wet-level</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">dry-level</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">balance</td><td class="r">0 &ndash; 1</td></tr></tbody></table>
+  </section><section class="block fam-drive">
+    <h3>DIST</h3>
+    <p class="blurb">distortion / overdrive</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">amount</td><td class="r">0 &ndash; 40</td></tr><tr><td class="k">mix</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">lowpass-cutoff</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">highpass-cutoff</td><td class="r">0 &ndash; 1</td></tr></tbody></table>
+  </section><section class="block fam-filter">
+    <h3>EQUALISER</h3>
+    <p class="blurb">single peaking band</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">cutoff</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">q</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">gain</td><td class="r">-1 &ndash; 1</td></tr><tr class="note"><td colspan="2">the only parameter on the device that goes negative besides SSB frequency</td></tr></tbody></table>
+  </section><div class="folio">3</div></section>
+<section class="page"><h2>the blocks &mdash; 2</h2><section class="block fam-pitch">
+    <h3>HARMONY<span class="mark once">once per chain</span></h3>
+    <p class="blurb">pitch-shifted voice against the dry signal</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">pitch</td><td class="r">0.5 &ndash; 2</td></tr><tr class="note"><td colspan="2">ratio, not semitones — 2.0 is an octave up, 0.5 an octave down</td></tr><tr><td class="k">dry-level</td><td class="r">0 &ndash; 1</td></tr></tbody></table>
+  </section><section class="block fam-filter">
+    <h3>LOWPASS</h3>
+    <p class="blurb">low-pass filter</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">cutoff</td><td class="r">0 &ndash; 1</td></tr></tbody></table>
+  </section><section class="block fam-filter">
+    <h3>HIGHPASS</h3>
+    <p class="blurb">high-pass filter</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">cutoff</td><td class="r">0 &ndash; 1</td></tr></tbody></table>
+  </section><section class="block fam-plain">
+    <h3>SAMPLE</h3>
+    <p class="blurb">drops the triggered sound into the chain here — its knobs move the sound, not your voice</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">speed</td><td class="r">0 &ndash; 4</td></tr><tr><td class="k">pitch</td><td class="r">-24 &ndash; 24</td></tr><tr class="note"><td colspan="2">semitones</td></tr><tr><td class="k">level</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">balance</td><td class="r">0 &ndash; 1</td></tr></tbody></table>
+  </section><div class="folio">4</div></section>
+<section class="page"><h2>the blocks &mdash; 3</h2><section class="block fam-space">
+    <h3>REVERB<span class="mark once">once per chain</span></h3>
+    <p class="blurb">room simulation</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">time</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">wet-level</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">dry-level</td><td class="r">0 &ndash; 1</td></tr><tr><td class="k">spring-mix</td><td class="r">0 &ndash; 1</td></tr><tr class="note"><td colspan="2">adds the metallic boing</td></tr><tr><td class="k">highpass-cutoff</td><td class="r">0 &ndash; 1</td></tr></tbody></table>
+  </section><section class="block fam-drive">
+    <h3>RING</h3>
+    <p class="blurb">ring modulation</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">frequency</td><td class="r">0 &ndash; 20000</td></tr><tr class="note"><td colspan="2">hz</td></tr><tr><td class="k">mix</td><td class="r">0 &ndash; 1</td></tr></tbody></table>
+  </section><section class="block fam-pitch">
+    <h3>SSB<span class="mark once">once per chain</span></h3>
+    <p class="blurb">single sideband — frequency shift, shortwave radio character</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">frequency</td><td class="r">-20000 &ndash; 20000</td></tr><tr class="note"><td colspan="2">hz, and it goes negative</td></tr></tbody></table>
+  </section><section class="block fam-space">
+    <h3>BALANCE<span class="mark field">not in the guide</span></h3>
+    <p class="blurb">pans this point of the chain — left, right, or between two buses</p>
+    <table class="params"><colgroup><col span="1"><col span="1"></colgroup><tbody><tr><td class="k">balance</td><td class="r">0 &ndash; 1</td></tr><tr class="note"><td colspan="2">0 is hard left, 1 is hard right — our reading, not the guide’s</td></tr></tbody></table>
+  </section><div class="folio">5</div></section>
+<section class="page"><h2>the three buttons</h2><table><tbody>
+  <tr><td class="k">orange</td><td class="n">steps through no effect and the four preset slots — the first position is your voice, dry</td></tr>
+  <tr><td class="k">white</td><td class="n">selects which of the four sample slots is armed</td></tr>
+  <tr><td class="k">grey</td><td class="n">plays the selected sample</td></tr>
+</tbody></table>
+<p class="lede">The four sounds already in it are horn, applause, ringside bell, censor beep &mdash; the beep
+mutes the mic while it plays, which is the point of it. A pack needs no wav of your own
+unless you want one.</p>
+     <h2>modulation</h2><table><tbody>
+  <tr><td class="k">handle</td><td class="n">the squeeze. one per preset. { "row": n, "param": "x", "depth": d }</td></tr>
+  <tr><td class="k">shake</td><td class="n">the gyroscope. keeps moving after you let go.</td></tr>
+  <tr><td class="k">lfo</td><td class="n">the only motion that runs on its own. shapes: sine, square, sawtooth, random. also takes speed, mpy, phase.</td></tr>
+  <tr><td class="k">trigger</td><td class="n">the sample button. point it at the SAMPLE row, counting from 0.</td></tr>
+  <tr><td class="k">target: "lfo"</td><td class="n">on the handle, squeezes the lfo itself rather than an effect.</td></tr>
+</tbody></table>
+     <h2>what it holds</h2><table><tbody>
+  <tr><td class="k">presets</td><td class="r">4</td><td class="n">the orange button, pos 0&ndash;3</td></tr>
+  <tr><td class="k">samples</td><td class="r">4</td><td class="n">the white button, pos 0&ndash;3</td></tr>
+  <tr><td class="k">storage</td><td class="r">1024 kb</td><td class="n">everything on the disk, together</td></tr>
+  <tr><td class="k">audio</td><td class="r">wav</td><td class="n">mono or stereo, 8/16/24/32-bit, up to 96 khz</td></tr>
+</tbody></table><div class="folio">6</div></section>
+<section class="page"><h2>the rules that bite</h2><ul class="rules"><li><b>rows count from 0.</b> The second row is row 1. Every <b>row</b> in a modulation block, and the one in <b>trigger</b>, is an index into <b>list</b>.</li><li><b>audio falls top to bottom.</b> A block only works on what is above it. Put <b>SAMPLE</b> last and the built-in sounds play dry; put it earlier and everything <i>below</i> it processes them too.</li><li><b>no trigger, no sample.</b> It has to name the SAMPLE row itself. Pointed at an effect row instead, it is reported to switch that effect in and out while held &mdash; and the sample button stops working.</li><li><b>effect names are UPPERCASE.</b> Parameters are lowercase and hyphenated: <b>wet-level</b>, <b>cross-feed</b>, <b>lowpass-cutoff</b>.</li><li><b>use once per chain:</b> DELAY, HARMONY, REVERB, SSB.</li><li><b>BUS is 1 or 2.</b> A bus row is a copy of whatever is at that point &mdash; dry included, unless the block's own dry-level says otherwise. <b>SAMPLE on BUS 2 is reported silent;</b> put it on BUS 1.</li><li><b>a wav the config never names does not play.</b> Every file needs an entry under <b>samples</b>, with a playmode: oneshot, hold, startstop.</li><li><b>check your braces, quotes and commas.</b> A broken file is a mic that will not boot &mdash; see the recovery note.</li></ul><div class="folio">7</div></section>
+<section class="page"><h2>where the guide says nothing</h2><ul><li><b>how a BUS sums</b> &mdash; The guide describes BUS in a single line and does not define how buses are summed.</li><li><b>what a sample file may be called</b> &mdash; The guide names the sample files 1.wav to 4.wav and never says whether the firmware will read any other name. If it will not, a pack built from files with their own names is silent and gives no reason why.</li><li><b>SAMPLE inside a bus</b> &mdash; The guide is silent on SAMPLE inside a bus; a player reports SAMPLE on BUS 2 gives no playback, and puts it on BUS 1 instead.</li><li><b>trigger on an effect row</b> &mdash; The guide only ever points &quot;trigger&quot; at a SAMPLE row. A player reports it works on an effect row too, switching that effect in and out while held, and that the sample button stops working when you do. The author of the config could not reproduce it.</li><li><b>whether a trigger is required</b> &mdash; The guide does not say whether &quot;trigger&quot; is required when a preset contains a SAMPLE row; a player reports that without one, pointed at the exact SAMPLE row, nothing plays.</li><li><b>capitalisation of parameters</b> &mdash; The guide requires uppercase effect names but shows parameters in lowercase; it never states whether parameter names are case-sensitive.</li><li><b>keys the guide never mentions</b> &mdash; The guide does not say whether the firmware ignores unrecognised keys or refuses the file.</li></ul>
+     <h2>who told us the rest</h2>
+     <p class="lede">Not from Teenage Engineering. People with the mic in front of them,
+     which is weaker than the guide and stronger than nothing &mdash; enough to warn you,
+     never enough to stop you. Anything in this book marked <i>not in the guide</i> is
+     waiting to be confirmed on hardware.</p>
+     <ul><li><b>windowbed’s example pack</b> &mdash; A four-preset config walked through running on a real EP-2350 TING — the mic bundled with the EP-40 RIDDIM. Same model number as the standalone unit; the two differ in labelling and in the presets they ship with (the TING is sold on echo, echo + spring, pixie and robot), which are built from these same blocks. Whether they differ in any other way is not known, so everything sourced here stays a warning until it has been heard on a standalone mic. <span class="src">https://www.youtube.com/watch?v=C2KM5qBMkKw, 2026-09</span></li><li><b>the replies under it</b> &mdash; Replies under that video, from other TING owners. Three claims worth having: a &quot;trigger&quot; pointed at an effect row switches it in and out while held (and kills the sample button); on newer firmware your own wavs need an explicit &quot;samples&quot; block listing every one; and SAMPLE only ever moves the sample, never the voice. <span class="src">https://www.youtube.com/watch?v=C2KM5qBMkKw, 2026-09</span></li></ul>
+     <div class="back">
+       <p><b>micgnome.stephen8n.com</b> &mdash; the editor this was generated from. It checks a
+       config before it can stop your mic booting, and it is free.</p>
+       <p>If it saved you an evening, <a class="tip" href="https://ko-fi.com/stejcu">ko-fi.com/stejcu</a>.</p>
+     </div><div class="folio">8</div></section>
+</body></html>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { KOFI } from '../site'
 import { CONFIG_NAME, DiskFullError, type MicDisk, type RestartResult, type Snapshot } from '../fxmic/disk'
 import type { Report } from '../fxmic/diagnostics'
 import { serialize } from '../fxmic/serialize'
@@ -172,7 +173,7 @@ function TipJar() {
     <p className="label flex items-baseline justify-between gap-3 border-t border-rule-soft pt-2 leading-relaxed">
       <span>
         mic gnome is free.{' '}
-        <a href="https://github.com/sponsors/stephencummins" target="_blank" rel="noreferrer"
+        <a href={KOFI} target="_blank" rel="noreferrer"
           className="text-orange underline">chip in</a>{' '}
         if it saved you an evening.
       </span>

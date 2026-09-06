@@ -3,7 +3,7 @@ import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
 const STEPS: { title: string; body: string }[] = [
   {
     title: 'build a chain',
-    body: 'add effect blocks in the chain tab. audio falls through them top to bottom, and the SAMPLE row is where your sound gets injected — put it last to keep it dry, earlier to run it through the effects above.',
+    body: 'add effect blocks in the chain tab. audio falls through them top to bottom, and the SAMPLE row is where your sound gets injected — put it last to keep it dry, earlier to run it through everything below it — that is how you get reverb on the airhorn and not just on your voice.',
   },
   {
     title: 'drop in sounds',
@@ -18,8 +18,12 @@ const STEPS: { title: string; body: string }[] = [
     body: 'errors block the write — an unknown effect, a value out of range, modulation pointing at a row that is not there. warnings never block: they are the places the guide itself is silent, and refusing a config that works would be worse.',
   },
   {
+    title: 'know the three buttons',
+    body: 'orange steps through no effect and your four presets — the first position is your voice, dry, which is why there are five stops and not four. white picks which of the four sample slots is armed and grey plays it. the four sounds already in the mic are horn, applause, ringside bell and censor beep; the beep mutes the mic while it plays, which is the whole point of it. one warning from the guide, about you rather than the mic: the socket is a line output at 2 vrms, meant for a k.o. ii or a mixer — plugged straight into headphones it can be very loud.',
+  },
+  {
     title: 'prove it boots, then put it on the mic',
-    body: 'write to the virtual fx-mic first: it backs up what was there, writes the files, ejects and boots the config the way the mic would, so a file that would stop a mic is caught here. then the real one: take the lower lid off, connect a usb-c cable to your computer, push the handle so the mic is on, and a disk called fx-mic disk appears. download config.json and your wavs from under the write button, drop them onto that disk, eject it the way you would a memory stick and wait for the restart — do not pull the cable. if a mic ever refuses to start, hold the white + grey buttons during startup to get the disk back and fix the file.',
+    body: 'write to the virtual fx-mic first: it backs up what was there, writes the files, ejects and boots the config the way the mic would, so a file that would stop a mic is caught here. then the real one: take the lower lid off, connect a usb-c cable to your computer, push the handle so the mic is on, and a disk appears — called fx-mic disk, or ting boot if your mic came bundled with an ep–40 riddim; it is the same mic and the same file either way. download config.json and your wavs from under the write button, drop them onto that disk, eject it the way you would a memory stick and wait for the restart — do not pull the cable. if a mic ever refuses to start, hold the white + grey buttons during startup to get the disk back and fix the file.',
   },
 ]
 
@@ -29,6 +33,7 @@ const STEP_GLYPHS = [
   <EffectGlyph key="sample" name="SAMPLE" size={22} />,
   <SourceGlyph key="handle" kind="handle" size={22} />,
   <Glyph key="tick" name="tick" size={22} />,
+  <Glyph key="buttons" name="buttons" size={22} />,
   <Glyph key="eject" name="eject" size={22} />,
 ]
 
@@ -78,6 +83,19 @@ export function HowTo({ onClose, onTour }: { onClose: () => void; onTour?: () =>
             </li>
           ))}
         </ol>
+
+        <p className="label mt-4 border border-rule p-3 leading-relaxed">
+          <b className="font-medium">there is a paper version.</b> the same blocks, ranges and rules, generated
+          from the same source this tool checks against, so it cannot disagree with what you see here.{' '}
+          <a href="/zine.html" target="_blank" rel="noreferrer" className="text-orange underline">
+            read it or print it on a4
+          </a>
+          , or{' '}
+          <a href="/zine-booklet.html" target="_blank" rel="noreferrer" className="text-orange underline">
+            print the eight page booklet
+          </a>{' '}
+          &mdash; two sheets folded, small enough to live in the case with the mic. free, like everything else here.
+        </p>
 
         <p className="label mt-4 leading-relaxed">
           everything here follows teenage engineering&rsquo;s own{' '}

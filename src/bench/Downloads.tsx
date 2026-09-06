@@ -2,7 +2,8 @@ import { useEffect, useMemo } from 'react'
 
 /**
  * The way a pack reaches a real mic today: as files you drop onto the mounted
- * `fx-mic disk` yourself. Mic Gnome writes to its virtual mic to prove the
+ * `fx-mic disk` yourself (`ting boot` on the TING, the EP-2350 bundled with the EP-40
+ * RIDDIM — same mic, different label on the volume). Mic Gnome writes to its virtual mic to prove the
  * pack boots; it does not write to hardware it has never been tested on.
  */
 export function Downloads({
@@ -32,8 +33,9 @@ export function Downloads({
   return (
     <div className="mt-3 border-t border-rule-soft pt-3">
       <p className="label m-0 leading-relaxed">
-        for the real mic: plug it in with a usb-c cable and a drive called <b className="font-medium">fx-mic disk</b>{' '}
-        appears, like a memory stick. download these, drag them onto that drive, then eject it.
+        for the real mic: plug it in with a usb-c cable and a drive appears, like a memory stick —{' '}
+        <b className="font-medium">fx-mic disk</b>, or <b className="font-medium">ting boot</b> if yours came
+        with an ep–40 riddim. download these, drag them onto that drive, then eject it.
       </p>
       <ul className="m-0 mt-1.5 flex list-none flex-wrap gap-x-4 gap-y-1 p-0">
         {links.map((l) =>
