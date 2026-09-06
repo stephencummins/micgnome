@@ -45,6 +45,8 @@ export interface Rig {
   skipped: { row: number; effect: string; why: string }[]
   /** Apply the handle at 0..1. Cheap enough to call on every slider move. */
   setHandle: (amount: number) => void
+  /** Apply the shake at 0..1. Momentary in life; a held button here. */
+  setShake: (amount: number) => void
   stop: () => void
 }
 
@@ -280,19 +282,50 @@ export function buildRig(context: AudioContext, preset: Preset, destination: Aud
   trim.gain.value = 0.7
   tail.connect(trim).connect(destination)
 
-  const handleMod = preset.handle
-  const setHandle = (amount: number) => {
-    if (!handleMod || typeof handleMod.row !== 'number' || !handleMod.param) return
-    const target = live.find((p) => p.row === handleMod.row && p.param === handleMod.param)
-    if (!target) return
-    target.set(modulate(target.base, handleMod.depth ?? 0, amount, target.min, target.max))
+  /**
+   * The handle and the shake are two movers over the same set of parameters, so
+   * they are applied together rather than one at a time: if both point at the
+   * same parameter their depths compose, and letting go of one puts the
+   * parameter back where the other left it rather than back to its set value.
+   *
+   * Only parameters something actually points at are written. That is not a
+   * micro-optimisation — REVERB re-synthesises its impulse response when its
+   * time changes, so blindly re-setting every parameter on every move of a
+   * slider would rebuild a buffer for nothing.
+   */
+  const movers = [
+    { mod: preset.handle, amount: 0 },
+    { mod: preset.shake, amount: 0 },
+  ].filter((m) => m.mod && typeof m.mod.row === 'number' && m.mod.param)
+
+  const apply = () => {
+    for (const param of live) {
+      const pointed = movers.filter((m) => m.mod!.row === param.row && m.mod!.param === param.param)
+      if (pointed.length === 0) continue
+      let value = param.base
+      for (const m of pointed) {
+        value = modulate(value, m.mod!.depth ?? 0, m.amount, param.min, param.max)
+      }
+      param.set(value)
+    }
   }
+
+  const setMover = (index: number) => (amount: number) => {
+    const mover = movers[index]
+    if (!mover) return
+    mover.amount = amount
+    apply()
+  }
+
+  // The filter above drops absent movers, so the handle is not always index 0.
+  const indexOf = (mod: typeof preset.handle) => movers.findIndex((m) => m.mod === mod)
 
   return {
     context,
     input,
     skipped,
-    setHandle,
+    setHandle: setMover(indexOf(preset.handle)),
+    setShake: setMover(indexOf(preset.shake)),
     stop: () => {
       try {
         input.disconnect()

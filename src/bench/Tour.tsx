@@ -30,7 +30,7 @@ export const STEPS: Step[] = [
   {
     title: 'see what is in it',
     where: 'chain tab',
-    body: 'each of the four settings is a list of effects your voice passes through, top to bottom, like water through pipes. click a block to adjust it, or add and remove blocks. the block called SAMPLE is where the mic\u2019s button sounds (the horn, the applause) join in. press listen, above the chain, to hear it with your own voice through the computer\u2019s microphone \u2014 close to the mic, though not the mic itself.',
+    body: 'each of the four settings is a list of effects your voice passes through, top to bottom, like water through pipes. click a block to adjust it, or add and remove blocks. the block called SAMPLE is where the mic\u2019s button sounds (the horn, the applause) join in. press listen, above the chain, to hear it — with a voice we build in the page, or with your own through the computer\u2019s microphone. close to the mic, though not the mic itself.',
   },
   {
     title: 'make the squeeze do something',

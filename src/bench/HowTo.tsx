@@ -8,7 +8,7 @@ const STEPS: { title: string; body: string }[] = [
   },
   {
     title: 'build a chain',
-    body: 'add effect blocks in the chain tab. audio falls through them top to bottom, and the SAMPLE row is where your sound gets injected — put it last to keep it dry, earlier to run it through everything below it — that is how you get reverb on the airhorn and not just on your voice. press listen above the chain to hear it through your computer\u2019s microphone as you build — an approximation of the mic, not the mic, and three blocks (harmony, ssb and sample) say so rather than pretending.',
+    body: 'add effect blocks in the chain tab. audio falls through them top to bottom, and the SAMPLE row is where your sound gets injected — put it last to keep it dry, earlier to run it through everything below it — that is how you get reverb on the airhorn and not just on your voice. press listen above the chain to hear it as you build — through a voice we build in the page, which needs no microphone and no headphones, or through your own — an approximation of the mic, not the mic, and three blocks (harmony, ssb and sample) say so rather than pretending.',
   },
   {
     title: 'drop in sounds',

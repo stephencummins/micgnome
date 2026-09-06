@@ -151,3 +151,72 @@ describe('squeezing the handle while it plays', () => {
     expect(() => rig.setHandle(1)).not.toThrow()
   })
 })
+
+describe('shaking the mic while it plays', () => {
+  const cutoffOf = (rig: { input: unknown }) => {
+    const node = (rig.input as unknown as FakeNode).connections[0]
+    return (node.frequency as { value: number }).value
+  }
+
+  it('moves the parameter the shake is pointed at, not only the handle', () => {
+    const { context, node } = fakeContext()
+    const row = blankRow('LOWPASS')
+    row.cutoff = 0
+    const rig = buildRig(
+      context,
+      preset([row], { shake: { row: 0, param: 'cutoff', depth: 1 } }),
+      asAudio(node('out')),
+    )
+    const before = cutoffOf(rig)
+    rig.setShake(1)
+    expect(cutoffOf(rig)).toBeGreaterThan(before)
+  })
+
+  it('composes with the handle when both are pointed at the same parameter', () => {
+    // The device has two movers and nothing says they take turns.
+    const { context, node } = fakeContext()
+    const row = blankRow('LOWPASS')
+    row.cutoff = 0
+    const rig = buildRig(
+      context,
+      preset([row], {
+        handle: { row: 0, param: 'cutoff', depth: 0.4 },
+        shake: { row: 0, param: 'cutoff', depth: 0.4 },
+      }),
+      asAudio(node('out')),
+    )
+    rig.setHandle(1)
+    const handleOnly = cutoffOf(rig)
+    rig.setShake(1)
+    expect(cutoffOf(rig)).toBeGreaterThan(handleOnly)
+  })
+
+  it('leaves the handle where it was when the shake is let go', () => {
+    // Letting go of one mover must not drag the parameter back to its set
+    // value while the other is still held.
+    const { context, node } = fakeContext()
+    const row = blankRow('LOWPASS')
+    row.cutoff = 0
+    const rig = buildRig(
+      context,
+      preset([row], {
+        handle: { row: 0, param: 'cutoff', depth: 0.5 },
+        shake: { row: 0, param: 'cutoff', depth: 0.5 },
+      }),
+      asAudio(node('out')),
+    )
+    rig.setHandle(1)
+    const held = cutoffOf(rig)
+    rig.setShake(1)
+    rig.setShake(0)
+    expect(cutoffOf(rig)).toBeCloseTo(held, 5)
+  })
+
+  it('does nothing when the preset has no shake, rather than inventing one', () => {
+    const { context, node } = fakeContext()
+    const rig = buildRig(context, preset([blankRow('LOWPASS')]), asAudio(node('out')))
+    const before = cutoffOf(rig)
+    rig.setShake(1)
+    expect(cutoffOf(rig)).toBe(before)
+  })
+})
