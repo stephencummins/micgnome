@@ -277,7 +277,7 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
           e.preventDefault()
           void send(draft)
         }}
-        className="flex gap-2"
+        className="flex gap-2 pt-1"
       >
         <input
           value={draft}
@@ -285,7 +285,7 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
           disabled={busy || exhausted}
           placeholder="say anything — ask him a question, or tell him what to change"
           aria-label="message the gnome"
-          className="flex-1 border-b border-rule bg-transparent py-1"
+          className="flex-1 rounded border border-rule bg-transparent px-3 py-2 placeholder:text-mute focus:border-orange focus:outline-none"
         />
         <button type="submit" disabled={busy || exhausted || draft.trim() === ''}
           className="label rounded border border-rule px-3 py-1 disabled:opacity-40 hover:border-orange hover:text-orange">
@@ -293,11 +293,12 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
         </button>
       </form>
 
-      <div ref={widget} />
       <p className="label text-mute">
         He is a small helper and he gets things wrong. Nothing he suggests reaches your pack until you press
         apply, and anything that would stop the mic starting is refused before you see it.
       </p>
+
+      <div ref={widget} className="opacity-70" />
     </div>
   )
 }
