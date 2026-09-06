@@ -224,16 +224,12 @@ export function Guide({
   // A fresh reason to move (a tab change, a step completed) beats a manual pick.
   useEffect(() => setPicked(undefined), [auto])
   const open = picked ?? auto
-  const doneCount = status.filter((s) => s === 'done').length
 
   return (
     <div className="flex h-full flex-col" aria-label="how it works">
       <div className="mb-3 flex items-baseline justify-between border-b border-rule-soft pb-2">
         <span className="data font-medium">how it works</span>
-        <span className="flex items-baseline gap-3">
-          <span className="label">{doneCount} of {STEPS.length}</span>
-          <button type="button" onClick={onClose} className="label underline hover:text-orange">close</button>
-        </span>
+        <button type="button" onClick={onClose} className="label underline hover:text-orange">close</button>
       </div>
 
       <ol className="m-0 flex list-none flex-col gap-1.5 p-0" aria-label="steps">
