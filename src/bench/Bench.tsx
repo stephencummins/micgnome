@@ -41,6 +41,23 @@ export function Bench() {
   const [sources, setSources] = useState(new Map<string, Source>())
   const [plan, setPlan] = useState<FitPlan>()
   const [tab, setTab] = useState<Tab>('chain')
+  // Whether the gnome has ever been asked anything, for the guide's first step.
+  // Remembered across reloads: having asked him once is not undone by a refresh.
+  const [askedGnome, setAskedGnome] = useState(() => {
+    try {
+      return localStorage.getItem('micgnome:gnome-chat') !== null
+    } catch {
+      return false
+    }
+  })
+  useEffect(() => {
+    if (!askedGnome) return
+    try {
+      localStorage.setItem('micgnome:gnome-asked', '1')
+    } catch {
+      // Blocked storage only costs a tick in the guide.
+    }
+  }, [askedGnome])
   const [writing, setWriting] = useState(false)
   const [focus, setFocus] = useState<string>()
   const [note, setNote] = useState<string>()
@@ -156,8 +173,8 @@ export function Bench() {
 
   const preset = state.config.presets[state.selected]
   const progress = useMemo(
-    () => stepStatuses(state.config, { written, downloaded, submitted }),
-    [state.config, written, downloaded, submitted],
+    () => stepStatuses(state.config, { written, downloaded, submitted, asked: askedGnome }),
+    [state.config, written, downloaded, submitted, askedGnome],
   )
   async function submit() {
     const link = shareUrl(await encodePack(state.config))
@@ -379,7 +396,7 @@ export function Bench() {
 
           <div className={guideOpen ? 'hidden lg:block' : ''}>
           {tab === 'gnome' ? (
-            <GnomeTab state={state} dispatch={dispatch} />
+            <GnomeTab state={state} dispatch={dispatch} onAsked={() => setAskedGnome(true)} />
           ) : tab === 'library' ? (
             <Library dirty={state.dirty} dispatch={dispatch} onSubmit={() => void submit()} />
           ) : tab === 'chain' ? (

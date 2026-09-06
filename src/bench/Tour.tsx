@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
+import { Mark } from './Mark'
 import { STEP_TAB, type StepStatus } from './progress'
 import { LIBRARY } from '../packs/library'
 
@@ -17,6 +18,11 @@ export interface Step {
 
 export const STEPS: Step[] = [
   {
+    title: 'just ask the gnome',
+    where: 'helper gnome tab',
+    body: 'if none of the rest of this appeals, say what you want in your own words \u2014 "make me sound like a robot", "something for a football match" \u2014 and the helper gnome builds it for you. he shows you what he wants to change before he changes anything, and you press apply or say no thanks. he can also just answer questions, and he will not touch your pack unless you let him. everything below is here for when you want the knobs yourself.',
+  },
+  {
     title: 'pick a pack',
     where: 'library tab',
     body: `a pack is a ready-made set of four sound settings for the mic, a bit like the picture modes on a camera. the library has ${LIBRARY.length} already made. press load on one and it is yours: use it as it is, or change it. you do not have to build anything.`,
@@ -24,7 +30,7 @@ export const STEPS: Step[] = [
   {
     title: 'see what is in it',
     where: 'chain tab',
-    body: 'each of the four settings is a list of effects your voice passes through, top to bottom, like water through pipes. click a block to adjust it, or add and remove blocks. the block called SAMPLE is where the mic\u2019s button sounds (the horn, the applause) join in.',
+    body: 'each of the four settings is a list of effects your voice passes through, top to bottom, like water through pipes. click a block to adjust it, or add and remove blocks. the block called SAMPLE is where the mic\u2019s button sounds (the horn, the applause) join in. press listen, above the chain, to hear it with your own voice through the computer\u2019s microphone \u2014 close to the mic, though not the mic itself.',
   },
   {
     title: 'make the squeeze do something',
@@ -54,6 +60,7 @@ export const STEPS: Step[] = [
 ]
 
 export const TILE_GLYPHS: ReactNode[] = [
+  <Mark key="gnome" size={22} />,
   <Glyph key="library" name="library" size={22} />,
   <Glyph key="chain" name="chain" size={22} />,
   <SourceGlyph key="handle" kind="handle" size={22} />,
@@ -81,6 +88,30 @@ function Frame({ children, label }: { children: ReactNode; label: string }) {
 }
 
 export const PICTURES: ReactNode[] = [
+  // Somebody asks in words; the gnome answers with a chain.
+  <Frame key="gnome" label="a question in plain words, and the gnome answering with a chain of blocks">
+    <g>
+      <rect x="16" y="16" width="120" height="26" rx="3" {...rule} fill="var(--color-paper)" />
+      <line x1="26" y1="25" x2="112" y2="25" {...rule} />
+      <line x1="26" y1="33" x2="88" y2="33" {...rule} />
+      <polyline points="30,42 30,50 40,42" {...rule} />
+    </g>
+    <g transform="translate(150 52) scale(0.9)">
+      <path d="M7.4 19.4 A8.6 8.6 0 0 1 24.6 19.4 A8.6 8.6 0 0 1 18.6 27.6 L16 24.6 L13.4 27.6 A8.6 8.6 0 0 1 7.4 19.4 z"
+        fill="var(--color-paper)" stroke="var(--color-rule)" strokeWidth="1" />
+      <path d="M5.4 18.6 L14.5 4.2 Q16 2.7 17.5 4.2 L26.6 18.6 z" fill="var(--color-rule)" />
+      <circle cx="16" cy="18.4" r="3.5" fill="var(--color-orange)" />
+    </g>
+    {['RING', 'LOWPASS'].map((name, i) => (
+      <g key={name}>
+        <rect x="30" y={62 + i * 20} width="92" height="16" fill="var(--color-paper)" stroke="var(--color-orange)" strokeWidth="1.4" />
+        <line x1={38} y1={70 + i * 20} x2={110} y2={70 + i * 20} {...rule} />
+      </g>
+    ))}
+    <line x1="24" y1="62" x2="24" y2="98" {...rule} />
+    <polyline points="20,92 24,98 28,92" {...rule} />
+  </Frame>,
+
   // Four cards; one of them chosen.
   <Frame key="0" label="a grid of pack cards, one selected">
     {[0, 1, 2, 3].map((i) => {

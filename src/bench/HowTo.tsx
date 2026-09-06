@@ -1,9 +1,14 @@
 import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
+import { Mark } from './Mark'
 
 const STEPS: { title: string; body: string }[] = [
   {
+    title: 'ask, if you would rather not build',
+    body: 'the helper gnome tab takes plain english — "make me sound like an old radio", "why is my sample silent?", "how do i get this onto the mic?" — and answers, or proposes a change to your pack. he shows you exactly what he wants to alter and nothing happens until you press apply; anything that would stop the mic starting is refused before it reaches you, by the same checks that guard the write button. he is a small free model and he gets things wrong, so read what he proposes. he runs on a shared daily allowance and when it is spent he says so and everything else here still works.',
+  },
+  {
     title: 'build a chain',
-    body: 'add effect blocks in the chain tab. audio falls through them top to bottom, and the SAMPLE row is where your sound gets injected — put it last to keep it dry, earlier to run it through everything below it — that is how you get reverb on the airhorn and not just on your voice.',
+    body: 'add effect blocks in the chain tab. audio falls through them top to bottom, and the SAMPLE row is where your sound gets injected — put it last to keep it dry, earlier to run it through everything below it — that is how you get reverb on the airhorn and not just on your voice. press listen above the chain to hear it through your computer\u2019s microphone as you build — an approximation of the mic, not the mic, and three blocks (harmony, ssb and sample) say so rather than pretending.',
   },
   {
     title: 'drop in sounds',
@@ -29,6 +34,7 @@ const STEPS: { title: string; body: string }[] = [
 
 /** One drawing per step, the same ones the bench itself uses, so the panel teaches the vocabulary. */
 const STEP_GLYPHS = [
+  <Mark key="gnome" size={22} />,
   <Glyph key="chain" name="chain" size={22} />,
   <EffectGlyph key="sample" name="SAMPLE" size={22} />,
   <SourceGlyph key="handle" kind="handle" size={22} />,

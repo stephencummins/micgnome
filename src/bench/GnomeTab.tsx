@@ -52,7 +52,16 @@ declare global {
   }
 }
 
-export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a: Action) => void }) {
+export function GnomeTab({
+  state,
+  dispatch,
+  onAsked,
+}: {
+  state: BenchState
+  dispatch: (a: Action) => void
+  /** Called the first time a message is sent, so the guide can tick its step. */
+  onAsked?: () => void
+}) {
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE)
@@ -113,6 +122,7 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
     if (!clean || busy) return
     const outgoing: Message[] = [...messages, { role: 'user', content: clean }]
     setMessages(outgoing)
+    onAsked?.()
     setDraft('')
     setBusy(true)
     setError(null)
