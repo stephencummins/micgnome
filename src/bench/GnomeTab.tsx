@@ -19,9 +19,9 @@ import { SKILLS, skillById } from '../gnome/skills'
 import type { SkillId } from '../gnome/skills'
 import type { ProposedAction } from '../gnome/protocol'
 import type { Action, BenchState } from './state'
+import { TURNSTILE_SITE_KEY } from '../site'
 
 const STORAGE = 'micgnome:gnome-chat'
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined
 
 interface Message {
   role: 'user' | 'assistant'
