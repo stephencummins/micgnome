@@ -272,6 +272,13 @@ export const LIMITS = {
 /**
  * Recovery instruction, from chapter 7.2. This belongs anywhere the user can
  * write to the device, not buried in a manual.
+ *
+ * CONTESTED, and this is the worst sentence in the product to be wrong about.
+ * TE's guide says white + grey, which is what we print. The unofficial editor at
+ * ting.supervisedmusic.com tells people to hold *green + white* during startup.
+ * Either two owners are naming the same pair of buttons by different colours, or
+ * one of the two is wrong and somebody with a dead mic follows it. Settle this by
+ * looking at the hardware on the 14th, not by picking a source.
  */
 export const RECOVERY =
   'If the mic will not start, connect it to a computer and hold the white + grey ' +
