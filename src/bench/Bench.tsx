@@ -15,6 +15,7 @@ import { stepStatuses } from './progress'
 import { submitUrl } from './submit'
 import { ThemeToggle } from './Theme'
 import { GnomeTab } from './GnomeTab'
+import { Listen } from './Listen'
 import { Library } from './Library'
 import { Mark } from './Mark'
 import { Modulation } from './Modulation'
@@ -392,6 +393,7 @@ export function Bench() {
                     onChange={(e) => dispatch({ type: 'set-preset-field', field: 'comment', value: e.target.value })}
                     className="label flex-1 border-b border-rule-soft bg-transparent py-0.5" />
                 </div>
+                <Listen preset={preset} handle={state.handle} />
                 <Chain preset={preset} dispatch={dispatch} focus={focus} />
                 <Modulation preset={preset} dispatch={dispatch} />
               </div>
