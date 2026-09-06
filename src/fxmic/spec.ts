@@ -273,16 +273,18 @@ export const LIMITS = {
  * Recovery instruction, from chapter 7.2. This belongs anywhere the user can
  * write to the device, not buried in a manual.
  *
- * CONTESTED, and this is the worst sentence in the product to be wrong about.
- * TE's guide says white + grey, which is what we print. The unofficial editor at
- * ting.supervisedmusic.com tells people to hold *green + white* during startup.
- * Either two owners are naming the same pair of buttons by different colours, or
- * one of the two is wrong and somebody with a dead mic follows it. Settle this by
- * looking at the hardware on the 14th, not by picking a source.
+ * The colours differ between the two mics. TE's guide says white + grey; the
+ * unofficial editor at ting.supervisedmusic.com says green + white, and its author
+ * is almost certainly looking at a TING, which is labelled differently from the
+ * newer standalone EP-2350 — the same difference that makes its disk mount as
+ * "ting boot". So the buttons are the pair, not the colour: we name the pair
+ * first and give both colourings, because a person reading this has a mic that
+ * will not start and needs to press something they can actually see.
  */
 export const RECOVERY =
-  'If the mic will not start, connect it to a computer and hold the white + grey ' +
-  'buttons during startup to get the disk back, then fix or delete config.json.'
+  'If the mic will not start, connect it to a computer and hold the two small ' +
+  'buttons \u2014 white + grey, or green + white on a TING \u2014 during startup to get ' +
+  'the disk back, then fix or delete config.json.'
 
 /**
  * Places the guide is genuinely ambiguous. The validator warns here; it never
