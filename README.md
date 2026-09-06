@@ -11,7 +11,7 @@ Not affiliated with Teenage Engineering.
 
 The fx-mic mounts over USB-C as a FAT disk. You drop `1.wav`–`4.wav` and a `config.json`
 onto it, eject, and the mic restarts with new sounds. That `config.json` is the whole
-instrument — four effect chains, ten effect blocks, and rules for how the handle,
+instrument — four effect chains, eleven effect blocks, and rules for how the handle,
 the accelerometer and an LFO push parameters around while you perform.
 
 It is also a text file with no safety net. The guide says it plainly: break the syntax
@@ -116,7 +116,7 @@ and a line is faster.
 
 ### The starter library
 
-`src/packs/library.ts`. Eight packs, thirty-two presets, in a **library** tab that loads any
+`src/packs/library.ts`. Nine packs, thirty-six presets, in a **library** tab that loads any
 of them onto the bench.
 
 | pack | after | idea |
@@ -129,6 +129,7 @@ of them onto the bench.
 | XY RACK | OP&ndash;XY | the three of its six published effects the library did not already have, plus a phaser |
 | HOUSE MIC | no device | the working pack: host, tannoy, mc and a fader, with the built-in sounds playing dry |
 | Y CABLE | guide &sect;7.10 | the only pack that uses BUS: a clean voice with a copy mangled beside it, four ways |
+| DUAL MONO | windowbed | not ours: a published config known to run on a TING, ending in a clean channel and a wet one |
 
 Each card leads with a **sigil** (`src/bench/Sigil.tsx`) that draws what the pack does
 rather than decorating it: PUNCH IN is the punch, FOUR SHAPES is the four shapes,
@@ -142,7 +143,7 @@ four factory sounds. Three good consequences: nothing of Teenage Engineering's i
 redistributed, a pack is under 2 kB rather than a megabyte, and anyone can try one without
 finding a wav first.
 
-Six are homages assembled from the fx-mic's own ten blocks, not recreations of another
+Six are homages assembled from the fx-mic's own blocks, not recreations of another
 device's DSP. The seventh, HOUSE MIC, is the first pack that is not a demonstration: four
 jobs a mic does at an actual event, using the four sounds already in it. It is also the
 only pack that puts the SAMPLE row at the **end** of a chain, which per guide 7.5 is how
@@ -156,6 +157,17 @@ thing to find out first when the mic arrives. Chain rows and library strips now 
 bus. **None has been heard on hardware yet** — every card says so, and
 `verified` flips per pack once each has actually been played through a mic.
 
+The ninth, DUAL MONO, is the only one that is not ours. It is windowbed's published example
+pack, walked through preset by preset on video with the mic in hand and released to be
+modified and redistributed, so it is the only entry here where every row is known to run.
+It earns its place twice over: it is the one pack that demonstrates BALANCE, and it settles
+what a `BUS` actually is. Y CABLE guessed a bus was a wet-only copy. DUAL MONO's first row
+is a bare pan on bus 2 and its delay on bus 1 carries `dry-level: 1.0`, which means a bus is
+a copy of *whatever is at that point*, dry included — wet-only was never the format's rule,
+only the convention a send effect follows. The test that enforced it across the whole
+library now applies to Y CABLE alone, where it is the point of the pack rather than a claim
+about the mic.
+
 The tests are the quality bar, not just a smoke check. Each pack must produce **zero errors
 and zero warnings** — a shipped pack is the example everyone copies, so it has to be
 exemplary rather than merely legal. Each must round-trip through serialize → parse with no
@@ -167,10 +179,143 @@ parameter's whole range, and SSB's frequency spans 40,000 hz while a musical shi
 of them — the line was flat and told you nothing. It now scales to the travel, pads from
 the travel rather than the range, and prints the full range in the caption so nothing is
 hidden.
-Between them they must use **every one of the ten blocks** and all four LFO shapes, and
+Between them they must use **every one of the eleven blocks** and all four LFO shapes, and
 demonstrate shake and handle-controls-LFO as well as ordinary handle modulation. The
 library is how someone learns what these things do; a block that appears nowhere is never
 heard.
+
+### Reading the guide directly
+
+Everything in `spec.ts` was transcribed from Teenage Engineering's guide, but the guide had
+never actually been fetched and checked against it. Doing that confirmed the ten documented
+blocks (an eleventh name, `ECHO`, turns out to be DELAY's feedback parameter rather than a
+block of its own, and BALANCE really is absent — which is what makes the field-report tier
+necessary) and turned up four things the tool did not have:
+
+- **The orange button has five positions, not four**: "no effect and the 4 effect preset
+  slots". People count the lights and assume a preset is missing. The white button arms a
+  sample slot; the grey one plays it.
+- **The four built-in sounds are horn, applause, ringside bell and censor beep** — and the
+  beep is not just a sound, it "temporarily mutes fx-mic, for foul language emergencies".
+- **The output is a line output**, 8 dBu / 2 VRMS max, 98 dBA SNR, "designed to connect to
+  koii or an audio mixer, not directly to headphones", where 2 VRMS "can be very loud". That
+  is the only warning in any of this about a person rather than a device, so it now sits
+  beside the recovery note in the manual and in the guide tab.
+- **The guide names the sample files `1.wav` to `4.wav`.** Mic Gnome writes whatever the
+  dropped file was called (`Bench.tsx` uses `file.name`). If the firmware only reads the
+  numbered names, every pack with custom filenames is silent and says nothing about why —
+  so a `wav-name` warning now says so. It is a warning, not a rename: the guide never states
+  that other names fail, and silently renaming somebody's file would be its own surprise.
+  **First thing to check on hardware, alongside BUS.**
+
+### What we know, and who told us
+
+Two sources, and the validator treats them differently. The **guide** is the authority on
+what is legal: where it states a rule plainly, breaking it is an error. A **field report**
+is somebody who has the hardware saying what actually happens — weaker than the guide,
+stronger than nothing, and never enough to refuse a file. `spec.FIELD_REPORTS` names them;
+`spec.AMBIGUOUS` says where the guide is silent.
+
+The first field report is windowbed's config, run on an **EP-2350 TING** — the mic bundled
+with the EP-40 RIDDIM rather than the standalone unit. Same model number; the two differ in
+labelling and in the presets they ship with, and whether they differ in any other way is not
+known. That is exactly why the tier exists: everything below stays a warning until it has
+been heard on a standalone mic. It moved three things:
+
+- **BALANCE is an effect.** It is nowhere in the guide's effect table, and it appears three
+  times in a preset that plays. Mic Gnome used to reject `{ "effect": "BALANCE" }` as an
+  unknown effect — a hard error, on a file that runs, which is the one failure this
+  validator exists to prevent. It is now a known block, flagged `unverified`, and a value
+  outside the range we have *read into* it warns rather than errors: our uncertainty is not
+  the user's mistake.
+- **SAMPLE on bus 2 is silent**, per the same player, while bus 1 is where the working
+  config puts it. A warning, not an error.
+- **A trigger is effectively required**, pointed at the SAMPLE row itself, or the sample
+  button does nothing. The guide never says so. Still a warning — but one that now names
+  the row you want instead of shrugging.
+
+The comments under the same video are a second report, and they cost another hard error.
+**A `trigger` can point at an effect row rather than a SAMPLE row**, switching that effect
+in and out while the button is held — a way to change sound without changing preset, at the
+cost of the sample button, which stops working in that preset. Mic Gnome rejected it
+outright. It is a warning now, and one that says what the trade is. (The video's own author
+could not reproduce it, which is the honest reason it is a warning and not a fact.)
+
+Two smaller things came out of the same thread. **A wav on the disk that `samples` never
+names will not play** — the mic falls back to its factory sounds and the files sit there
+looking correct, which is how people lose an afternoon; that is a warning now too. And the
+line telling you where to put the SAMPLE row **said the wrong direction**: audio falls top
+to bottom, so a SAMPLE row placed earlier runs through everything *below* it, not above.
+It was wrong in the guide tab and in the validator's own hint, and "how do I get reverb on
+the airhorn" is the most asked question under that video.
+
+`HARMONY`'s pitch now reads back in semitones beside the value. The device wants a ratio,
+every musician asks in semitones, and 1.19 is not a number anyone arrives at without a
+calculator.
+
+The same report answers a question the help copy could not: the drive is called `fx-mic
+disk` on the standalone mic and **`ting boot`** on the TING. Both are named where it
+matters, because someone who has been told to look for one name and sees the other stops
+dead — and the file is identical either way.
+
+Two smaller things the real file caught: a top-level `comment` (where a published pack
+carries its credit and its licence) was **silently deleted on save**, and the LFO has an
+undocumented `mpy` field. Anything we do not recognise now survives a round trip at every
+level of the file, not just inside a row.
+
+### The pocket manual
+
+`npm run zine` writes `public/zine.html`, so it ships with the site and prints on A4 from
+the browser. People with this mic have been asking for a printed syntax reference — the
+guide is a web page, and a web page is no use with the lid off the mic and a text editor
+open.
+
+It emits two files: `zine.html`, one long A4 sheet to read on screen or print, and
+`zine-booklet.html`, the same manual laid out as an **eight page 5.5 × 8.5in booklet** —
+which is what a print-on-demand shop wants, and what two folded sheets and a long-arm
+stapler produce at home. Both are linked from the guide tab; an unlinked page is not
+shipped.
+
+The booklet's pages are **declared, not flowed**, for one reason that is commercial rather
+than aesthetic: saddle stitch needs a page count divisible by four, and a reflowing document
+does not have a page count you can promise a printer. It is in **reader order, not printer
+spreads** — imposition is the printer's job, and doing it here would be a mistake nobody
+sees until the box arrives and has been paid for. Twelve pages was the first attempt and
+left every page about half empty, which reads as unfinished rather than airy.
+
+It is **generated from `spec.ts`**, which is the entire point. A reference that disagrees
+with the validator is worse than no reference: every block, range, note, ambiguity and
+field report on the sheet is read out of the same source the validator enforces, so they
+cannot drift. Tests fail if a block or a parameter never reaches the page, if the recovery
+instruction is not the first thing on it, or if the page ever grows a `<script>` or an
+external stylesheet — it has to print from a folder with no network.
+
+Three layout notes worth keeping, all of which only showed up rendered. The blocks flow in
+CSS **columns**, not a grid, because a grid gave every row the height of its tallest cell and
+left holes beside the long ones. Each parameter's note sits on **its own line** under the
+name and range, because three columns in a half-width block put SSB's `-20000 - 20000`
+straight through its own footnote. And the booklet's code block is `pre-wrap` at 7pt: on
+screen an over-wide `<pre>` scrolls, but on paper it is simply cut off at the trim edge.
+
+The tip jar lives in `src/site.ts` and nowhere else. It had drifted: the bench was still
+pointing at GitHub Sponsors long after the decision was Ko-fi, so the manual, the booklet
+and the write-succeeded screen now read one constant, and a test asserts they agree.
+
+### One colour, one meaning
+
+The family colours — filters blue, time and space teal, pitch violet, drive magenta, and
+SAMPLE deliberately in ink because it is the sound rather than something done to the sound —
+existed only inside 20px glyphs, while the printed manual drew every block with a
+family-coloured edge and heading. The two said the same thing at different volumes.
+
+The bench now wears it too: a chain row carries its family on its left edge with the block
+name in the same colour, and so does the button in the picker that will create it, so the
+colour is learned at the point of choosing rather than after the fact. `familyVar()` sits
+beside the existing `familyClass()` in `Glyphs.tsx` and is the single source for both.
+
+It stops at the guide column on purpose. Those step borders already carry a meaning — green
+done, orange current, muted optional — and a second colour system on the same element would
+break the consistency this was for.
 
 ### Type scale
 
@@ -293,7 +438,12 @@ matches what the encoder actually writes.
 
 - **Free, with a tip jar.** Not a paid product. The editor, validator, preview, import,
   cookbook and gallery stay free. Tips go on the write-succeeded screen and nowhere else —
-  never a modal, never on first load.
+  never a modal, never on first load. The manual carries the same link on its back page,
+  because a thing somebody printed and kept is the one place a tip is not an interruption.
+- **The manual is free too**, as HTML and as a print-ready booklet. Print-on-demand stays a
+  later option, and only if the tip jar shows there is demand for a physical copy — Lulu's
+  own storefront if so, since Lulu is then the seller and the VAT and merchant-of-record
+  problem that killed the paid version is theirs rather than ours.
 - **Gallery read-only at launch.** Seeded with the cookbook packs and Stephen's own.
   Uploads open later, once there is something to moderate.
 - **`micgnome.stephen8n.com`**, public — no Cloudflare Access on this hostname.
@@ -348,7 +498,7 @@ yet, which is exactly why it is safe to put up now. The launch gate still stands
 ```sh
 npm install
 npm run dev
-npm test          # 168 tests, including TE's own documented example
+npm test          # 184 tests, including TE's documented example and one known to run
 npm run typecheck
 ```
 

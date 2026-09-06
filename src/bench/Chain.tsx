@@ -1,8 +1,8 @@
-import { EFFECTS, effectByName } from '../fxmic/spec'
+import { EFFECTS, effectByName, paramReadout } from '../fxmic/spec'
 import type { EffectRow, Preset } from '../fxmic/types'
 import type { Action } from './state'
 import { paramDisplay, paramValue } from './state'
-import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
+import { EffectGlyph, Glyph, SourceGlyph, familyClass, familyVar } from './Glyphs'
 
 export function Chain({
   preset,
@@ -72,14 +72,17 @@ function Row({
   const triggered = preset.trigger?.row === index
 
   return (
-    <div className="relative border border-rule bg-paper p-3">
+    // The left edge carries the block's family, the same way the printed manual
+    // draws it: filters blue, time and space teal, pitch violet, drive magenta.
+    <div className="relative border border-rule bg-paper p-3"
+      style={{ borderLeftWidth: 2, borderLeftColor: familyVar(row.effect) }}>
       <span aria-hidden className="absolute top-4 -left-4 h-2 w-2 rounded-full border border-orange bg-paper" />
       <div className="flex items-baseline justify-between gap-3">
         {/* Wraps, so on a phone the blurb drops under the name instead of forcing the page wider. */}
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-0.5">
           <span className="data text-orange">{index}</span>
           <EffectGlyph name={row.effect} size={20} className="self-center" />
-          <span className="data font-medium tracking-wide text-[15px]">{row.effect}</span>
+          <span className={`data font-medium tracking-wide text-[15px] ${familyClass(row.effect)}`}>{row.effect}</span>
           {spec && <span className="label">{spec.blurb}</span>}
           {triggered && <span className="label text-orange">trigger</span>}
           {row.BUS !== undefined && (
@@ -111,6 +114,7 @@ function Row({
             const set = paramValue(row, param.name)
             const value = paramDisplay(row, param.name)
             const modulated = modsHere.filter((k) => preset[k]?.param === param.name)
+            const readout = paramReadout(row.effect, param.name, value)
             const path = `presets[?].list[${index}].${param.name}`
             return (
               <label key={param.name}
@@ -125,6 +129,7 @@ function Row({
                   </span>
                   <span className="data">
                     {value}
+                    {readout && <span className="text-mute opacity-60"> · {readout}</span>}
                     {set === undefined && <span className="text-mute opacity-60"> · unset</span>}
                   </span>
                 </span>
@@ -182,6 +187,9 @@ function AddBlock({ preset, dispatch }: { preset: Preset; dispatch: (a: Action) 
             disabled={blocked}
             title={blocked ? `${effect.name} can only be used once per chain` : effect.blurb}
             onClick={() => dispatch({ type: 'add-row', effect: effect.name })}
+            /* Same family edge as the row it will become, so the colour is
+               learned here rather than only once the block is in the chain. */
+            style={{ borderLeftWidth: 2, borderLeftColor: familyVar(effect.name) }}
             className="data flex items-center gap-1.5 border border-rule px-2 py-1 hover:border-orange hover:text-orange disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-rule disabled:hover:text-ink"
           >
             <EffectGlyph name={effect.name} size={15} />
