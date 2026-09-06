@@ -59,6 +59,7 @@ const AMBIGUOUS_LABEL: Record<keyof typeof AMBIGUOUS, string> = {
 const REPORT_LABEL: Record<keyof typeof FIELD_REPORTS, string> = {
   'ep2350-ting-config': 'windowbed\u2019s example pack',
   'ep2350-ting-comments': 'the replies under it',
+  'ep2350-repl-api': 'the firmware\u2019s own REPL, documented',
 }
 
 function block(e: EffectSpec): string {

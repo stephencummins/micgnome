@@ -14,6 +14,7 @@ import { Guide } from './Tour'
 import { stepStatuses } from './progress'
 import { submitUrl } from './submit'
 import { ThemeToggle } from './Theme'
+import { GnomeTab } from './GnomeTab'
 import { Library } from './Library'
 import { Mark } from './Mark'
 import { Modulation } from './Modulation'
@@ -27,7 +28,7 @@ import { historyReduce, initialHistory } from './history'
 import { decodePack, encodePack, shareUrl } from './share'
 
 const initial: BenchState = { config: blankConfig(), selected: 0, handle: 0, dirty: false }
-type Tab = 'chain' | 'samples' | 'library'
+type Tab = 'chain' | 'samples' | 'library' | 'gnome'
 
 export function Bench() {
   const [history, dispatch] = useReducer(historyReduce, initial, initialHistory)
@@ -354,7 +355,7 @@ export function Bench() {
 
         <section className="bg-paper p-4">
           <div className="mb-4 flex gap-4 border-b border-rule-soft">
-            {(['chain', 'samples', 'library'] as const).map((t) => (
+            {(['chain', 'samples', 'library', 'gnome'] as const).map((t) => (
               <button key={t} type="button" onClick={() => chooseTab(t)}
                 className={`data -mb-px border-b-2 px-1 pb-2 ${
                   tab === t ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
@@ -376,7 +377,9 @@ export function Bench() {
           {guideOpen && <div className="lg:hidden">{guide}</div>}
 
           <div className={guideOpen ? 'hidden lg:block' : ''}>
-          {tab === 'library' ? (
+          {tab === 'gnome' ? (
+            <GnomeTab state={state} dispatch={dispatch} />
+          ) : tab === 'library' ? (
             <Library dirty={state.dirty} dispatch={dispatch} onSubmit={() => void submit()} />
           ) : tab === 'chain' ? (
             preset ? (

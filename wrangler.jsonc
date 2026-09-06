@@ -2,5 +2,11 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "micgnome",
   "compatibility_date": "2026-09-02",
-  "pages_build_output_dir": "./dist"
+  "pages_build_output_dir": "./dist",
+  // The gnome's model runs on Cloudflare's own network, reached through this
+  // binding, so no API key exists anywhere in the app. Local dev needs
+  // `wrangler pages dev --ai AI`; note inference is billed even locally.
+  "ai": {
+    "binding": "AI"
+  }
 }

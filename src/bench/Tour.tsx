@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { EffectGlyph, Glyph, SourceGlyph } from './Glyphs'
 import { STEP_TAB, type StepStatus } from './progress'
+import { LIBRARY } from '../packs/library'
 
 /**
  * Seven steps, docked beside the bench so they can be followed while doing
@@ -18,7 +19,7 @@ export const STEPS: Step[] = [
   {
     title: 'pick a pack',
     where: 'library tab',
-    body: 'a pack is a ready-made set of four sound settings for the mic, a bit like the picture modes on a camera. the library has eight already made. press load on one and it is yours: use it as it is, or change it. you do not have to build anything.',
+    body: `a pack is a ready-made set of four sound settings for the mic, a bit like the picture modes on a camera. the library has ${LIBRARY.length} already made. press load on one and it is yours: use it as it is, or change it. you do not have to build anything.`,
   },
   {
     title: 'see what is in it',

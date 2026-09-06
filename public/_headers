@@ -8,8 +8,12 @@
   # microphone stays open for the preview engine; nothing else is ever needed.
   Permissions-Policy: microphone=(self), accelerometer=(), camera=(), geolocation=(), payment=()
   # 'unsafe-inline' on style-src covers React's style attributes and Google Fonts.
-  # No connect-src beyond self: the app talks to your disk, not to a server.
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  # connect-src stays 'self': the app talks to your disk, and to one endpoint of
+  # our own (/api/gnome) which is same-origin. It never talks to a model directly.
+  # challenges.cloudflare.com is Turnstile, which proves there is a person here
+  # before the gnome spends the day's shared allowance. It needs a script and a
+  # frame; it is given nothing else.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-src https://challenges.cloudflare.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

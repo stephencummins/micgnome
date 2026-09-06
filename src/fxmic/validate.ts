@@ -210,6 +210,17 @@ function validateChain(c: Collector, list: unknown, path: string): (string | und
   if (list.length === 0) {
     c.warn('empty-list', p, 'This preset has an empty chain, so it will pass audio through untouched.')
   }
+  if (list.length > LIMITS.maxRowsPerPreset) {
+    // A warning, not an error: the ceiling comes from a player's reading of the
+    // firmware, not from the guide, and refusing a file that works is the worse
+    // failure. See FIELD_REPORTS['ep2350-repl-api'].
+    c.warn(
+      'chain-too-long',
+      p,
+      `This chain has ${list.length} effects. The firmware is reported to read only the first ${LIMITS.maxRowsPerPreset}, so the rest may be ignored.`,
+      `Shorten the chain to ${LIMITS.maxRowsPerPreset} effects or fewer.`,
+    )
+  }
 
   const rows: (string | undefined)[] = []
   const onceUsed = new Map<string, number>()

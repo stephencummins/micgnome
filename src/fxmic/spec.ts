@@ -259,6 +259,14 @@ export const LIMITS = {
   },
   /** "BUS": 1 or 2. The guide documents no other value. */
   busValues: [1, 2],
+  /**
+   * "The device parses up to 16 effects per preset." Not in TE's guide — this
+   * comes from the firmware's own REPL API, documented by a player (see
+   * FIELD_REPORTS['ep2350-repl-api']). A chain longer than this is therefore a
+   * warning, not a refusal: we are trusting a summary of the firmware, and the
+   * cost of being wrong is refusing a file that works.
+   */
+  maxRowsPerPreset: 16,
 } as const
 
 /**
@@ -299,6 +307,18 @@ export const FIELD_REPORTS = {
       'sample button); on newer firmware your own wavs need an explicit "samples" block ' +
       'listing every one; and SAMPLE only ever moves the sample, never the voice.',
     where: 'https://www.youtube.com/watch?v=C2KM5qBMkKw',
+    when: '2026-09',
+  },
+  'ep2350-repl-api': {
+    what:
+      "Documentation of the firmware's own MicroPython REPL, published by a player who " +
+      'drives the mic live over Web Serial. Stronger than the video, because the effect ' +
+      'list is read out of the device rather than transcribed from the guide: it confirms ' +
+      'BALANCE as a real effect and "mpy" as a real LFO key, and adds a ceiling of 16 ' +
+      'effects per preset. Note it is still one person\'s summary of the firmware, not the ' +
+      'firmware: it lists no EQUALISER although the guide documents one, which is why we ' +
+      'keep EQUALISER rather than deleting it on this evidence.',
+    where: 'https://github.com/brunomarinho/labs-te-ting-preset/blob/main/docs/REPL-API.md',
     when: '2026-09',
   },
 } as const
