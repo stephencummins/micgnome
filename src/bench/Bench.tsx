@@ -21,6 +21,7 @@ import { SampleBay, type Source } from './SampleBay'
 import { Verdict } from './Verdict'
 import { WriteDialog } from './WriteDialog'
 import { Downloads } from './Downloads'
+import { Paper } from './Paper'
 import type { BenchState } from './state'
 import { historyReduce, initialHistory } from './history'
 import { decodePack, encodePack, shareUrl } from './share'
@@ -346,6 +347,8 @@ export function Bench() {
             </button>
             <Downloads configText={configText} files={packFiles} blocked={blocked} onDownload={() => setDownloaded(true)} />
           </div>
+
+          <Paper />
           </div>
         </section>
 

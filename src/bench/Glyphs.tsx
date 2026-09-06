@@ -222,6 +222,29 @@ const MISC_PATHS = {
       <path d="M9 12h6M9 16h6" opacity="0.6" />
     </>
   ),
+  // A single sheet, read or printed flat.
+  sheet: (
+    <>
+      <path d="M5 3h14v18H5z" />
+      <path d="M8 8h8M8 12h8M8 16h5" opacity="0.6" />
+    </>
+  ),
+  // Two facing pages over a spine: the booklet, opened.
+  booklet: (
+    <>
+      <path d="M12 6v14" />
+      <path d="M12 6c-2.5-1.6-5-2-8-2v14c3 0 5.5.4 8 2" />
+      <path d="M12 6c2.5-1.6 5-2 8-2v14c-3 0-5.5.4-8 2" />
+    </>
+  ),
+  // The tip jar, which on ko-fi is a cup.
+  cup: (
+    <>
+      <path d="M4 9h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" />
+      <path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17" />
+      <path d="M8 3v2.5M12 3v2.5" opacity="0.6" />
+    </>
+  ),
 } as const
 
 export function Glyph({ name, size = 16, className }: { name: keyof typeof MISC_PATHS; size?: number; className?: string }) {
