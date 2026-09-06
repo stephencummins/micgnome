@@ -30,12 +30,16 @@ interface Message {
   proposal?: { actions: ProposedAction[]; summary: string[]; cautions: string[] }
   /** Set when the gnome proposed something the validator refused. */
   refused?: boolean
+  /** Things he thinks you might say next. Rendered as tappable pills, because a
+   *  blank box after an answer does not read as a conversation. */
+  suggest?: string[]
 }
 
 const OPENERS = [
   'I want to sound like a robot',
   'Show me some packs',
   'What does the squeeze do?',
+  'How do I get this onto my mic?',
 ]
 
 declare global {
@@ -154,7 +158,7 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
         }
       }
 
-      setMessages((m) => [...m, { role: 'assistant', content: data.reply!.say, proposal, refused }])
+      setMessages((m) => [...m, { role: 'assistant', content: data.reply!.say, proposal, refused, suggest: data.reply!.suggest }])
     } catch {
       setError('Could not reach the gnome. Check your connection and try again.')
     } finally {
@@ -209,6 +213,17 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
               <p className="label mt-1 text-mute">
                 He had an idea that would not have worked on the mic, so it was not offered. Try asking again.
               </p>
+            )}
+
+            {m.suggest && i === messages.length - 1 && !busy && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {m.suggest.map((sug) => (
+                  <button key={sug} type="button" onClick={() => void send(sug)}
+                    className="label rounded-full border border-rule px-3 py-1 hover:border-orange hover:text-orange">
+                    {sug}
+                  </button>
+                ))}
+              </div>
             )}
 
             {m.proposal && (
@@ -268,7 +283,7 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           disabled={busy || exhausted}
-          placeholder="tell him what you want to sound like"
+          placeholder="say anything — ask him a question, or tell him what to change"
           aria-label="message the gnome"
           className="flex-1 border-b border-rule bg-transparent py-1"
         />
