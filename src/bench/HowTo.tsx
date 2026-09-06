@@ -87,11 +87,11 @@ export function HowTo({ onClose, onTour }: { onClose: () => void; onTour?: () =>
         <p className="label mt-4 border border-rule p-3 leading-relaxed">
           <b className="font-medium">there is a paper version.</b> the same blocks, ranges and rules, generated
           from the same source this tool checks against, so it cannot disagree with what you see here.{' '}
-          <a href="/zine.html" target="_blank" rel="noreferrer" className="text-orange underline">
+          <a href="/zine" target="_blank" rel="noreferrer" className="text-orange underline">
             read it or print it on a4
           </a>
           , or{' '}
-          <a href="/zine-booklet.html" target="_blank" rel="noreferrer" className="text-orange underline">
+          <a href="/zine-booklet" target="_blank" rel="noreferrer" className="text-orange underline">
             print the eight page booklet
           </a>{' '}
           &mdash; two sheets folded, small enough to live in the case with the mic. free, like everything else here.

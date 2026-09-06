@@ -277,7 +277,7 @@ export function Guide({
         </button>
         {/* One level up from the full guide, because a manual nobody can find
             is a manual nobody prints. */}
-        <a href="/zine.html" target="_blank" rel="noreferrer" className="label underline hover:text-orange">
+        <a href="/zine" target="_blank" rel="noreferrer" className="label underline hover:text-orange">
           the pocket manual, on paper →
         </a>
       </div>
