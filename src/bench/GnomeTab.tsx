@@ -18,6 +18,7 @@ import type { DryRun } from '../gnome/apply'
 import { SKILLS, skillById } from '../gnome/skills'
 import type { SkillId } from '../gnome/skills'
 import type { ProposedAction } from '../gnome/protocol'
+import { Mark } from './Mark'
 import type { Action, BenchState } from './state'
 import { TURNSTILE_SITE_KEY } from '../site'
 
@@ -182,7 +183,9 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
     <div className="flex max-w-3xl flex-col gap-4">
       {messages.length === 0 && (
         <div className="rounded border border-rule-soft p-4">
-          <p className="mb-1 text-lg font-medium tracking-tight">The gnome</p>
+          <p className="mb-1 flex items-center gap-2 text-lg font-medium tracking-tight">
+            <Mark size={22} /> the helper gnome
+          </p>
           <p className="text-mute">{opening}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {OPENERS.map((o) => (
@@ -198,16 +201,17 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
       <div className="flex flex-col gap-4">
         {messages.map((m, i) => (
           <div key={i} className={m.role === 'user' ? 'self-end max-w-[85%]' : 'max-w-[90%]'}>
-            <div
-              className={
-                m.role === 'user'
-                  ? 'rounded border border-rule px-3 py-2'
-                  : 'whitespace-pre-wrap leading-relaxed'
-              }
-            >
-              {/* Text, never HTML: these words come from a model, on a public page. */}
-              {m.content}
-            </div>
+            {m.role === 'user' ? (
+              <div className="rounded border border-rule px-3 py-2">{m.content}</div>
+            ) : (
+              <div className="flex gap-2.5">
+                <span className="mt-0.5 shrink-0">
+                  <Mark size={20} />
+                </span>
+                {/* Text, never HTML: these words come from a model, on a public page. */}
+                <div className="whitespace-pre-wrap leading-relaxed">{m.content}</div>
+              </div>
+            )}
 
             {m.refused && (
               <p className="label mt-1 text-mute">
@@ -272,33 +276,38 @@ export function GnomeTab({ state, dispatch }: { state: BenchState; dispatch: (a:
 
       {error && <p className="text-mute">{error}</p>}
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          void send(draft)
-        }}
-        className="flex gap-2 pt-1"
-      >
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          disabled={busy || exhausted}
-          placeholder="say anything — ask him a question, or tell him what to change"
-          aria-label="message the gnome"
-          className="flex-1 rounded border border-rule bg-transparent px-3 py-2 placeholder:text-mute focus:border-orange focus:outline-none"
-        />
-        <button type="submit" disabled={busy || exhausted || draft.trim() === ''}
-          className="label rounded border border-rule px-3 py-1 disabled:opacity-40 hover:border-orange hover:text-orange">
-          send
-        </button>
-      </form>
+      {/* Pinned. The thread grows without limit and the one control that matters
+          was scrolling off the bottom — "I didn't see the Chat box". It bleeds to
+          the panel edges so nothing shows through underneath it. */}
+      <div className="sticky bottom-0 -mx-4 mt-1 border-t border-rule bg-paper px-4 pb-3 pt-3">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            void send(draft)
+          }}
+          className="flex gap-2"
+        >
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            disabled={busy || exhausted}
+            placeholder={exhausted ? 'the gnome is resting until midnight' : 'ask the gnome anything…'}
+            aria-label="message the helper gnome"
+            className="flex-1 rounded border-2 border-rule bg-paper px-3 py-2.5 placeholder:text-mute focus:border-orange focus:outline-none disabled:opacity-50"
+          />
+          <button type="submit" disabled={busy || exhausted || draft.trim() === ''}
+            className="rounded border-2 border-orange bg-orange px-5 py-2.5 font-medium text-paper disabled:border-rule disabled:bg-transparent disabled:text-mute">
+            {busy ? '…' : 'send'}
+          </button>
+        </form>
 
-      <p className="label text-mute">
-        He is a small helper and he gets things wrong. Nothing he suggests reaches your pack until you press
-        apply, and anything that would stop the mic starting is refused before you see it.
-      </p>
+        <p className="label mt-2 text-mute">
+          He gets things wrong. Nothing he suggests reaches your pack until you press apply, and anything
+          that would stop the mic starting is refused before you see it.
+        </p>
 
-      <div ref={widget} className="opacity-70" />
+        <div ref={widget} className="opacity-70" />
+      </div>
     </div>
   )
 }

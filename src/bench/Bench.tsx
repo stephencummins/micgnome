@@ -361,7 +361,7 @@ export function Bench() {
                 className={`data -mb-px border-b-2 px-1 pb-2 ${
                   tab === t ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
                 }`}>
-                {t}
+                {t === 'gnome' ? 'helper gnome' : t}
               </button>
             ))}
             <button type="button" onClick={() => (guideOpen ? closeGuide() : setGuideOpen(true))}
