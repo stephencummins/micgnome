@@ -271,9 +271,16 @@ export function Guide({
         })}
       </ol>
 
-      <button type="button" onClick={onFullGuide} className="label mt-4 self-start underline hover:text-orange">
-        the full guide →
-      </button>
+      <div className="mt-4 flex flex-col items-start gap-1.5">
+        <button type="button" onClick={onFullGuide} className="label self-start underline hover:text-orange">
+          the full guide →
+        </button>
+        {/* One level up from the full guide, because a manual nobody can find
+            is a manual nobody prints. */}
+        <a href="/zine.html" target="_blank" rel="noreferrer" className="label underline hover:text-orange">
+          the pocket manual, on paper →
+        </a>
+      </div>
     </div>
   )
 }
