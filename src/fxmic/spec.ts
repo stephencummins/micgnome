@@ -290,6 +290,7 @@ export const RECOVERY =
  */
 export const FIELD_REPORTS = {
   'ep2350-ting-config': {
+    short: 'A four-preset config filmed running on a real TING, the mic inside the EP-40 RIDDIM.',
     what:
       'A four-preset config walked through running on a real EP-2350 TING — the mic ' +
       'bundled with the EP-40 RIDDIM. Same model number as the standalone unit; the two ' +
@@ -301,6 +302,7 @@ export const FIELD_REPORTS = {
     when: '2026-09',
   },
   'ep2350-ting-comments': {
+    short: 'Replies under that video, from other owners.',
     what:
       'Replies under that video, from other TING owners. Three claims worth having: a ' +
       '"trigger" pointed at an effect row switches it in and out while held (and kills the ' +
@@ -310,6 +312,7 @@ export const FIELD_REPORTS = {
     when: '2026-09',
   },
   'ep2350-repl-api': {
+    short: "The firmware's own REPL, documented \u2014 read out of the device, not the guide.",
     what:
       "Documentation of the firmware's own MicroPython REPL, published by a player who " +
       'drives the mic live over Web Serial. Stronger than the video, because the effect ' +

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BOOKLET_PAGE_COUNT, KOFI, RULES, renderBooklet, renderZine } from '../zine'
+import { BOOKLET_PAGE_COUNT, BOOKLET_RULES_ON_PAGE_6, KOFI, RULES, renderBooklet, renderZine } from '../zine'
 import { AMBIGUOUS, EFFECTS, FACTORY_SOUNDS, FIELD_REPORTS, LFO_SHAPES, PLAYMODES } from '../../fxmic/spec'
 
 /**
@@ -121,5 +121,46 @@ describe('the booklet', () => {
     expect(html).not.toMatch(/<script/i)
     expect(html).not.toMatch(/<link[^>]+stylesheet/i)
     expect(html).not.toMatch(/src=["\']http/i)
+  })
+})
+
+describe('the booklet still fits on the paper', () => {
+  /**
+   * The booklet declares its pages instead of flowing them, which is the only
+   * way to promise a printer a count divisible by four. The cost is that
+   * nothing warns you when a page outgrows 5.5 x 8.5in — it simply prints off
+   * the bottom edge, and on 2026-09-06 it did: adding a third field report
+   * pushed the last page past the trim and nobody noticed until it was live.
+   *
+   * These numbers were measured in a browser at the sizes below, where the
+   * tightest page had about 86px of a 816px page to spare. They are the inputs
+   * that grow. If one of them trips, the fix is not to raise the number here —
+   * it is to open /zine-booklet, measure every page again, and rebalance.
+   */
+  const MEASURED = { rules: 9, ambiguities: 7, reports: 3, blocks: 11 }
+
+  it('carries no more of each growing thing than was measured to fit', () => {
+    expect(RULES.length, 'rules').toBeLessThanOrEqual(MEASURED.rules)
+    expect(Object.keys(AMBIGUOUS).length, 'ambiguities').toBeLessThanOrEqual(MEASURED.ambiguities)
+    expect(Object.keys(FIELD_REPORTS).length, 'field reports').toBeLessThanOrEqual(MEASURED.reports)
+    expect(EFFECTS.length, 'blocks').toBeLessThanOrEqual(MEASURED.blocks)
+  })
+
+  it('splits the rules across two pages, since one page cannot hold them beside the gaps', () => {
+    expect(BOOKLET_RULES_ON_PAGE_6).toBeGreaterThan(0)
+    expect(BOOKLET_RULES_ON_PAGE_6).toBeLessThan(RULES.length)
+  })
+
+  it('gives the booklet the short form of each source, and the sheet the full one', () => {
+    // A 5.5in page has no room for the full provenance, and someone with the lid
+    // off their mic does not want it there.
+    // Both are read de-escaped: the renderer turns quotes into entities, and the
+    // reports are full of quoted key names.
+    const booklet = unescape_(renderBooklet())
+    const sheet = unescape_(renderZine())
+    for (const report of Object.values(FIELD_REPORTS)) {
+      expect(booklet, 'booklet carries the short form').toContain(report.short)
+      expect(sheet, 'the sheet carries the whole account').toContain(report.what)
+    }
   })
 })

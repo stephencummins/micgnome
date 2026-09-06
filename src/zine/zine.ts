@@ -107,6 +107,16 @@ const SKELETON = `{
  * The rules as data rather than one blob of markup: the booklet has to split
  * them across pages, and a test can then assert none went missing in the split.
  */
+/**
+ * How many rules ride on page 6, the rest going to page 7.
+ *
+ * Measured in a browser, not guessed: at this split every page of the booklet
+ * has room to spare, the tightest being about 100px of a 816px page. The pages
+ * are declared rather than flowed, so nothing warns you when content outgrows
+ * one — it simply prints off the bottom edge. See the fit test.
+ */
+export const BOOKLET_RULES_ON_PAGE_6 = 3
+
 export const RULES: { title: string; body: string }[] = [
   {
     title: 'rows count from 0.',
@@ -186,11 +196,16 @@ const ambiguousList = () =>
     .map(([k, v]) => `<li><b>${esc(AMBIGUOUS_LABEL[k as keyof typeof AMBIGUOUS])}</b> &mdash; ${esc(v)}</li>`)
     .join('')}</ul>`
 
-const reportsList = () =>
+/**
+ * `brief` is for the booklet, where a 5.5in page has no room for the full
+ * provenance and a person with the lid off their mic does not want it. The A4
+ * sheet carries the whole account.
+ */
+const reportsList = (brief = false) =>
   `<ul>${Object.entries(FIELD_REPORTS)
     .map(
       ([k, v]) =>
-        `<li><b>${esc(REPORT_LABEL[k as keyof typeof FIELD_REPORTS])}</b> &mdash; ${esc(v.what)} <span class="src">${esc(v.where)}, ${esc(v.when)}</span></li>`,
+        `<li><b>${esc(REPORT_LABEL[k as keyof typeof FIELD_REPORTS])}</b> &mdash; ${esc(brief ? v.short : v.what)} <span class="src">${esc(v.where)}, ${esc(v.when)}</span></li>`,
     )
     .join('')}</ul>`
 
@@ -364,22 +379,23 @@ function bookletPages(): string[] {
     `<h2>the blocks &mdash; 2</h2>${blocksFor('HARMONY', 'LOWPASS', 'HIGHPASS', 'SAMPLE')}`,
     `<h2>the blocks &mdash; 3</h2>${blocksFor('REVERB', 'RING', 'SSB', 'BALANCE')}`,
 
-    // 6 — what moves, and what bites
+    // 6 — what moves, then the first of the rules. The rules are split because
+    // page 7 also carries the gaps; the test asserts none is lost in the split.
     `<h2>the three buttons</h2>${buttonsTable()}
      <h2>modulation</h2>${modulationTable()}
-     <h2>what it holds</h2>${limitsTable()}`,
+     <h2>what it holds</h2>${limitsTable()}
+     <h2>the rules that bite</h2>${rulesList(RULES.slice(0, BOOKLET_RULES_ON_PAGE_6))}`,
 
-    // 7 — the rules
-    `<h2>the rules that bite</h2>${rulesList(RULES)}`,
+    // 7 — the rest of the rules, and the places the guide simply stops. Both are
+    // "what the manual does not tell you". Page 8 could not hold the gaps as
+    // well as the sources: it overflowed the moment a third report was added.
+    `<h2>the rules that bite &mdash; 2</h2>${rulesList(RULES.slice(BOOKLET_RULES_ON_PAGE_6))}
+     <h2>where the guide says nothing</h2>${ambiguousList()}`,
 
-    // 8 — the gaps, who filled them, and the back cover
-    `<h2>where the guide says nothing</h2>${ambiguousList()}
-     <h2>who told us the rest</h2>
-     <p class="lede">Not from Teenage Engineering. People with the mic in front of them,
-     which is weaker than the guide and stronger than nothing &mdash; enough to warn you,
-     never enough to stop you. Anything in this book marked <i>not in the guide</i> is
-     waiting to be confirmed on hardware.</p>
-     ${reportsList()}
+    // 8 — who filled the gaps, and the back cover
+    `<h2>who told us the rest</h2>
+     <p class="lede">Not Teenage Engineering, but people with the mic in front of them &mdash; enough to warn you, never enough to stop you.</p>
+     ${reportsList(true)}
      <div class="back">
        <p><b>micgnome.stephen8n.com</b> &mdash; the editor this was generated from. It checks a
        config before it can stop your mic booting, and it is free.</p>
