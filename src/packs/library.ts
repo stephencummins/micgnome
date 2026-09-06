@@ -544,6 +544,136 @@ export const LIBRARY: Pack[] = [
       ],
     },
   },
+
+  {
+    id: 'dual-mono',
+    name: 'DUAL MONO',
+    after: 'windowbed\u2019s example pack \u2014 modify & redistribute, <3',
+    blurb:
+      'the one pack here that is not ours and not a guess: a config published by a player with the mic in front of them \u2014 a TING, the version that came with the ep\u201340 riddim \u2014 so every row in it is known to run on that. it walks up in four steps \u2014 a plain chain, the same chain with every parameter written out, then modulation, and finally the split: your clean voice out of one channel and the whole wet chain out of the other, which is how you record two tracks at once into a sampler.',
+    handle: 'only on the last two \u2014 it ducks the reverb, then sets the wet/dry split',
+    verified: false,
+    config: {
+      name: 'DUAL MONO',
+      comment: 'after windowbed\u2019s example pack. feel free to modify & redistribute. <3',
+      presets: [
+        {
+          pos: 0,
+          name: 'PLAIN',
+          comment: 'sample sits after the delay, so the beep is reverbed but never echoed',
+          list: [
+            { effect: 'DELAY', time: 0.5, echo: 0.3 },
+            { effect: 'SAMPLE', level: 0.5 },
+            { effect: 'REVERB', time: 0.8 },
+          ],
+          trigger: { row: 1 },
+        },
+        {
+          pos: 1,
+          name: 'FULL',
+          comment: 'the same three blocks with every parameter spelled out; shake works the echo',
+          // Identical to PLAIN apart from order and the parameters made
+          // explicit — SAMPLE first here, so the beep goes through everything.
+          list: [
+            { effect: 'SAMPLE', speed: 1.0, pitch: 0.0, level: 0.5, balance: 0.5 },
+            {
+              effect: 'DELAY',
+              time: 0.5,
+              echo: 0.3,
+              'cross-feed': 0.2,
+              'lowpass-cutoff': 1.0,
+              'highpass-cutoff': 0.0,
+              'wet-level': 0.5,
+              'dry-level': 1.0,
+              balance: 0.5,
+            },
+            {
+              effect: 'REVERB',
+              time: 0.8,
+              'wet-level': 0.5,
+              'dry-level': 1.0,
+              'spring-mix': 0.0,
+              'highpass-cutoff': 0.0,
+            },
+          ],
+          shake: { row: 1, param: 'echo', depth: 0.7 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 2,
+          name: 'HALF SPEED',
+          comment: 'the sample at half rate with the pitch sinking under it; squeeze to clear the reverb',
+          list: [
+            { effect: 'SAMPLE', speed: 0.5, pitch: 0.0, level: 0.5, balance: 0.5 },
+            {
+              effect: 'DELAY',
+              time: 0.5,
+              echo: 0.3,
+              'cross-feed': 0.2,
+              'wet-level': 0.5,
+              'dry-level': 1.0,
+              balance: 0.5,
+            },
+            {
+              effect: 'REVERB',
+              time: 0.8,
+              'wet-level': 1.0,
+              'dry-level': 1.0,
+              'spring-mix': 0.2,
+              'highpass-cutoff': 0.0,
+            },
+          ],
+          // mpy is not in the guide. It is in the published file, it is carried
+          // through untouched, and it is left here rather than tidied away.
+          lfo: { row: 0, param: 'pitch', depth: -12.0, shape: 'sine', speed: 1.0, mpy: 0.5, phase: 0.0 },
+          shake: { row: 1, param: 'echo', depth: 0.7 },
+          handle: { row: 2, param: 'wet-level', depth: -0.3 },
+          trigger: { row: 0 },
+        },
+        {
+          pos: 3,
+          name: 'SPLIT',
+          comment: 'clean voice out of one channel, the whole wet chain out of the other; squeeze to mix them',
+          // The reading this pack settles, because it came off a working mic:
+          // a BUS row is a COPY of the signal at that point, and it is a copy
+          // of whatever is there — dry included. Row 0 is a bare pan on bus 2,
+          // which is how you get an untouched voice hard right; bus 1 carries
+          // the effects and is panned hard left; the last row has no bus, so
+          // it sets the balance between the two.
+          list: [
+            { effect: 'BALANCE', balance: 1.0, BUS: 2 },
+            { effect: 'SAMPLE', speed: 1.0, pitch: 0.0, level: 0.5, balance: 0.5, BUS: 1 },
+            {
+              effect: 'DELAY',
+              time: 0.5,
+              echo: 0.3,
+              'cross-feed': 0.2,
+              'wet-level': 0.8,
+              'dry-level': 1.0,
+              balance: 0.5,
+              BUS: 1,
+            },
+            {
+              effect: 'REVERB',
+              time: 1.0,
+              'wet-level': 0.8,
+              'dry-level': 1.0,
+              'spring-mix': 0.0,
+              'highpass-cutoff': 0.0,
+              BUS: 1,
+            },
+            { effect: 'HARMONY', pitch: 0.5, 'dry-level': 1.0, BUS: 1 },
+            { effect: 'BALANCE', balance: 0.0, BUS: 1 },
+            { effect: 'BALANCE', balance: 0.9 },
+          ],
+          // Shallow on purpose: the effects channel is far louder than the
+          // clean one, so a squeeze only has to nudge the balance.
+          handle: { row: 6, param: 'balance', depth: -0.2 },
+          trigger: { row: 1 },
+        },
+      ],
+    },
+  },
 ]
 
 export const packById = (id: string) => LIBRARY.find((p) => p.id === id)

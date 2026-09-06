@@ -180,6 +180,32 @@ const DRAWINGS: Record<string, () => Drawing> = {
     }
   },
 
+  // One voice in, two channels out, and unlike Y CABLE they never rejoin:
+  // the top one leaves clean, the bottom one leaves soaked.
+  'dual-mono': () => {
+    const x0 = 6, xs = 34, xb = 46, x1 = W - 6
+    const lift = 14
+    const wet: [number, number][] = [[xs, MID], [xb, MID + lift]]
+    // A tail that rings down rather than a plain line — the wet channel is the
+    // one carrying delay, reverb and a harmony under it.
+    for (let i = 1; i <= 28; i++) {
+      const x = xb + (i * (x1 - xb)) / 28
+      wet.push([x, MID + lift + 5 * Math.sin(i / 1.15) * Math.exp(-i / 22)])
+    }
+    return {
+      guides: [
+        { d: `M${xs} ${MID - 6} V${MID + 6}`, accent: true },
+        { d: `M${x1} ${MID - lift - 5} V${MID - lift + 5}` },
+        { d: `M${x1} ${MID + lift - 5} V${MID + lift + 5}` },
+      ],
+      lines: [
+        { points: points([[x0, MID], [xs, MID]]), width: 1.8 },
+        { points: points([[xs, MID], [xb, MID - lift], [x1, MID - lift]]), width: 1.8 },
+        { points: points(wet), width: 1.4 },
+      ],
+    }
+  },
+
   // A carrier wandering either side of the station it is hunting.
   shortwave: () => ({
     guides: [{ d: `M${W / 2} 7 V${H - 7}`, accent: true }],

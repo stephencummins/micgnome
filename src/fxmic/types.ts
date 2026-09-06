@@ -19,6 +19,11 @@ export interface Modulation {
 export interface Lfo extends Modulation {
   shape?: LfoShape
   speed?: number
+  /**
+   * Speed multiplier. Not in the guide; present in a published config that
+   * runs, so we carry it rather than dropping it. See spec.FIELD_REPORTS.
+   */
+  mpy?: number
   phase?: number
 }
 
@@ -43,6 +48,8 @@ export interface SampleRef {
 
 export interface Config {
   name?: string
+  /** A note that travels with the pack — authors use it for credit and licence. */
+  comment?: string
   /** Omit entirely to use the mic's four factory sounds. */
   samples?: SampleRef[]
   presets: Preset[]

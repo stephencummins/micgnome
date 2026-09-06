@@ -122,8 +122,15 @@ describe('the library as a whole', () => {
     const rows = LIBRARY.flatMap((p) => p.config.presets.flatMap((preset) => preset.list))
     const buses = new Set(rows.map((r) => r.BUS).filter((b): b is number => b !== undefined))
     expect([...buses].sort()).toEqual([...LIMITS.busValues])
-    // A bus row that still carries dry doubles the voice with itself. The
-    // reading the library takes is: a bus is a copy, and a copy is wet only.
+  })
+
+  it('keeps Y CABLE\u2019s sends wet-only, because that is what a send is', () => {
+    // This used to be asserted over the whole library, on the reading that a
+    // bus is a copy and a copy is wet only. DUAL MONO came off a working mic
+    // and its bus rows carry dry — a bare pan on one bus, dry-level 1.0 on the
+    // next — so the rule was never the format's, only the send convention
+    // Y CABLE is built on. It stays here, where it is the point of the pack.
+    const rows = LIBRARY.find((p) => p.id === 'y-cable')!.config.presets.flatMap((p) => p.list)
     for (const r of rows) {
       if (r.BUS === undefined) continue
       const dry = r['dry-level'] ?? (r.mix === undefined ? undefined : 1 - (r.mix as number))

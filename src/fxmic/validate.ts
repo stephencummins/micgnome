@@ -31,7 +31,7 @@ const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFin
 
 const PRESET_KEYS = ['pos', 'name', 'comment', 'list', 'handle', 'shake', 'lfo', 'trigger']
 const SAMPLE_KEYS = ['pos', 'file', 'playmode']
-const TOP_KEYS = ['name', 'samples', 'presets']
+const TOP_KEYS = ['name', 'comment', 'samples', 'presets']
 /** Fields of the LFO block itself, for `"target": "lfo"` modulation. */
 const LFO_TARGETS = ['speed', 'depth', 'phase']
 
@@ -57,6 +57,7 @@ export function validate(input: unknown, options: ValidateOptions = {}): Report 
   }
 
   validateSamples(c, input.samples, options.files)
+  validateOrphanWavs(c, input.samples, options.files)
   validatePresets(c, input.presets, isObject(input) && Array.isArray(input.samples) ? input.samples.length : 0)
   validateStorage(c, options.files)
 
@@ -110,6 +111,14 @@ function validateSamples(c: Collector, samples: unknown, files?: DiskFile[]) {
     } else {
       if (!s.file.toLowerCase().endsWith('.wav')) {
         c.error('sample-not-wav', join(path, 'file'), `"${s.file}" is not a .wav — the mic only reads wav files.`)
+      }
+      if (!LIMITS.audio.names.includes(s.file.toLowerCase() as never)) {
+        c.warn(
+          'wav-name',
+          join(path, 'file'),
+          `The guide names the sample files ${LIMITS.audio.names.join(', ')}; this one is "${s.file}".`,
+          AMBIGUOUS.sampleNames,
+        )
       }
       if (files && !files.some((f) => f.name.toLowerCase() === String(s.file).toLowerCase())) {
         c.error(
@@ -283,6 +292,13 @@ function validateRowParams(c: Collector, row: Record<string, unknown>, effectNam
           `BUS is ${JSON.stringify(value)}; the guide only documents 1 and 2.`,
           AMBIGUOUS.bus,
         )
+      } else if (effectName === 'SAMPLE' && value === 2) {
+        c.warn(
+          'sample-on-bus-2',
+          join(rp, 'BUS'),
+          'SAMPLE is on BUS 2, which a player reports gives no sample playback at all.',
+          'Move it to BUS 1, or take the BUS off and leave it in the main chain.',
+        )
       }
       continue
     }
@@ -312,12 +328,24 @@ function validateRowParams(c: Collector, row: Record<string, unknown>, effectNam
     if (!isNum(value)) {
       c.error('param-not-number', join(rp, key), `"${key}" must be a number, not ${JSON.stringify(value)}.`)
     } else if (value < param.min || value > param.max) {
-      c.error(
-        'param-out-of-range',
-        join(rp, key),
-        `"${key}" is ${value}; the range is ${param.min} to ${param.max}.`,
-        `Clamp it to ${Math.min(Math.max(value, param.min), param.max)}.`,
-      )
+      const clamped = Math.min(Math.max(value, param.min), param.max)
+      if (spec.unverified) {
+        // We are guessing at this range, so a value outside it is our doubt,
+        // not the user's mistake. Never refuse a file over our own guess.
+        c.warn(
+          'param-range-unverified',
+          join(rp, key),
+          `"${key}" is ${value}. We read ${spec.name}'s range as ${param.min} to ${param.max}, but ${spec.name} is not in the guide.`,
+          `If it misbehaves, try ${clamped}.`,
+        )
+      } else {
+        c.error(
+          'param-out-of-range',
+          join(rp, key),
+          `"${key}" is ${value}; the range is ${param.min} to ${param.max}.`,
+          `Clamp it to ${clamped}.`,
+        )
+      }
     }
   }
 }
@@ -392,7 +420,7 @@ function validateLfoFields(c: Collector, block: Record<string, unknown>, bp: str
     c.warn('no-lfo-shape', join(bp, 'shape'), 'No LFO shape set.', `Add one of: ${LFO_SHAPES.join(', ')}.`)
   }
 
-  for (const key of ['speed', 'phase'] as const) {
+  for (const key of ['speed', 'mpy', 'phase'] as const) {
     if (key in block && !isNum(block[key])) {
       c.error('lfo-not-number', join(bp, key), `"${key}" must be a number.`)
     }
@@ -472,18 +500,30 @@ function validateTrigger(
     }
     validateRowRef(c, trigger.row, join(tp, 'row'), rows, 'trigger')
     if (isInt(trigger.row) && trigger.row < rows.length && rows[trigger.row] !== 'SAMPLE') {
-      c.error(
+      // Not a mistake. A player reports pointing the trigger at an effect row
+      // switches that effect in and out while you hold the button, which is a
+      // way to change sound without changing preset — at the cost of the
+      // sample button, which stops working in that preset. This used to be an
+      // error, which refused a working preset over an undocumented technique.
+      c.warn(
         'trigger-not-sample',
         join(tp, 'row'),
         `"trigger" points at row ${trigger.row}, which is ${rows[trigger.row] ?? 'unreadable'}, not SAMPLE.`,
-        sampleRow >= 0 ? `The SAMPLE row is ${sampleRow}.` : 'Add a { "effect": "SAMPLE" } row first.',
+        sampleRow >= 0
+          ? `Held, this is reported to switch that ${rows[trigger.row]} in and out — but the SAMPLE row at ${sampleRow} goes silent while it does. Point it at ${sampleRow} if you wanted the sound.`
+          : `Held, this is reported to switch that ${rows[trigger.row]} in and out. ${AMBIGUOUS.triggerOnEffect}`,
       )
     }
     return
   }
 
   if (sampleRow >= 0) {
-    c.warn('no-trigger', path, 'This preset has a SAMPLE row but no "trigger".', AMBIGUOUS.trigger)
+    c.warn(
+      'no-trigger',
+      path,
+      'This preset has a SAMPLE row but no "trigger", so the sample button will probably do nothing.',
+      `Add "trigger": { "row": ${sampleRow} } — it has to name the SAMPLE row itself. ${AMBIGUOUS.trigger}`,
+    )
   } else if (rows.length > 0) {
     // Guide 7.5: without a SAMPLE block in the chain, no sample sound is generated.
     c.warn(
@@ -492,7 +532,7 @@ function validateTrigger(
       sampleCount > 0
         ? 'This preset has no SAMPLE row, so the sample button will be silent here.'
         : 'This preset has no SAMPLE row, so the mic\'s built-in sounds will be silent here.',
-      'Add { "effect": "SAMPLE" } to the chain — at the end to keep it dry, earlier to run it through the effects above.',
+      'Add { "effect": "SAMPLE" } to the chain — at the end to keep it dry, earlier to run it through everything below it.',
     )
   }
 }
@@ -533,6 +573,28 @@ function validateSlot(
     return
   }
   seen.set(pos, index)
+}
+
+/**
+ * Wavs sitting on the disk that nothing names. Reported from the field as the
+ * way people lose an afternoon: the files are right there, and the mic plays
+ * its factory sounds instead, because a wav only exists once "samples" says so.
+ */
+function validateOrphanWavs(c: Collector, samples: unknown, files?: DiskFile[]) {
+  if (!files?.length) return
+  const named = new Set(
+    (Array.isArray(samples) ? samples : [])
+      .map((s) => (isObject(s) && typeof s.file === 'string' ? s.file.toLowerCase() : undefined))
+      .filter((f): f is string => f !== undefined),
+  )
+  const orphans = files.filter((f) => f.name.toLowerCase().endsWith('.wav') && !named.has(f.name.toLowerCase()))
+  if (!orphans.length) return
+  c.warn(
+    'wav-not-listed',
+    'samples',
+    `${orphans.map((f) => `"${f.name}"`).join(', ')} ${orphans.length === 1 ? 'is' : 'are'} on the disk but not in "samples", so ${orphans.length === 1 ? 'it' : 'they'} will not play.`,
+    'Add an entry under "samples" for each one — a wav the config never names is just a file taking up room.',
+  )
 }
 
 function validateStorage(c: Collector, files?: DiskFile[]) {

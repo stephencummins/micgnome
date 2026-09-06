@@ -12,11 +12,14 @@ import type { Config, EffectRow, Modulation, Preset, SampleRef } from './types'
 
 const PRESET_ORDER = ['pos', 'name', 'comment', 'list', 'handle', 'shake', 'lfo', 'trigger'] as const
 const SAMPLE_ORDER = ['pos', 'file', 'playmode'] as const
-const MOD_ORDER = ['row', 'target', 'param', 'depth', 'shape', 'speed', 'phase'] as const
+const MOD_ORDER = ['row', 'target', 'param', 'depth', 'shape', 'speed', 'mpy', 'phase'] as const
+const TOP_ORDER = ['name', 'comment', 'samples', 'presets'] as const
 
 export function serialize(config: Config): string {
-  const out: Record<string, unknown> = {}
-  if (config.name !== undefined) out.name = config.name
+  // Through pick, so the top level keeps unknown keys the way rows and presets
+  // already did. It did not: a published config carries its author's
+  // redistribution note in a top-level "comment", and saving deleted it.
+  const out = pick(config as unknown as Record<string, unknown>, TOP_ORDER)
   if (config.samples !== undefined) out.samples = config.samples.map(orderSample)
   out.presets = (config.presets ?? []).map(orderPreset)
   return JSON.stringify(out, null, 2) + '\n'

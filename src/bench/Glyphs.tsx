@@ -28,6 +28,15 @@ function Svg({ size, title, children, className }: { size: number; title?: strin
 /* ---------- effect blocks ---------- */
 
 const EFFECT_PATHS: Record<string, React.ReactNode> = {
+  // a pan pot: the axis between the two channels, and where this row sits on it
+  BALANCE: (
+    <>
+      <path d="M3 12h18" />
+      <path d="M3 9v6" opacity="0.45" />
+      <path d="M21 9v6" opacity="0.45" />
+      <path d="M15 7v10" />
+    </>
+  ),
   // three repeats, each quieter than the last
   DELAY: (
     <>
@@ -87,6 +96,7 @@ const EFFECT_PATHS: Record<string, React.ReactNode> = {
 }
 
 const FAMILY: Record<string, string> = {
+  BALANCE: 'text-space',
   LOWPASS: 'text-filter',
   HIGHPASS: 'text-filter',
   EQUALISER: 'text-filter',
@@ -100,6 +110,16 @@ const FAMILY: Record<string, string> = {
 
 /** The family colour for a block, or nothing for SAMPLE and unknowns. Exported so a row can borrow it. */
 export const familyClass = (name: string): string => FAMILY[name] ?? ''
+
+/**
+ * The same family, as a colour rather than a text class, for borders and rules.
+ * The printed manual already draws each block with a family-coloured edge; this
+ * is what lets the bench say the same thing in the same colour. Unknown blocks
+ * and SAMPLE fall back to the rule grey — SAMPLE stays in ink deliberately, it
+ * is the sound rather than something done to the sound.
+ */
+export const familyVar = (name: string): string =>
+  FAMILY[name] ? `var(--color-${FAMILY[name].replace('text-', '')})` : 'var(--color-rule)'
 
 export function EffectGlyph({ name, size = 16, className }: { name: string; size?: number; className?: string }) {
   const path = EFFECT_PATHS[name]
@@ -177,6 +197,15 @@ const MISC_PATHS = {
     </>
   ),
   // the verdict
+  // The three buttons, in the order they sit on the mic.
+  buttons: (
+    <>
+      <circle cx="12" cy="5.5" r="2.6" />
+      <circle cx="12" cy="12" r="2.6" />
+      <circle cx="12" cy="18.5" r="2.6" />
+      <path d="M17 5.5h5M17 12h5M17 18.5h5" opacity="0.45" />
+    </>
+  ),
   tick: <path d="M4 12.5l5 5L20 6.5" />,
   // eject: the arrow up, the line it leaves behind
   eject: (
