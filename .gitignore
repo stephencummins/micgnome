@@ -28,3 +28,6 @@ dist-ssr
 
 # Design canvas working files
 design/
+
+# JUCE plugin build tree (JUCE itself is fetched by CMake)
+plugin/build/

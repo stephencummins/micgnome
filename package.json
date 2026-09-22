@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "deploy": "npm run build && wrangler pages deploy",
-    "zine": "node scripts/zine.ts"
+    "zine": "node scripts/zine.ts",
+    "plugin-spec": "node scripts/plugin-spec.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
