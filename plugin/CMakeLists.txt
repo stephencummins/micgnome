@@ -4,12 +4,18 @@
 # cmake and a compiler — no Projucer, no full Xcode. The version is pinned:
 # a plugin that builds today and not in a year is worse than no plugin.
 cmake_minimum_required(VERSION 3.22)
+
+# Before project(), not after: project() seeds both of these into the cache
+# itself, and a later `set(... CACHE)` is then a no-op. Set below, the build
+# silently comes out arm64-only — which loads in a native host and not in one
+# running under Rosetta.
+set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "")
+set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "")
+
 project(MicGnomePlugin VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "")
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "")
 
 include(FetchContent)
 FetchContent_Declare(JUCE
