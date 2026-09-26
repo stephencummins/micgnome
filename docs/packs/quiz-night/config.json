@@ -1,0 +1,56 @@
+{
+  "name": "QUIZ NIGHT",
+  "comment": "White picks the sound, grey plays it. Chime and buzzer cut your voice so they land clean; applause and walk-on halve it so you can talk over them. Orange: HOST for the rounds, TANNOY for announcements. Needs firmware 1.0.9+ for duck.",
+  "samples": [
+    {
+      "pos": 0,
+      "file": "chime.wav",
+      "playmode": "oneshot",
+      "duck": 1.0
+    },
+    {
+      "pos": 1,
+      "file": "applause.wav",
+      "playmode": "oneshot",
+      "duck": 0.5
+    },
+    {
+      "pos": 2,
+      "file": "walkon.wav",
+      "playmode": "startstop",
+      "duck": 0.5
+    },
+    {
+      "pos": 3,
+      "file": "buzzer.wav",
+      "playmode": "oneshot",
+      "duck": 1.0
+    }
+  ],
+  "presets": [
+    {
+      "pos": 0,
+      "name": "HOST",
+      "comment": "rumble cut, a little presence; squeeze for more cut-through. the sounds play clean after the eq.",
+      "list": [
+        { "effect": "HIGHPASS", "cutoff": 0.1 },
+        { "effect": "EQUALIZER", "cutoff": 0.62, "Q": 0.35, "gain": 0.25 },
+        { "effect": "SAMPLE" }
+      ],
+      "handle": { "row": 1, "param": "gain", "depth": 0.5 },
+      "trigger": { "row": 2 }
+    },
+    {
+      "pos": 1,
+      "name": "TANNOY",
+      "comment": "a horn speaker for announcements; squeeze to push the voice harder into it. the sounds stay clean.",
+      "list": [
+        { "effect": "DIST", "amount": 3, "mix": 0.35, "lowpass-cutoff": 0.55, "highpass-cutoff": 0.3 },
+        { "effect": "REVERB", "time": 0.35, "wet-level": 0.3, "dry-level": 1.0, "highpass-cutoff": 0.3 },
+        { "effect": "SAMPLE" }
+      ],
+      "handle": { "row": 0, "param": "mix", "depth": 0.5 },
+      "trigger": { "row": 2 }
+    }
+  ]
+}
