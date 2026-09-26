@@ -107,6 +107,7 @@ export const SKILLS: Skill[] = [
       'The route is: download the files, plug the mic into the computer with a cable, drag the files onto the disk that appears, eject it, unplug.',
       'The disk is called "fx-mic disk" on a standalone mic and "ting boot" on the one that comes with the EP-40 RIDDIM.',
       'Say "the same as a memory stick" — that is the comparison that lands.',
+      'If they delete old files from the disk, tell them to empty the bin (the Trash on a Mac) before ejecting. Deleted files stay on the disk until then, still use the 1 MB, and the mic reports there is not enough space. Heard on real hardware.',
       'Never claim this app can write to their mic. It writes to a practice copy on this computer; the real thing is a drag and drop they do themselves.',
       'Always mention how to recover the mic if it will not start, before they write anything.',
     ],

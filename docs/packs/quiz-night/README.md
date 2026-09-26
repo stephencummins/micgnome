@@ -13,7 +13,8 @@ The orange button's first two slots are HOST (clean, a little presence) and TANN
 announcements). Both put SAMPLE last, so the sounds play dry whatever the voice is doing.
 
 Load it: plug the mic in, copy `config.json` and the four wavs to the top level of its disk
-(replacing what is there), eject. Needs firmware 1.0.9 or later for `duck`; flash 1.1.2.
+(replacing what is there). If you deleted old files, empty the bin before ejecting: until you do,
+they still use the mic's 1 MB and it says there is not enough space. Then eject. Needs firmware 1.0.9 or later for `duck`; flash 1.1.2.
 
 Every sound is synthesised by `make_sounds.py` (numpy), so nothing here is anyone's recording.
 24 kHz, 16-bit mono: about 800 KB of the mic's 1 MB.

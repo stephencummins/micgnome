@@ -35,7 +35,9 @@ export function Downloads({
       <p className="label m-0 leading-relaxed">
         for the real mic: plug it in with a usb-c cable and a drive appears, like a memory stick —{' '}
         <b className="font-medium">fx-mic disk</b>, or <b className="font-medium">ting boot</b> if yours came
-        with an ep–40 riddim. download these, drag them onto that drive, then eject it.
+        with an ep–40 riddim. download these, drag them onto that drive, then eject it. if you delete old
+        files from it first, empty the bin (the trash on a mac) before ejecting: until then they still use the
+        mic’s 1 mb, and it says there is not enough space.
       </p>
       <ul className="m-0 mt-1.5 flex list-none flex-wrap gap-x-4 gap-y-1 p-0">
         {links.map((l) =>

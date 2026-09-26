@@ -50,7 +50,7 @@ export const STEPS: Step[] = [
   {
     title: 'put it on the mic',
     where: 'the cable, then the links under write',
-    body: 'take the bottom cover off the mic, plug it into your computer with a usb-c cable (the small oval plug on most new phones and laptops, not the older iphone one) and push the handle so it is switched on. a drive called fx-mic disk appears, just like a memory stick. click the download links under write, drag those files from your downloads folder onto fx-mic disk, then eject it the way you would a memory stick. the mic restarts with your pack. if it ever will not start, hold the two small buttons while switching it on — white + grey, or green + white if yours came with an ep–40 riddim — and the disk comes back so you can fix or delete config.json.',
+    body: 'take the bottom cover off the mic, plug it into your computer with a usb-c cable (the small oval plug on most new phones and laptops, not the older iphone one) and push the handle so it is switched on. a drive called fx-mic disk appears, just like a memory stick. click the download links under write, drag those files from your downloads folder onto fx-mic disk, then eject it the way you would a memory stick. if you delete old files off the disk, empty the bin too, or they keep taking up space and the mic says it is full. the mic restarts with your pack. if it ever will not start, hold the two small buttons while switching it on — white + grey, or green + white if yours came with an ep–40 riddim — and the disk comes back so you can fix or delete config.json.',
   },
   {
     title: 'make it yours, send it in',

@@ -397,7 +397,9 @@ because it is the sentence someone will be hunting for in a hurry.
 `src/bench/Downloads.tsx`. Nothing in the deployed site writes to hardware. Under the write
 button sit download links for `config.json` and every wav in the pack; the instruction
 beside them is the memory-stick one — plug in over USB-C, a drive called *fx-mic disk*
-appears, drag the files on, eject. The links are struck through while the verdict has
+appears, drag the files on, eject. Files deleted from the disk sit in its bin until it is emptied,
+still using the 1 MB, and the mic then reports there is not enough space (found on hardware,
+26 Sep 2026), so the instruction says to empty the bin. The links are struck through while the verdict has
 errors, because this is the file that stops a mic booting. Downloading `config.json` is
 what marks step six done.
 
