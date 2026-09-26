@@ -221,7 +221,7 @@ export const LIBRARY: Pack[] = [
           comment: 'thin, telegraphic, and it repeats — squeeze for more repeats',
           list: [
             { effect: 'SAMPLE' },
-            { effect: 'EQUALISER', cutoff: 0.62, q: 0.85, gain: 0.7 },
+            { effect: 'EQUALIZER', cutoff: 0.62, Q: 0.85, gain: 0.7 },
             {
               effect: 'DELAY',
               time: 0.45,
@@ -315,7 +315,7 @@ export const LIBRARY: Pack[] = [
           list: [
             { effect: 'SAMPLE' },
             { effect: 'DIST', amount: 5, mix: 0.7, 'lowpass-cutoff': 0.7 },
-            { effect: 'EQUALISER', cutoff: 0.35, q: 0.4, gain: -0.4 },
+            { effect: 'EQUALIZER', cutoff: 0.35, Q: 0.4, gain: -0.4 },
           ],
           handle: { row: 2, param: 'gain', depth: 1.0 },
           trigger: { row: 0 },
@@ -341,7 +341,7 @@ export const LIBRARY: Pack[] = [
           comment: 'a notch wandering up and down the voice; squeeze to sweep it faster',
           // No allpass on this mic, so a phaser is approximated by sweeping a
           // deep EQ notch — which is the part of a phaser you actually hear.
-          list: [{ effect: 'SAMPLE' }, { effect: 'EQUALISER', cutoff: 0.35, q: 0.75, gain: -0.7 }],
+          list: [{ effect: 'SAMPLE' }, { effect: 'EQUALIZER', cutoff: 0.35, Q: 0.75, gain: -0.7 }],
           lfo: { row: 1, param: 'cutoff', depth: 0.4, shape: 'sine', speed: 0.7 },
           handle: { target: 'lfo', param: 'speed', depth: 5 },
           trigger: { row: 0 },
@@ -420,7 +420,7 @@ export const LIBRARY: Pack[] = [
           // censor beep is a beep and the horn is a horn.
           list: [
             { effect: 'HIGHPASS', cutoff: 0.1 },
-            { effect: 'EQUALISER', cutoff: 0.62, q: 0.35, gain: 0.25 },
+            { effect: 'EQUALIZER', cutoff: 0.62, Q: 0.35, gain: 0.25 },
             { effect: 'SAMPLE' },
           ],
           handle: { row: 1, param: 'gain', depth: 0.5 },

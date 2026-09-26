@@ -48,7 +48,7 @@ const EFFECT_PATHS: Record<string, React.ReactNode> = {
   // a wave that has been pushed too hard
   DIST: <path d="M2 12l2.5-7 2 13 2.5-14 2 15 2.5-13 2 11 2.5-9 2 8 2-4" />,
   // one peaking band on a flat line
-  EQUALISER: <path d="M2 16h5c2 0 2.5-9 5-9s3 9 5 9h5" />,
+  EQUALIZER: <path d="M2 16h5c2 0 2.5-9 5-9s3 9 5 9h5" />,
   // the voice and its shifted twin
   HARMONY: (
     <>
@@ -99,7 +99,7 @@ const FAMILY: Record<string, string> = {
   BALANCE: 'text-space',
   LOWPASS: 'text-filter',
   HIGHPASS: 'text-filter',
-  EQUALISER: 'text-filter',
+  EQUALIZER: 'text-filter',
   DELAY: 'text-space',
   REVERB: 'text-space',
   HARMONY: 'text-pitch',

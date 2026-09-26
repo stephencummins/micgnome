@@ -16,6 +16,7 @@ import {
   LFO_SHAPES,
   LIMITS,
   PLAYMODES,
+  SPELLINGS,
   effectByLooseName,
   effectByName,
   paramByLooseName,
@@ -111,14 +112,6 @@ function validateSamples(c: Collector, samples: unknown, files?: DiskFile[]) {
     } else {
       if (!s.file.toLowerCase().endsWith('.wav')) {
         c.error('sample-not-wav', join(path, 'file'), `"${s.file}" is not a .wav — the mic only reads wav files.`)
-      }
-      if (!LIMITS.audio.names.includes(s.file.toLowerCase() as never)) {
-        c.warn(
-          'wav-name',
-          join(path, 'file'),
-          `The guide names the sample files ${LIMITS.audio.names.join(', ')}; this one is "${s.file}".`,
-          AMBIGUOUS.sampleNames,
-        )
       }
       if (files && !files.some((f) => f.name.toLowerCase() === String(s.file).toLowerCase())) {
         c.error(
@@ -240,10 +233,21 @@ function validateChain(c: Collector, list: unknown, path: string): (string | und
       return
     }
 
+    const respelled = SPELLINGS[raw.toUpperCase()]
     const exact = effectByName(raw)
-    const loose = effectByLooseName(raw)
+    const loose = effectByLooseName(respelled ?? raw)
 
-    if (!exact && loose) {
+    if (respelled && loose) {
+      // Our own old spelling. The readme prints the name, so this is TE being
+      // explicit — but refusing every pack made before the fix helps nobody.
+      c.warn(
+        'effect-spelling',
+        join(rp, 'effect'),
+        `"${raw}" is spelled "${loose.name}" in the mic's own readme.`,
+        `Write "${loose.name}" — the mic may not recognise "${raw}".`,
+      )
+      rows.push(loose.name)
+    } else if (!exact && loose) {
       // The guide is explicit: uppercase is mandatory. This is an error, not a nag.
       c.error(
         'effect-case',
@@ -485,7 +489,9 @@ function validateParamRef(
     return
   }
   const guess = nearest(param, spec.params.map((x) => x.name))
-  c.error(
+  // A warning, not a refusal: TE's own example in the readme points an LFO at
+  // "echo" on a SAMPLE row, and nothing says a pointer to nowhere stops a boot.
+  c.warn(
     'mod-param-missing',
     join(bp, 'param'),
     `Row ${row} is ${effectName}, which has no "${param}" to modulate.`,
@@ -598,7 +604,12 @@ function validateOrphanWavs(c: Collector, samples: unknown, files?: DiskFile[]) 
       .map((s) => (isObject(s) && typeof s.file === 'string' ? s.file.toLowerCase() : undefined))
       .filter((f): f is string => f !== undefined),
   )
-  const orphans = files.filter((f) => f.name.toLowerCase().endsWith('.wav') && !named.has(f.name.toLowerCase()))
+  // With no "samples" block, 1.wav to 4.wav replace the factory sounds on their
+  // own — the readme says so — so those are not orphans.
+  const byName = Array.isArray(samples) ? [] : (LIMITS.audio.names as readonly string[])
+  const orphans = files.filter(
+    (f) => f.name.toLowerCase().endsWith('.wav') && !named.has(f.name.toLowerCase()) && !byName.includes(f.name.toLowerCase()),
+  )
   if (!orphans.length) return
   c.warn(
     'wav-not-listed',

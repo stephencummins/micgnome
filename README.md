@@ -201,12 +201,17 @@ necessary) and turned up four things the tool did not have:
   koii or an audio mixer, not directly to headphones", where 2 VRMS "can be very loud". That
   is the only warning in any of this about a person rather than a device, so it now sits
   beside the recovery note in the manual and in the guide tab.
-- **The guide names the sample files `1.wav` to `4.wav`.** Mic Gnome writes whatever the
-  dropped file was called (`Bench.tsx` uses `file.name`). If the firmware only reads the
-  numbered names, every pack with custom filenames is silent and says nothing about why —
-  so a `wav-name` warning now says so. It is a warning, not a rename: the guide never states
-  that other names fail, and silently renaming somebody's file would be its own surprise.
-  **First thing to check on hardware, alongside BUS.**
+- **Sample names, settled by the readme on the mic's own disk** (`docs/factory-disk/`,
+  copied the day the unit arrived). Files called `1.wav`–`4.wav` replace the factory sounds
+  with no config at all; a `"samples"` block may name any file, in a folder or not — TE's
+  own example uses `samples/whistle1.wav`. So the old `wav-name` warning is gone, and a wav
+  only counts as unused when nothing names it.
+- **The same readme corrected three things:** the equaliser is `EQUALIZER` with a capital
+  `Q` (Mic Gnome wrote `EQUALISER`; the old spelling now warns `effect-spelling`),
+  LOWPASS and HIGHPASS take a `Q` too, and BALANCE is TE's, range 0–1. Its own example
+  modulates `echo` on a SAMPLE row, so modulating a parameter a block lacks is now a
+  warning. It calls the recovery buttons green + white; the standalone mic's are orange,
+  white and grey, so RECOVERY still says white + grey.
 
 ### What we know, and who told us
 

@@ -110,6 +110,7 @@ function buildRow(
       const node = context.createBiquadFilter()
       node.type = 'lowpass'
       track('cutoff', (v) => (node.frequency.value = lowpassHz(v)))
+      track('Q', (v) => (node.Q.value = eqQ(v)))
       return { input: node, output: node }
     }
 
@@ -117,14 +118,15 @@ function buildRow(
       const node = context.createBiquadFilter()
       node.type = 'highpass'
       track('cutoff', (v) => (node.frequency.value = highpassHz(v)))
+      track('Q', (v) => (node.Q.value = eqQ(v)))
       return { input: node, output: node }
     }
 
-    case 'EQUALISER': {
+    case 'EQUALIZER': {
       const node = context.createBiquadFilter()
       node.type = 'peaking'
       track('cutoff', (v) => (node.frequency.value = eqHz(v)))
-      track('q', (v) => (node.Q.value = eqQ(v)))
+      track('Q', (v) => (node.Q.value = eqQ(v)))
       track('gain', (v) => (node.gain.value = eqGainDb(v)))
       return { input: node, output: node }
     }

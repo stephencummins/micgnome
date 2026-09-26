@@ -176,10 +176,7 @@ describe('a config known to run on the hardware', () => {
     expect(again.presets[2].lfo.mpy).toBe(0.5)
   })
 
-  it('accepts BALANCE, which is not in the guide at all', () => {
-    // Three BALANCE rows in a preset that demonstrably plays. Refusing them
-    // would be the validator refusing a working file, which is the one thing
-    // it must never do.
+  it('accepts BALANCE, which the mic\'s own readme lists', () => {
     const report = validate({
       name: 'X',
       presets: [{ list: [{ effect: 'BALANCE', balance: 1.0 }, { effect: 'SAMPLE' }], trigger: { row: 1 } }],
@@ -188,15 +185,12 @@ describe('a config known to run on the hardware', () => {
     expect(errors(report)).toEqual([])
   })
 
-  it('doubts a BALANCE value it cannot place, but never refuses it', () => {
-    // We read BALANCE as 0 to 1. That reading is ours, not TE's, so a value
-    // outside it is our uncertainty and can only ever be a warning.
+  it('holds BALANCE to the range the readme gives it', () => {
     const report = validate({
       name: 'X',
       presets: [{ list: [{ effect: 'BALANCE', balance: -1.0 }, { effect: 'SAMPLE' }], trigger: { row: 1 } }],
     })
-    expect(errors(report)).toEqual([])
-    expect(codes(report)).toContain('param-range-unverified')
+    expect(codes(report)).toContain('param-out-of-range')
   })
 
   it('warns about SAMPLE on bus 2, which a player reports is silent', () => {
@@ -322,11 +316,11 @@ describe('the configs that stop the mic booting', () => {
     expect(d.message).toContain('the chain has 1 row')
   })
 
-  it('rejects modulation of a parameter the target effect does not have', () => {
+  it('warns about modulation of a parameter the target effect does not have', () => {
     const report = validate({
       presets: [{ list: [{ effect: 'LOWPASS' }, { effect: 'SAMPLE' }], handle: { row: 0, param: 'mix', depth: 1 } }],
     })
-    const d = errors(report).find((x) => x.code === 'mod-param-missing')!
+    const d = warnings(report).find((x) => x.code === 'mod-param-missing')!
     expect(d.message).toContain('LOWPASS')
     expect(d.fix).toContain('cutoff')
   })
@@ -431,5 +425,88 @@ describe('the shape of the report', () => {
     expect(validate([]).ok).toBe(false)
     expect(validate('nope').ok).toBe(false)
     expect(validate(null).ok).toBe(false)
+  })
+})
+
+/**
+ * The example printed in readme.pdf on the mic's own disk (docs/factory-disk/),
+ * copied as TE wrote it. It is TE's file, so if the validator refuses it, the
+ * validator is wrong.
+ */
+const README_EXAMPLE = {
+  name: 'We count from zero',
+  samples: [
+    { pos: 1, file: 'samples/whistle1.wav', playmode: 'oneshot', duck: 1.0 },
+    { pos: 0, file: 'live1/loop.wav', playmode: 'startstop' },
+    { file: 'horn.wav', playmode: 'hold' },
+    { file: 'live1/shottis.wav', playmode: 'oneshot' },
+  ],
+  presets: [
+    {
+      pos: 0,
+      list: [
+        { effect: 'HARMONY', pitch: 2.0, BUS: 2 },
+        { effect: 'REVERB', time: 0.1, 'dry-level': 1.0 },
+        { effect: 'DELAY', time: 0.5, 'dry-level': 0.0, echo: 0.5, BUS: 1 },
+        { effect: 'SAMPLE', speed: 1.0 },
+      ],
+      handle: { row: 1, param: 'time', depth: 0.6 },
+      shake: { row: 2, param: 'echo', depth: 1.0 },
+      lfo: { row: 3, param: 'echo', depth: 1.0, mpy: 1.0, shape: 'random', phase: 0, speed: 4.0 },
+      trigger: { row: 3 },
+    },
+    {
+      pos: 2,
+      list: [
+        { effect: 'HARMONY', pitch: 2.0 },
+        { effect: 'SAMPLE', speed: 2.0 },
+        { effect: 'REVERB', time: 1.0, spring: 0.5 },
+        { effect: 'DELAY', time: 0.1, echo: 0.5 },
+      ],
+      handle: { row: 0, param: 'pitch', depth: -1.0 },
+      trigger: { row: 1 },
+    },
+  ],
+}
+
+describe('the readme on the mic\'s own disk', () => {
+  it('does not refuse TE\'s own example', () => {
+    expect(errors(validate(README_EXAMPLE))).toEqual([])
+  })
+
+  it('lets a samples block name any file, in a folder or not', () => {
+    expect(codes(validate(README_EXAMPLE))).not.toContain('wav-name')
+  })
+
+  it('spells the equaliser with a Z and a capital Q', () => {
+    const report = validate({
+      name: 'X',
+      presets: [{ list: [{ effect: 'EQUALIZER', cutoff: 0.5, Q: 0.5, gain: -0.5 }] }],
+    })
+    expect(codes(report)).not.toContain('unknown-effect')
+    expect(codes(report)).not.toContain('unknown-param')
+    expect(codes(report)).not.toContain('param-case')
+  })
+
+  it('names our old EQUALISER spelling rather than calling it unknown', () => {
+    const report = validate({ name: 'X', presets: [{ list: [{ effect: 'EQUALISER', cutoff: 0.5 }] }] })
+    expect(codes(report)).toContain('effect-spelling')
+    expect(codes(report)).not.toContain('unknown-effect')
+  })
+
+  it('gives both filters a Q', () => {
+    const report = validate({
+      name: 'X',
+      presets: [{ list: [{ effect: 'LOWPASS', cutoff: 0.5, Q: 0.7 }, { effect: 'HIGHPASS', cutoff: 0.1, Q: 0.2 }] }],
+    })
+    expect(codes(report)).not.toContain('unknown-param')
+  })
+
+  it('lets 1.wav to 4.wav play with no samples block at all', () => {
+    const files = [{ name: '1.wav', bytes: 1000 }, { name: 'extra.wav', bytes: 1000 }]
+    const report = validate({ name: 'X', presets: [{ list: [{ effect: 'LOWPASS' }] }] }, { files })
+    const orphan = warnings(report).find((d) => d.code === 'wav-not-listed')!
+    expect(orphan.message).toContain('extra.wav')
+    expect(orphan.message).not.toContain('1.wav')
   })
 })

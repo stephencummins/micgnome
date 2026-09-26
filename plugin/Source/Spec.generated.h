@@ -42,9 +42,9 @@ inline constexpr Param distParams[] = {
     { "highpass-cutoff", 0.0f, 1.0f, 0.0f },
 };
 
-inline constexpr Param equaliserParams[] = {
+inline constexpr Param equalizerParams[] = {
     { "cutoff", 0.0f, 1.0f, 0.5f },
-    { "q", 0.0f, 1.0f, 0.5f },
+    { "Q", 0.0f, 1.0f, 0.5f },
     { "gain", -1.0f, 1.0f, 0.0f },
 };
 
@@ -55,10 +55,12 @@ inline constexpr Param harmonyParams[] = {
 
 inline constexpr Param lowpassParams[] = {
     { "cutoff", 0.0f, 1.0f, 1.0f },
+    { "Q", 0.0f, 1.0f, 0.0f },
 };
 
 inline constexpr Param highpassParams[] = {
     { "cutoff", 0.0f, 1.0f, 0.0f },
+    { "Q", 0.0f, 1.0f, 0.0f },
 };
 
 inline constexpr Param sampleParams[] = {
@@ -92,15 +94,15 @@ inline constexpr Param balanceParams[] = {
 inline constexpr Effect effects[] = {
     { "DELAY", "delay", true, false, delayParams, 8 },
     { "DIST", "dist", false, false, distParams, 4 },
-    { "EQUALISER", "equaliser", false, false, equaliserParams, 3 },
+    { "EQUALIZER", "equalizer", false, false, equalizerParams, 3 },
     { "HARMONY", "harmony", true, false, harmonyParams, 2 },
-    { "LOWPASS", "lowpass", false, false, lowpassParams, 1 },
-    { "HIGHPASS", "highpass", false, false, highpassParams, 1 },
+    { "LOWPASS", "lowpass", false, false, lowpassParams, 2 },
+    { "HIGHPASS", "highpass", false, false, highpassParams, 2 },
     { "SAMPLE", "sample", false, false, sampleParams, 4 },
     { "REVERB", "reverb", true, false, reverbParams, 5 },
     { "RING", "ring", false, false, ringParams, 2 },
     { "SSB", "ssb", true, false, ssbParams, 1 },
-    { "BALANCE", "balance", false, true, balanceParams, 1 },
+    { "BALANCE", "balance", false, false, balanceParams, 1 },
 };
 
 inline constexpr int numEffects = 11;

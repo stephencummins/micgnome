@@ -6,7 +6,7 @@ namespace skin
 {
 juce::Colour family (const juce::String& effect)
 {
-    if (effect == "LOWPASS" || effect == "HIGHPASS" || effect == "EQUALISER") return filter;
+    if (effect == "LOWPASS" || effect == "HIGHPASS" || effect == "EQUALIZER") return filter;
     if (effect == "DELAY" || effect == "REVERB" || effect == "BALANCE") return space;
     if (effect == "HARMONY" || effect == "SSB") return pitch;
     if (effect == "DIST" || effect == "RING") return drive;

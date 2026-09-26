@@ -7,6 +7,14 @@
  * the `AMBIGUOUS` list at the bottom.
  *
  * Source: https://teenage.engineering/guides/ep-2350
+ *
+ * Second source: the `readme.pdf` the mic ships on its own disk (dated 14 Jun
+ * 2026, copied to docs/factory-disk/). It is TE's text and it sits next to the
+ * firmware, so where it names something exactly — an effect's spelling, a
+ * parameter — it wins over the web guide. It is not right about everything: it
+ * calls the buttons orange, green and white, and the standalone mic's are
+ * orange, white and grey (see RECOVERY); and it calls the volume trimmer under
+ * the lower lid green, where on the standalone it is orange (LINE_OUT.trim).
  */
 
 export interface ParamSpec {
@@ -74,13 +82,15 @@ export const EFFECTS: EffectSpec[] = [
     ],
   },
   {
-    name: 'EQUALISER',
-    label: 'equaliser',
+    // Spelled with a Z and with a capital Q, as the mic's own readme prints them.
+    // Mic Gnome wrote EQUALISER until the hardware arrived — see SPELLINGS.
+    name: 'EQUALIZER',
+    label: 'equalizer',
     blurb: 'single peaking band',
     oncePerChain: false,
     params: [
       p('cutoff', 0.0, 1.0, 0.5),
-      p('q', 0.0, 1.0, 0.5),
+      p('Q', 0.0, 1.0, 0.5),
       p('gain', -1.0, 1.0, 0.0, 'the only parameter on the device that goes negative besides SSB frequency'),
     ],
   },
@@ -99,14 +109,14 @@ export const EFFECTS: EffectSpec[] = [
     label: 'lowpass',
     blurb: 'low-pass filter',
     oncePerChain: false,
-    params: [p('cutoff', 0.0, 1.0, 1.0)],
+    params: [p('cutoff', 0.0, 1.0, 1.0), p('Q', 0.0, 1.0, 0.0, 'resonance — in the readme, not the guide')],
   },
   {
     name: 'HIGHPASS',
     label: 'highpass',
     blurb: 'high-pass filter',
     oncePerChain: false,
-    params: [p('cutoff', 0.0, 1.0, 0.0)],
+    params: [p('cutoff', 0.0, 1.0, 0.0), p('Q', 0.0, 1.0, 0.0, 'resonance — in the readme, not the guide')],
   },
   {
     name: 'SAMPLE',
@@ -153,25 +163,31 @@ export const EFFECTS: EffectSpec[] = [
     params: [p('frequency', -20000.0, 20000.0, 0.0, 'hz, and it goes negative')],
   },
   /**
-   * BALANCE is NOT in the guide's effect table. It appears as a chain row in a
-   * working config published by a player with an EP-2350 TING, used three times
-   * in one preset to pan a bus hard right, a bus hard left, and then to set the
-   * mix between them. We list it because the alternative is refusing a file that
-   * demonstrably runs — the one failure this validator exists to avoid.
-   * The parameter name and its range are our reading, not TE's: 'balance' to
-   * match the identically-named parameter on DELAY and SAMPLE, 0 left, 1 right.
+   * BALANCE is not in the web guide's effect table, and for a while it rested on
+   * a player's config (FIELD_REPORTS['ep2350-ting-config']). The mic's own readme
+   * lists it — one parameter, 'balance', 0.0 to 1.0 — so it is now as solid as
+   * any other block. Which end is left is still our reading.
    */
   {
     name: 'BALANCE',
     label: 'balance',
     blurb: 'pans this point of the chain — left, right, or between two buses',
     oncePerChain: false,
-    unverified: 'ep2350-ting-config',
-    params: [p('balance', 0.0, 1.0, 0.5, '0 is hard left, 1 is hard right — our reading, not the guide’s')],
+    params: [p('balance', 0.0, 1.0, 0.5, '0 is hard left, 1 is hard right — the range is TE’s, the direction is our reading')],
   },
 ]
 
 export const EFFECT_NAMES = EFFECTS.map((e) => e.name)
+
+/**
+ * Effect names Mic Gnome itself used to write, and what they are called now.
+ * Packs and share links made before the fix still carry the old name, so the
+ * validator recognises it and says what to write instead rather than calling
+ * it an effect that does not exist.
+ */
+export const SPELLINGS: Record<string, string> = {
+  EQUALISER: 'EQUALIZER',
+}
 const BY_NAME = new Map(EFFECTS.map((e) => [e.name, e]))
 
 export const effectByName = (name: string): EffectSpec | undefined => BY_NAME.get(name)
@@ -233,6 +249,8 @@ export const LINE_OUT = {
   what: 'stereo line output',
   maxLevel: '8 dBu, 2 VRMS',
   snr: '98 dBA',
+  /** Seen on the unit, 26 Sep 2026: bottom left under the lower lid, a cross slot. */
+  trim: 'the round orange dial with a cross slot under the lower lid sets the output level',
   warning:
     'Designed for a K.O. II or an audio mixer, not for headphones directly — at 2 VRMS it can be very loud.',
 } as const
@@ -248,9 +266,10 @@ export const LIMITS = {
   audio: {
     extensions: ['.wav'],
     /**
-     * The guide names the files on the disk "1.wav, 2.wav, 3.wav and 4.wav".
-     * It does not say whether the firmware will read any other name, so this is
-     * a warning and never a refusal — see AMBIGUOUS.sampleNames.
+     * The readme settles what these are for: files called 1.wav to 4.wav replace
+     * the factory samples on their own, with no config.json at all. A config's
+     * "samples" block may name any file, in a folder or not ("samples/whistle1.wav"
+     * is TE's own example), so a name is only a problem when nothing lists it.
      */
     names: ['1.wav', '2.wav', '3.wav', '4.wav'],
     bitDepths: [8, 16, 24, 32],
@@ -272,6 +291,10 @@ export const LIMITS = {
 /**
  * Recovery instruction, from chapter 7.2. This belongs anywhere the user can
  * write to the device, not buried in a manual.
+ *
+ * The readme on the mic's own disk says green + white — on a standalone mic,
+ * whose buttons are orange, white and grey (checked on the unit, 26 Sep 2026).
+ * It reads as the TING's text shipped on both, so it does not move this.
  *
  * The colours differ between the two mics. TE's guide says white + grey; the
  * unofficial editor at ting.supervisedmusic.com says green + white, and its author
@@ -302,11 +325,10 @@ export const FIELD_REPORTS = {
     short: 'A four-preset config filmed running on a real TING, the mic inside the EP-40 RIDDIM.',
     what:
       'A four-preset config walked through running on a real EP-2350 TING — the mic ' +
-      'bundled with the EP-40 RIDDIM. Same model number as the standalone unit; the two ' +
-      'differ in labelling and in the presets they ship with (the TING is sold on echo, ' +
-      'echo + spring, pixie and robot), which are built from these same blocks. Whether ' +
-      'they differ in any other way is not known, so everything sourced here stays a ' +
-      'warning until it has been heard on a standalone mic.',
+      'bundled with the EP-40 RIDDIM. Same model number as the standalone unit, and the ' +
+      'standalone ships the same presets (clean, echo, spring, pixie, robot, per the readme ' +
+      'on its own disk); the two differ in button colours at least. Everything sourced here ' +
+      'stays a warning until it has been heard on a standalone mic.',
     where: 'https://www.youtube.com/watch?v=C2KM5qBMkKw',
     when: '2026-09',
   },
@@ -328,8 +350,7 @@ export const FIELD_REPORTS = {
       'list is read out of the device rather than transcribed from the guide: it confirms ' +
       'BALANCE as a real effect and "mpy" as a real LFO key, and adds a ceiling of 16 ' +
       'effects per preset. Note it is still one person\'s summary of the firmware, not the ' +
-      'firmware: it lists no EQUALISER although the guide documents one, which is why we ' +
-      'keep EQUALISER rather than deleting it on this evidence.',
+      'firmware: it lists no EQUALIZER, and the readme on the mic\'s own disk does.',
     where: 'https://github.com/brunomarinho/labs-te-ting-preset/blob/main/docs/REPL-API.md',
     when: '2026-09',
   },
@@ -339,10 +360,9 @@ export type FieldReportKey = keyof typeof FIELD_REPORTS
 
 export const AMBIGUOUS = {
   bus: 'The guide describes BUS in a single line and does not define how buses are summed.',
-  sampleNames:
-    'The guide names the sample files 1.wav to 4.wav and never says whether the firmware ' +
-    'will read any other name. If it will not, a pack built from files with their own names ' +
-    'is silent and gives no reason why.',
+  reverbSpring:
+    'The readme\'s table calls REVERB\'s parameter "spring-mix", and its own example a few ' +
+    'lines above writes "spring". One of them is a typo, and nobody has heard which.',
   sampleOnBus: 'The guide is silent on SAMPLE inside a bus; a player reports SAMPLE on BUS 2 gives no playback, and puts it on BUS 1 instead.',
   triggerOnEffect:
     'The guide only ever points "trigger" at a SAMPLE row. A player reports it works on an ' +

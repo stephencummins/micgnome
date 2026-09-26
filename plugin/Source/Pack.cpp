@@ -199,7 +199,7 @@ Pack starter()
     close.name = "Close";
     close.comment = "A voice, tidied. The handle opens the top end.";
     close.list = { row ("HIGHPASS", { { "cutoff", 0.18f } }),
-                   row ("EQUALISER", { { "cutoff", 0.55f }, { "q", 0.25f }, { "gain", 0.35f } }),
+                   row ("EQUALIZER", { { "cutoff", 0.55f }, { "Q", 0.25f }, { "gain", 0.35f } }),
                    row ("LOWPASS", { { "cutoff", 0.75f } }) };
     close.handle = { 2, "cutoff", 0.25f, false };
 

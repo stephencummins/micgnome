@@ -33,7 +33,7 @@ const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 const FAMILY: Record<string, string> = {
-  LOWPASS: 'filter', HIGHPASS: 'filter', EQUALISER: 'filter',
+  LOWPASS: 'filter', HIGHPASS: 'filter', EQUALIZER: 'filter',
   DELAY: 'space', REVERB: 'space', BALANCE: 'space',
   HARMONY: 'pitch', SSB: 'pitch',
   DIST: 'drive', RING: 'drive',
@@ -49,7 +49,7 @@ const num = (n: number) => (Number.isInteger(n) ? String(n) : String(n))
 const AMBIGUOUS_LABEL: Record<keyof typeof AMBIGUOUS, string> = {
   bus: 'how a BUS sums',
   sampleOnBus: 'SAMPLE inside a bus',
-  sampleNames: 'what a sample file may be called',
+  reverbSpring: 'what the reverb\u2019s spring is called',
   triggerOnEffect: 'trigger on an effect row',
   trigger: 'whether a trigger is required',
   paramCase: 'capitalisation of parameters',
@@ -375,7 +375,7 @@ function bookletPages(): string[] {
      button. Each names a <b>row</b> &mdash; a position in that list, counting from zero.</p>`,
 
     // 3-5 — the blocks
-    `<h2>the ${EFFECTS.length} blocks &mdash; 1</h2>${blocksFor('DELAY', 'DIST', 'EQUALISER')}`,
+    `<h2>the ${EFFECTS.length} blocks &mdash; 1</h2>${blocksFor('DELAY', 'DIST', 'EQUALIZER')}`,
     `<h2>the blocks &mdash; 2</h2>${blocksFor('HARMONY', 'LOWPASS', 'HIGHPASS', 'SAMPLE')}`,
     `<h2>the blocks &mdash; 3</h2>${blocksFor('REVERB', 'RING', 'SSB', 'BALANCE')}`,
 

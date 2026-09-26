@@ -484,7 +484,7 @@ inline std::unique_ptr<Block> make (const juce::String& effect)
 {
     if (effect == "LOWPASS")   return std::make_unique<Lowpass>();
     if (effect == "HIGHPASS")  return std::make_unique<Highpass>();
-    if (effect == "EQUALISER") return std::make_unique<Equaliser>();
+    if (effect == "EQUALIZER") return std::make_unique<Equaliser>();
     if (effect == "BALANCE")   return std::make_unique<Balance>();
     if (effect == "DIST")      return std::make_unique<Dist>();
     if (effect == "RING")      return std::make_unique<Ring>();
