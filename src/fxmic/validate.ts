@@ -12,6 +12,7 @@
 import { Collector, nearest, type Report } from './diagnostics'
 import {
   AMBIGUOUS,
+  DUCK,
   EFFECT_NAMES,
   LFO_SHAPES,
   LIMITS,
@@ -31,7 +32,7 @@ const isInt = (v: unknown): v is number => typeof v === 'number' && Number.isInt
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v)
 
 const PRESET_KEYS = ['pos', 'name', 'comment', 'list', 'handle', 'shake', 'lfo', 'trigger']
-const SAMPLE_KEYS = ['pos', 'file', 'playmode']
+const SAMPLE_KEYS = ['pos', 'file', 'playmode', 'duck']
 const TOP_KEYS = ['name', 'comment', 'samples', 'presets']
 /** Fields of the LFO block itself, for `"target": "lfo"` modulation. */
 const LFO_TARGETS = ['speed', 'depth', 'phase']
@@ -138,6 +139,20 @@ function validateSamples(c: Collector, samples: unknown, files?: DiskFile[]) {
         `"${String(s.playmode)}" is not a playmode.`,
         guess ? `Did you mean "${guess}"?` : `Use one of: ${PLAYMODES.join(', ')}.`,
       )
+    }
+
+    // Warnings only: the readme's single example is all TE has published.
+    if (s.duck !== undefined) {
+      if (typeof s.duck !== 'number' || !Number.isFinite(s.duck)) {
+        c.warn('bad-duck', join(path, 'duck'), `"duck" should be a number, not ${JSON.stringify(s.duck)}.`, DUCK.caveat)
+      } else if (s.duck < DUCK.min || s.duck > DUCK.max) {
+        c.warn(
+          'duck-out-of-range',
+          join(path, 'duck'),
+          `"duck" is ${s.duck}; the readme's example uses ${DUCK.max}.`,
+          `Keep it between ${DUCK.min} and ${DUCK.max}. ${DUCK.caveat}`,
+        )
+      }
     }
 
     validateSlot(c, s.pos, join(path, 'pos'), seenPos, i, LIMITS.samples, 'sample')

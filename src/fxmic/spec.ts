@@ -219,6 +219,26 @@ export function paramReadout(effect: string, param: string, value: number): stri
 export const PLAYMODES = ['oneshot', 'hold', 'startstop'] as const
 export type Playmode = (typeof PLAYMODES)[number]
 
+/**
+ * How far the mic turns your voice down while a sample plays. Firmware 1.0.9's
+ * release notes add a "duck setting for sample play", and the only example is
+ * the readme's own, "duck": 1.0 on a oneshot. Neither says what the number
+ * means, so this is our reading, taken from the OP-Z, where duck drops the
+ * other sound under the one playing: 0 leaves the voice alone, 1 takes it out
+ * for as long as the sample runs. Leaving it off is taken as no ducking, since
+ * the readme only sets it on one of its four samples.
+ */
+export const DUCK = {
+  min: 0.0,
+  max: 1.0,
+  default: 0.0,
+  since: '1.0.9',
+  note: 'how far your voice drops while this sample plays — 0 not at all, 1 silent',
+  caveat:
+    'Only the readme\'s example sets "duck", and only to 1.0. The range and direction are ' +
+    'our reading from the OP-Z, not TE\'s; it needs firmware 1.0.9 or later.',
+} as const
+
 export const LFO_SHAPES = ['sine', 'square', 'sawtooth', 'random'] as const
 export type LfoShape = (typeof LFO_SHAPES)[number]
 

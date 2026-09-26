@@ -16,6 +16,7 @@ import { KOFI } from '../site.ts'
 import {
   AMBIGUOUS,
   BUTTONS,
+  DUCK,
   FACTORY_SOUNDS,
   LINE_OUT,
   EFFECTS,
@@ -144,7 +145,7 @@ export const RULES: { title: string; body: string }[] = [
   },
   {
     title: 'a wav the config never names does not play.',
-    body: `Every file needs an entry under <b>samples</b>, with a playmode: ${PLAYMODES.join(', ')}.`,
+    body: `Every file needs an entry under <b>samples</b>, with a playmode: ${PLAYMODES.join(', ')}. Add <b>"duck": ${DUCK.max}</b> to drop your voice while it plays (firmware ${DUCK.since}+).`,
   },
   {
     title: 'check your braces, quotes and commas.',

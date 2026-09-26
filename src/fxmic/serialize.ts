@@ -11,7 +11,7 @@ import { EFFECTS, effectByName } from './spec'
 import type { Config, EffectRow, Modulation, Preset, SampleRef } from './types'
 
 const PRESET_ORDER = ['pos', 'name', 'comment', 'list', 'handle', 'shake', 'lfo', 'trigger'] as const
-const SAMPLE_ORDER = ['pos', 'file', 'playmode'] as const
+const SAMPLE_ORDER = ['pos', 'file', 'playmode', 'duck'] as const
 const MOD_ORDER = ['row', 'target', 'param', 'depth', 'shape', 'speed', 'mpy', 'phase'] as const
 const TOP_ORDER = ['name', 'comment', 'samples', 'presets'] as const
 

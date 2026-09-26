@@ -36,6 +36,7 @@ export type Action =
   | { type: 'add-sample'; file: string; playmode: Playmode }
   | { type: 'remove-sample'; index: number }
   | { type: 'set-playmode'; index: number; playmode: Playmode }
+  | { type: 'set-duck'; index: number; duck: number | undefined }
   | { type: 'load'; config: Config }
 
 export function reduce(state: BenchState, action: Action): BenchState {
@@ -97,6 +98,15 @@ export function reduce(state: BenchState, action: Action): BenchState {
       const samples = (state.config.samples ?? []).map((s, i) =>
         i === action.index ? { ...s, playmode: action.playmode } : s,
       )
+      return { ...state, dirty: true, config: { ...state.config, samples } }
+    }
+
+    case 'set-duck': {
+      const samples = (state.config.samples ?? []).map((s, i) => {
+        if (i !== action.index) return s
+        const { duck: _, ...rest } = s
+        return action.duck === undefined ? rest : { ...rest, duck: action.duck }
+      })
       return { ...state, dirty: true, config: { ...state.config, samples } }
     }
 

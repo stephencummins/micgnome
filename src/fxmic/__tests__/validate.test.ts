@@ -509,4 +509,17 @@ describe('the readme on the mic\'s own disk', () => {
     expect(orphan.message).toContain('extra.wav')
     expect(orphan.message).not.toContain('1.wav')
   })
+
+  it('knows "duck" on a sample, as the readme\'s example uses it', () => {
+    expect(codes(validate(README_EXAMPLE))).not.toContain('unknown-key')
+  })
+
+  it('only warns about a duck out of range or not a number — TE gives one example, not a range', () => {
+    const sample = (duck: unknown) =>
+      validate({ name: 'X', samples: [{ file: 'a.wav', playmode: 'oneshot', duck }], presets: [{ list: [{ effect: 'SAMPLE' }], trigger: { row: 0 } }] })
+    expect(codes(sample(0.5))).not.toContain('duck-out-of-range')
+    expect(warnings(sample(1.5)).map((d) => d.code)).toContain('duck-out-of-range')
+    expect(warnings(sample('full')).map((d) => d.code)).toContain('bad-duck')
+    expect(errors(sample(1.5))).toEqual([])
+  })
 })

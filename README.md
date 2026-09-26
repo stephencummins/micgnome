@@ -212,6 +212,12 @@ necessary) and turned up four things the tool did not have:
   modulates `echo` on a SAMPLE row, so modulating a parameter a block lacks is now a
   warning. It calls the recovery buttons green + white; the standalone mic's are orange,
   white and grey, so RECOVERY still says white + grey.
+- **`duck` on a sample**, from firmware 1.0.9 ("duck setting for sample play") and the
+  readme's example (`"duck": 1.0` on a oneshot). Neither says what the number means, so
+  we read it the way the OP-Z does: 0 leaves your voice alone, 1 drops it out while the
+  sample plays, and leaving it off means no ducking. The bench has a slider for it; the
+  validator only warns on a value outside 0–1 or one that isn't a number. Flash 1.1.2 before
+  trusting any of it — 1.0.9 to 1.1.1 misparse user JSON.
 
 ### What we know, and who told us
 

@@ -1,5 +1,5 @@
 import { khz, type Encoding, type FitPlan } from '../fxmic/fit'
-import { PLAYMODES, type Playmode } from '../fxmic/spec'
+import { DUCK, PLAYMODES, type Playmode } from '../fxmic/spec'
 import type { SampleRef } from '../fxmic/types'
 import type { Audio, WavFormat } from '../fxmic/wav'
 import { envelope } from '../fxmic/wav'
@@ -161,6 +161,20 @@ function Slot({
         ))}
       </div>
       <p className="label mt-1 opacity-70">{PLAYMODE_BLURB[sample.playmode ?? 'oneshot']}</p>
+
+      <label className="label mt-2 flex items-center gap-2">
+        <span>duck</span>
+        <input type="range" min={DUCK.min} max={DUCK.max} step={0.05}
+          value={sample.duck ?? DUCK.default}
+          aria-label={`duck the voice under ${sample.file}`}
+          onChange={(e) => {
+            const v = Number(e.target.value)
+            dispatch({ type: 'set-duck', index, duck: v === DUCK.default ? undefined : v })
+          }}
+          className="flex-1 accent-[var(--color-orange)]" />
+        <span className="data w-8 text-right">{(sample.duck ?? DUCK.default).toFixed(2)}</span>
+      </label>
+      <p className="label mt-1 opacity-70">{DUCK.note} · firmware {DUCK.since}+</p>
     </div>
   )
 }

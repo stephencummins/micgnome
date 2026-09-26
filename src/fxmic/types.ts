@@ -44,6 +44,8 @@ export interface SampleRef {
   pos?: number
   file: string
   playmode?: Playmode
+  /** How far the voice drops while this sample plays, 0-1. Firmware 1.0.9+. */
+  duck?: number
 }
 
 export interface Config {
