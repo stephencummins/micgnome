@@ -223,10 +223,11 @@ export type Playmode = (typeof PLAYMODES)[number]
  * How far the mic turns your voice down while a sample plays. Firmware 1.0.9's
  * release notes add a "duck setting for sample play", and the only example is
  * the readme's own, "duck": 1.0 on a oneshot. Neither says what the number
- * means, so this is our reading, taken from the OP-Z, where duck drops the
- * other sound under the one playing: 0 leaves the voice alone, 1 takes it out
- * for as long as the sample runs. Leaving it off is taken as no ducking, since
- * the readme only sets it on one of its four samples.
+ * means, so we measured it on an EP-2350 on firmware 1.1.2 (26 Sep 2026, the
+ * duck-test pack, a held hum recorded through the line out): 0 left the voice
+ * alone, 0.5 dropped it about 6.5 dB (half the amplitude), 1 silenced it for
+ * as long as the sample ran. Leaving it off is taken as no ducking, since the
+ * readme only sets it on one of its four samples.
  */
 export const DUCK = {
   min: 0.0,
@@ -235,8 +236,8 @@ export const DUCK = {
   since: '1.0.9',
   note: 'how far your voice drops while this sample plays — 0 not at all, 1 silent',
   caveat:
-    'Only the readme\'s example sets "duck", and only to 1.0. The range and direction are ' +
-    'our reading from the OP-Z, not TE\'s; it needs firmware 1.0.9 or later.',
+    'TE don\'t document the range. We measured it on firmware 1.1.2: 0.5 halves your voice, ' +
+    '1.0 silences it. It needs firmware 1.0.9 or later.',
 } as const
 
 export const LFO_SHAPES = ['sine', 'square', 'sawtooth', 'random'] as const

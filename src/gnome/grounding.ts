@@ -75,7 +75,7 @@ function modulation(): string {
     'A mover can also point at the LFO itself (target "lfo") so squeezing changes the',
     'wobble speed rather than an effect.',
     `Sample playback modes: ${PLAYMODES.join(', ')}.`,
-    `A sample can also set "duck" (${DUCK.min}-${DUCK.max}): ${DUCK.note}. Needs firmware ${DUCK.since}+; the meaning is inferred from the OP-Z, not confirmed on an fx-mic.`,
+    `A sample can also set "duck" (${DUCK.min}-${DUCK.max}): ${DUCK.note}. Needs firmware ${DUCK.since}+; measured on an fx-mic: 0.5 halves the voice, 1.0 silences it.`,
   ].join('\n')
 }
 

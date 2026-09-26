@@ -214,8 +214,9 @@ necessary) and turned up four things the tool did not have:
   white and grey, so RECOVERY still says white + grey.
 - **`duck` on a sample**, from firmware 1.0.9 ("duck setting for sample play") and the
   readme's example (`"duck": 1.0` on a oneshot). Neither says what the number means, so
-  we read it the way the OP-Z does: 0 leaves your voice alone, 1 drops it out while the
-  sample plays, and leaving it off means no ducking. The bench has a slider for it; the
+  we measured it (firmware 1.1.2, `docs/test-packs/duck-test`, a held hum through the line
+  out): 0 leaves your voice alone, 0.5 drops it about 6.5 dB, 1 silences it while the
+  sample plays. Leaving it off is assumed to mean no ducking. The bench has a slider for it; the
   validator only warns on a value outside 0–1 or one that isn't a number. Flash 1.1.2 before
   trusting any of it — 1.0.9 to 1.1.1 misparse user JSON.
 
