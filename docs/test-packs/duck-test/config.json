@@ -1,0 +1,39 @@
+{
+  "name": "DUCK TEST",
+  "comment": "Same tone three times; only duck differs. White picks the slot, grey plays it. Talk while it plays. Slot 0 low tone duck 0, slot 1 mid tone duck 0.5, slot 2 high tone duck 1.0. Needs firmware 1.0.9+.",
+  "samples": [
+    {
+      "pos": 0,
+      "file": "duck-0.wav",
+      "playmode": "oneshot",
+      "duck": 0.0
+    },
+    {
+      "pos": 1,
+      "file": "duck-half.wav",
+      "playmode": "oneshot",
+      "duck": 0.5
+    },
+    {
+      "pos": 2,
+      "file": "duck-full.wav",
+      "playmode": "oneshot",
+      "duck": 1.0
+    }
+  ],
+  "presets": [
+    {
+      "pos": 0,
+      "name": "duck test",
+      "list": [
+        {
+          "effect": "SAMPLE",
+          "speed": 1.0
+        }
+      ],
+      "trigger": {
+        "row": 0
+      }
+    }
+  ]
+}
