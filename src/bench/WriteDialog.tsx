@@ -114,8 +114,9 @@ export function WriteDialog({
 
         {stage === 'done' && result && (
           <div className="mt-4 flex flex-col gap-2">
-            <p className="data bg-pass-soft px-2 py-1.5 text-pass">
-              ✓ the mic restarted and loaded {result.packName ?? 'your pack'}
+            <p className="data flex items-center gap-2 bg-pass-soft px-2 py-1.5 text-pass">
+              <svg className="ink-tick" viewBox="0 0 16 16" aria-hidden><path d="M3 8.5l3.2 3L13 4.5" pathLength={1} /></svg>
+              the mic restarted and loaded {result.packName ?? 'your pack'}
             </p>
             {result.report && result.report.diagnostics.length > 0 && (
               <p className="label">{result.report.diagnostics.length} thing(s) still flagged — see the verdict panel</p>

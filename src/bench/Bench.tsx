@@ -270,9 +270,9 @@ export function Bench() {
     <div className="min-h-dvh">
       <header className="sticky top-0 z-20 flex flex-wrap items-baseline justify-between gap-3 border-b border-rule bg-paper px-4 py-2.5">
         <div className="flex items-center gap-2.5">
-          <Mark />
+          <span className="brand-mark"><Mark /></span>
           <b className="tracking-tight">
-            mic <span className="text-orange">gnome</span>
+            mic <span className="wordmark text-orange">gnome</span>
           </b>
           <input aria-label="pack name" value={state.config.name ?? ''}
             onChange={(e) => dispatch({ type: 'set-pack-name', name: e.target.value })}
@@ -372,7 +372,8 @@ export function Bench() {
           <div>
             <div className="label mb-2">handle</div>
             <input type="range" min={0} max={1} step={0.01} value={state.handle}
-              aria-label="handle position"
+              aria-label="handle position" className="fill-track"
+              style={{ '--fill': `${state.handle * 100}%` } as React.CSSProperties}
               onChange={(e) => dispatch({ type: 'set-handle', value: Number(e.target.value) })} />
             <div className="data text-right text-orange">{Math.round(state.handle * 100)}%</div>
           </div>
@@ -397,7 +398,7 @@ export function Bench() {
           <div className="mb-4 flex gap-4 border-b border-rule-soft">
             {(['chain', 'samples', 'library', 'gnome'] as const).map((t) => (
               <button key={t} type="button" onClick={() => chooseTab(t)}
-                className={`data -mb-px border-b-2 px-1 pb-2 ${
+                className={`tab data -mb-px border-b-2 px-1 pb-2 ${
                   tab === t ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
                 }`}>
                 {t === 'gnome' ? 'helper gnome' : t}
@@ -405,7 +406,7 @@ export function Bench() {
             ))}
             <button type="button" onClick={() => (guideOpen ? closeGuide() : setGuideOpen(true))}
               aria-pressed={guideOpen}
-              className={`data -mb-px ml-auto border-b-2 px-1 pb-2 ${
+              className={`tab data -mb-px ml-auto border-b-2 px-1 pb-2 ${
                 guideOpen ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
               }`}>
               how it works

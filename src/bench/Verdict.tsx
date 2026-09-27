@@ -36,7 +36,7 @@ function Line({ d, onJump }: { d: Diagnostic; onJump?: (path: string) => void })
     <Tag
       {...(onJump && d.path ? { onClick: () => onJump(d.path), type: 'button' as const } : {})}
       className={`data block w-full px-2 py-1.5 text-left ${
-        error ? 'bg-orange-soft text-orange' : 'border border-rule-soft text-mute'
+        error ? 'verdict-error bg-orange-soft text-orange' : 'border border-rule-soft text-mute'
       }`}
     >
       <span className="flex gap-2">

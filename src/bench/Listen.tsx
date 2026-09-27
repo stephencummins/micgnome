@@ -188,7 +188,7 @@ export function Listen({ preset, handle }: { preset: Preset; handle: number }) {
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-3">
         <button type="button" onClick={() => (on ? stop() : setOn(true))}
-          className={`label rounded border px-3 py-1 ${
+          className={`listen-btn label rounded border px-3 py-1 ${
             on ? 'border-orange bg-orange text-paper' : 'border-rule hover:border-orange hover:text-orange'
           }`}>
           {on ? 'stop' : 'listen'}

@@ -27,7 +27,7 @@ export function Chain({
 
       {/* The spine: audio enters at the top and falls out of the bottom. */}
       {preset.list.length > 0 && (
-        <div className="relative flex flex-col gap-2 pl-5 before:absolute before:top-0 before:bottom-0 before:left-[7px] before:w-px before:bg-orange/50">
+        <div className="spine relative flex flex-col gap-2 pl-5 before:absolute before:top-0 before:bottom-0 before:left-[7px] before:w-px before:bg-orange/50">
           {preset.list.map((row, i) => (
             <Row
               key={i}
@@ -74,8 +74,8 @@ function Row({
   return (
     // The left edge carries the block's family, the same way the printed manual
     // draws it: filters blue, time and space teal, pitch violet, drive magenta.
-    <div className="relative border border-rule bg-paper p-3"
-      style={{ borderLeftWidth: 2, borderLeftColor: familyVar(row.effect) }}>
+    <div className="chain-row relative border border-rule bg-paper p-3"
+      style={{ borderLeftWidth: 2, borderLeftColor: familyVar(row.effect), '--i': index } as React.CSSProperties}>
       <span aria-hidden className="absolute top-4 -left-4 h-2 w-2 rounded-full border border-orange bg-paper" />
       <div className="flex items-baseline justify-between gap-3">
         {/* Wraps, so on a phone the blurb drops under the name instead of forcing the page wider. */}
