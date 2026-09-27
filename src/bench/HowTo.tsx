@@ -91,6 +91,17 @@ export function HowTo({ onClose, onTour }: { onClose: () => void; onTour?: () =>
         </ol>
 
         <p className="label mt-4 border border-rule p-3 leading-relaxed">
+          <b className="font-medium">hear it before the gig.</b> the mic&rsquo;s line out is a 3.5 mm jack and
+          runs hot (up to +8 dBu); a laptop&rsquo;s headset socket will not even notice it plugged in bare. what
+          works: a 3.5 mm to 1/4&Prime; adapter into an irig 2 (or any guitar interface), the irig&rsquo;s lead into
+          the laptop, headphones in the irig. start with the irig&rsquo;s gain and the mic&rsquo;s orange volume
+          dial low and bring them up; on ours the dial ended near two o&rsquo;clock. in ableton live: settings
+          &rarr; audio, input <i>external microphone</i>, output <i>external headphones</i>, buffer size 32
+          samples (at 128 you hear yourself late); then an audio track on <i>ext. in 1</i>, armed, monitor on{' '}
+          <i>auto</i> &mdash; <i>in</i> works too, but it never plays your recordings back.
+        </p>
+
+        <p className="label mt-4 border border-rule p-3 leading-relaxed">
           <b className="font-medium">there is a paper version.</b> the same blocks, ranges and rules, generated
           from the same source this tool checks against, so it cannot disagree with what you see here.{' '}
           <a href="/zine" target="_blank" rel="noreferrer" className="text-orange underline">

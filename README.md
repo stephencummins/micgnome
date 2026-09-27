@@ -403,6 +403,18 @@ still using the 1 MB, and the mic then reports there is not enough space (found 
 errors, because this is the file that stops a mic booting. Downloading `config.json` is
 what marks step six done.
 
+### Hearing a real mic
+
+The **full guide** (`src/bench/HowTo.tsx`) has a "hear it before the gig" note, from the
+route used to test `duck` and QUIZ NIGHT (26–27 Sep 2026). The line out (3.5 mm, up to
++8 dBu) is not detected by a MacBook headset socket on its own. Through an iRig 2 it is:
+3.5 mm-to-1/4" adapter → iRig guitar in → iRig lead into the headset socket (it presents as
+*External Microphone*), headphones in the iRig. Start with the iRig gain and the orange volume
+dial low; the dial ended near two o'clock. In Ableton Live: input *External Microphone*,
+output *External Headphones*, buffer 32 samples (128 gave a noticeable monitoring lag),
+an audio track on *Ext. In 1*, armed, Monitor *Auto*. Monitor *In* also works while recording
+but silences playback of the takes.
+
 ### Send it in
 
 `src/bench/submit.ts`. The library is read-only, so offering a pack is a hand-off, not an
