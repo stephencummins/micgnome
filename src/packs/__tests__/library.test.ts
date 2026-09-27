@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { describe, expect, it } from 'vitest'
 import { LIBRARY } from '../library'
 import { SIGIL_IDS, hasSigil } from '../../bench/Sigil'
@@ -5,6 +6,11 @@ import { parseConfig } from '../../fxmic/parse'
 import { modulationCurve, serialize } from '../../fxmic/serialize'
 import { EFFECTS, LIMITS, effectByName } from '../../fxmic/spec'
 import { validate } from '../../fxmic/validate'
+import { existsSync, statSync } from 'node:fs'
+import { join } from 'node:path'
+
+const PUBLIC = join(__dirname, '../../../public')
+const HEARD_ON_HARDWARE = ['quiz-night']
 
 describe.each(LIBRARY.map((p) => [p.name, p] as const))('%s', (_name, pack) => {
   it('is clean — no errors and no warnings', () => {
@@ -21,7 +27,16 @@ describe.each(LIBRARY.map((p) => [p.name, p] as const))('%s', (_name, pack) => {
     expect(validate(parsed.value).ok).toBe(true)
   })
 
-  it('carries no samples, so it uses the factory sounds and redistributes nothing', () => {
+  it('carries no samples unless it brings its own sounds, so it redistributes nothing', () => {
+    if (pack.sounds) {
+      // Every wav it names is served, and all of it fits the mic with the config.
+      const dir = join(PUBLIC, pack.sounds)
+      const files = (pack.config.samples ?? []).map((s) => join(dir, s.file))
+      for (const f of files) expect(existsSync(f), f).toBe(true)
+      const total = files.reduce((n, f) => n + statSync(f).size, 0) + serialize(pack.config).length
+      expect(total).toBeLessThan(LIMITS.storageBytes)
+      return
+    }
     expect(pack.config.samples).toBeUndefined()
     expect(serialize(pack.config)).not.toContain('.wav')
   })
@@ -37,9 +52,11 @@ describe.each(LIBRARY.map((p) => [p.name, p] as const))('%s', (_name, pack) => {
     expect(packed.length, `${packed.length} chars`).toBeLessThan(2000)
   })
 
-  it('fills the four slots on the orange button, one each', () => {
+  it('fills the slots on the orange button in order, all four unless its sounds are the point', () => {
+    // QUIZ NIGHT keeps the two presets it was heard with on a mic rather than
+    // gain two that nobody has played.
     const positions = pack.config.presets.map((p) => p.pos)
-    expect(positions).toEqual([0, 1, 2, 3])
+    expect(positions).toEqual(pack.sounds ? positions.map((_, i) => i) : [0, 1, 2, 3])
   })
 
   it('gives every preset a SAMPLE row and a trigger, or the sample button is dead', () => {
@@ -64,11 +81,13 @@ describe.each(LIBRARY.map((p) => [p.name, p] as const))('%s', (_name, pack) => {
     }
   })
 
-  it('says what it is and admits it has not been heard on hardware', () => {
+  it('says what it is, and claims hardware only where it was actually heard', () => {
     expect(pack.after).toBeTruthy()
     expect(pack.blurb.length).toBeGreaterThan(40)
     expect(pack.handle).toBeTruthy()
-    expect(pack.verified).toBe(false)
+    // Heard: QUIZ NIGHT, fx-mic firmware 1.1.2, 27 Sep 2026. Add to this list
+    // only with a recording to point at.
+    expect(pack.verified).toBe(HEARD_ON_HARDWARE.includes(pack.id))
   })
 })
 
@@ -138,7 +157,8 @@ describe('the library as a whole', () => {
     }
   })
 
-  it('uses every playmode-free path — no pack needs a wav to work', () => {
-    for (const pack of LIBRARY) expect(pack.config.samples).toBeUndefined()
+  it('needs no wav to work, except the one pack that brings its own', () => {
+    for (const pack of LIBRARY) if (!pack.sounds) expect(pack.config.samples).toBeUndefined()
+    expect(LIBRARY.filter((p) => p.sounds).map((p) => p.id)).toEqual(['quiz-night'])
   })
 })

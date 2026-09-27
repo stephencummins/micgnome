@@ -1,20 +1,22 @@
 /**
  * The starter library.
  *
- * Every pack here is **fx-only**: no `samples` block, which per guide 7.5 means
- * the mic falls back to its four factory sounds. That has three good
+ * Every pack but one is **fx-only**: no `samples` block, which per guide 7.5
+ * means the mic falls back to its four factory sounds. That has three good
  * consequences — nothing of Teenage Engineering's is redistributed, a pack is a
  * few hundred bytes rather than a megabyte, and anyone can try one without
- * finding a wav first.
+ * finding a wav first. QUIZ NIGHT is the exception: its four sounds are the
+ * point, and they are synthesised by `docs/packs/quiz-night/make_sounds.py`,
+ * so they are ours to give away. They are served from `public/packs/<id>/`.
  *
  * Most are homages assembled from the fx-mic's own ten blocks. They are not
  * recreations of another device's DSP. HOUSE MIC is the exception: not a
  * homage but a working pack, and the only one that puts SAMPLE at the end of
  * a chain so the built-in sounds play dry. Y CABLE is the other: the only pack
  * that uses BUS, and therefore the only one resting on a guess about routing
- * rather than on documented behaviour. None of them has been heard on
- * hardware yet — the unit arrives 14 Sep 2026. `verified` flips to true per
- * pack once each has actually been played through a mic.
+ * rather than on documented behaviour. `verified` flips to true per pack once
+ * it has actually been played through a mic; QUIZ NIGHT is the first
+ * (firmware 1.1.2, 27 Sep 2026).
  */
 import type { Config } from '../fxmic/types'
 
@@ -28,6 +30,11 @@ export interface Pack {
   handle: string
   /** True only once the pack has been played on real hardware. */
   verified: boolean
+  /**
+   * The folder its wavs are served from, for the one pack that carries its own
+   * sounds. Every file named in `config.samples` must be there.
+   */
+  sounds?: string
   config: Config
 }
 
@@ -542,6 +549,109 @@ export const LIBRARY: Pack[] = [
           trigger: { row: 0 },
         },
       ],
+    },
+  },
+
+  {
+    id: 'quiz-night',
+    name: 'QUIZ NIGHT',
+    after: 'a pub quiz host\u2019s sound desk',
+    blurb:
+      'the one pack that brings its own sounds, all four made from scratch so they are free to share: a doorbell chime to start a round, applause, a cheesy game-show walk-on and a wrong-answer buzzer. the chime and buzzer cut your voice so they land clean; the applause and walk-on only halve it, so you can talk over them. white picks the sound, grey plays it, and a second press stops the walk-on.',
+    handle: 'on HOST adds presence to cut through a room; on TANNOY pushes you harder into the horn',
+    verified: true,
+    sounds: '/packs/quiz-night',
+    config: {
+      name: 'QUIZ NIGHT',
+      comment: 'White picks the sound, grey plays it. Chime and buzzer cut your voice so they land clean; applause and walk-on halve it so you can talk over them. Orange: HOST for the rounds, TANNOY for announcements. Needs firmware 1.0.9+ for duck.',
+      samples: [
+        {
+          pos: 0,
+          file: 'chime.wav',
+          playmode: 'oneshot',
+          duck: 1.0
+        },
+        {
+          pos: 1,
+          file: 'applause.wav',
+          playmode: 'oneshot',
+          duck: 0.5
+        },
+        {
+          pos: 2,
+          file: 'walkon.wav',
+          playmode: 'startstop',
+          duck: 0.5
+        },
+        {
+          pos: 3,
+          file: 'buzzer.wav',
+          playmode: 'oneshot',
+          duck: 1.0
+        }
+      ],
+      presets: [
+        {
+          pos: 0,
+          name: 'HOST',
+          comment: 'rumble cut, a little presence; squeeze for more cut-through. the sounds play clean after the eq.',
+          list: [
+            {
+              effect: 'HIGHPASS',
+              cutoff: 0.1
+            },
+            {
+              effect: 'EQUALIZER',
+              cutoff: 0.62,
+              Q: 0.35,
+              gain: 0.25
+            },
+            {
+              effect: 'SAMPLE'
+            }
+          ],
+          handle: {
+            row: 1,
+            param: 'gain',
+            depth: 0.5
+          },
+          trigger: {
+            row: 2
+          }
+        },
+        {
+          pos: 1,
+          name: 'TANNOY',
+          comment: 'a horn speaker for announcements; squeeze to push the voice harder into it. the sounds stay clean.',
+          list: [
+            {
+              effect: 'DIST',
+              amount: 3,
+              mix: 0.35,
+              'lowpass-cutoff': 0.55,
+              'highpass-cutoff': 0.3
+            },
+            {
+              effect: 'REVERB',
+              time: 0.35,
+              'wet-level': 0.3,
+              'dry-level': 1.0,
+              'highpass-cutoff': 0.3
+            },
+            {
+              effect: 'SAMPLE'
+            }
+          ],
+          handle: {
+            row: 0,
+            param: 'mix',
+            depth: 0.5
+          },
+          trigger: {
+            row: 2
+          }
+        }
+      ]
     },
   },
 

@@ -88,7 +88,8 @@ function packs(): string {
   return (
     `THE PACK LIBRARY — ${LIBRARY.length} packs already built. Suggest one of these before building from scratch.\n` +
     lines.join('\n') +
-    `\nNone has been heard on real hardware yet, so never claim one is verified.`
+    `\nOnly ${LIBRARY.filter((p) => p.verified).map((p) => p.name).join(', ') || 'none'} has been played on a real mic. ` +
+    `Never claim any other pack is verified.`
   )
 }
 

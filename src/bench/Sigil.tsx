@@ -157,6 +157,29 @@ const DRAWINGS: Record<string, () => Drawing> = {
     }
   },
 
+  // A voice, then the chime: two struck notes dying away, the second
+  // starting before the first has gone. The voice stops under them, which is
+  // what duck 1.0 does.
+  'quiz-night': () => {
+    const voice: [number, number][] = Array.from({ length: 33 }, (_, t) => {
+      const x = 6 + (t * 32) / 32
+      return [x, MID - 5 * Math.sin(x / 2.1) * Math.sin(x / 7.3) - 2 * Math.sin(x / 1.3)]
+    })
+    const bell = (from: number, to: number, height: number): [number, number][] =>
+      Array.from({ length: 61 }, (_, t) => {
+        const x = from + (t * (to - from)) / 60
+        return [x, MID - height * Math.exp(-t / 18) * Math.sin(t * 1.35)]
+      })
+    return {
+      guides: [{ d: `M42 ${MID - 16} V${MID + 16}`, accent: true }],
+      lines: [
+        { points: points(voice), width: 1.6 },
+        { points: points(bell(42, 88, 15)), width: 1.4 },
+        { points: points(bell(62, 102, 12)), width: 1.4, faint: true },
+      ],
+    }
+  },
+
   // One wire in, a fork, two wires out and back together: the top one clean,
   // the bottom one mangled. The guide's one line on BUS, drawn.
   'y-cable': () => {

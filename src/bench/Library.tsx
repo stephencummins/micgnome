@@ -14,24 +14,28 @@ import { EffectGlyph, LfoGlyph, SourceGlyph } from './Glyphs'
 export function Library({
   dirty,
   dispatch,
+  onSounds,
   onSubmit,
 }: {
   dirty: boolean
   dispatch: (a: Action) => void
+  /** Fetch a pack's own wavs onto the bench, for the one pack that has them. */
+  onSounds: (pack: Pack) => void
   /** Open a prefilled GitHub issue carrying the pack on the bench. */
   onSubmit: () => void
 }) {
   return (
     <div className="flex flex-col gap-4">
       <p className="label m-0 max-w-prose leading-relaxed">
-        packs built from the fx-mic&rsquo;s own ten blocks, most borrowing ideas from other boxes. none carries a
-        wav &mdash; they drive the mic&rsquo;s four factory sounds, so they are a few hundred bytes and you can
-        try any of them without finding a sample first.
+        packs built from the fx-mic&rsquo;s own ten blocks, most borrowing ideas from other boxes. all but one
+        carry no wav &mdash; they drive the mic&rsquo;s four factory sounds, so they are a few hundred bytes and you
+        can try any of them without finding a sample first. quiz night brings its own four sounds, made from
+        scratch, and loads them onto the bench with it.
       </p>
 
       <div className="grid gap-3 lg:grid-cols-2">
         {LIBRARY.map((pack) => (
-          <Card key={pack.id} pack={pack} dirty={dirty} dispatch={dispatch} />
+          <Card key={pack.id} pack={pack} dirty={dirty} dispatch={dispatch} onSounds={onSounds} />
         ))}
       </div>
 
@@ -55,12 +59,18 @@ export function Library({
   )
 }
 
-function Card({ pack, dirty, dispatch }: { pack: Pack; dirty: boolean; dispatch: (a: Action) => void }) {
+function Card({ pack, dirty, dispatch, onSounds }: {
+  pack: Pack
+  dirty: boolean
+  dispatch: (a: Action) => void
+  onSounds: (pack: Pack) => void
+}) {
   const [confirming, setConfirming] = useState(false)
   const bytes = new TextEncoder().encode(serialize(pack.config)).byteLength
 
   function load() {
     dispatch({ type: 'load', config: structuredClone(pack.config) })
+    if (pack.sounds) onSounds(pack)
     setConfirming(false)
   }
 
@@ -95,7 +105,7 @@ function Card({ pack, dirty, dispatch }: { pack: Pack; dirty: boolean; dispatch:
 
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-rule-soft pt-3">
         <span className="label">
-          {bytes} bytes · {pack.verified ? 'tested on hardware' : 'not yet heard on hardware'}
+          {pack.sounds ? `${bytes} bytes + four wavs` : `${bytes} bytes`} · {pack.verified ? 'tested on hardware' : 'not yet heard on hardware'}
         </span>
 
         {confirming ? (

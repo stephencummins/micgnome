@@ -134,6 +134,6 @@ describe('what the model is told about the bench', () => {
     expect(prompt).toContain(SKILLS[0].steps[0])
     expect(prompt).toContain('ON THE BENCH RIGHT NOW')
     // The honesty rules are not optional, whichever skill is running.
-    expect(prompt).toContain('tested on real hardware')
+    expect(prompt).toContain('played on a real mic')
   })
 })

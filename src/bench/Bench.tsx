@@ -17,6 +17,7 @@ import { ThemeToggle } from './Theme'
 import { GnomeTab } from './GnomeTab'
 import { Listen } from './Listen'
 import { Library } from './Library'
+import type { Pack } from '../packs/library'
 import { Mark } from './Mark'
 import { Modulation } from './Modulation'
 import { SampleBay, type Source } from './SampleBay'
@@ -193,14 +194,35 @@ export function Bench() {
   )
   const configBytes = new TextEncoder().encode(configText).byteLength
 
+  function sourceFrom(bytes: Uint8Array): Source {
+    const { audio, format } = decodeWav(bytes)
+    const problem = checkPlayable(format)
+    const encoding = nativeEncoding(audio, format.float ? 16 : format.bitDepth, false)
+    return { audio, format, encoding, bytes: encodedBytes(audio, encoding), problem }
+  }
+
+  /** A library pack that carries its own sounds: fetch them from the site onto the bench. */
+  async function loadPackSounds(pack: Pack) {
+    setNote(undefined)
+    setPlan(undefined)
+    const loaded = new Map<string, Source>()
+    for (const sample of pack.config.samples ?? []) {
+      try {
+        const response = await fetch(`${pack.sounds}/${sample.file}`)
+        if (!response.ok) throw new Error(String(response.status))
+        loaded.set(sample.file, sourceFrom(new Uint8Array(await response.arrayBuffer())))
+      } catch {
+        setNote(`Could not fetch ${sample.file} for ${pack.name}. Load the pack again to retry.`)
+      }
+    }
+    setSources((current) => new Map([...current, ...loaded]))
+  }
+
   async function addSample(file: File) {
     setNote(undefined)
     try {
-      const bytes = new Uint8Array(await file.arrayBuffer())
-      const { audio, format } = decodeWav(bytes)
-      const problem = checkPlayable(format)
-      const encoding = nativeEncoding(audio, format.float ? 16 : format.bitDepth, false)
-      const source: Source = { audio, format, encoding, bytes: encodedBytes(audio, encoding), problem }
+      const source = sourceFrom(new Uint8Array(await file.arrayBuffer()))
+      const problem = source.problem
       setSources((current) => new Map(current).set(file.name, source))
       dispatch({ type: 'add-sample', file: file.name, playmode: 'oneshot' })
       setPlan(undefined)
@@ -398,7 +420,8 @@ export function Bench() {
           {tab === 'gnome' ? (
             <GnomeTab state={state} dispatch={dispatch} onAsked={() => setAskedGnome(true)} />
           ) : tab === 'library' ? (
-            <Library dirty={state.dirty} dispatch={dispatch} onSubmit={() => void submit()} />
+            <Library dirty={state.dirty} dispatch={dispatch} onSounds={(p) => void loadPackSounds(p)}
+              onSubmit={() => void submit()} />
           ) : tab === 'chain' ? (
             preset ? (
               <div className="flex max-w-3xl flex-col gap-5">

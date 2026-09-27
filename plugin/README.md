@@ -26,6 +26,32 @@ the AU the way the OS will:
 auval -v aufx Mgn1 Mgnm
 ```
 
+## Testing it against a real mic
+
+The plugin is only worth trusting if it sounds like the mic, and that can be heard
+side by side (the route is in the main README, *Hearing a real mic*):
+
+1. Put the pack's `config.json` on the mic, and load the same file into the plugin with
+   **load**.
+2. Record one take through the mic on a preset, say slot 1, and a second take with the mic's
+   orange button on its first position (your voice, dry), saying or humming the same thing.
+3. Put Mic Gnome on the dry take's track, select slot 1 there too, and play the two takes
+   one after the other. Squeeze the handle on the mic during the first take and move the
+   **handle** slider (or automate it) over the same stretch of the second.
+4. Where they differ, the reading in `Source/Mapping.h` is wrong. Correct it there **and** in
+   `src/preview/mapping.ts`, as above.
+
+Never put the plugin on a take that already went through a mic preset: the chain would run
+twice. And the four samples will not sound, because the plugin does not play `SAMPLE`.
+
+## After it in the chain
+
+Mic Gnome stands in for the mic, so it goes first on the track, where the mic sits in real
+life. Other vocal plugins can then go after it, as they would after a real mic: on this
+MacBook Humanoid, Nectar 4 DeEsser, RVox Stereo (Waves), Vocal Doubler, Vocal Marinade
+and VocalSynth 2. A de-esser or RVox to tidy up, Vocal Doubler to widen, and VocalSynth 2 or
+Humanoid for effects the mic does not have. Nectar 4 Voices and Backer add harmonies.
+
 ## The spec is generated, not typed
 
 `Source/Spec.generated.h` comes from `src/fxmic/spec.ts` via `npm run
