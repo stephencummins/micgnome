@@ -47,7 +47,11 @@
     }
   }
   /* Fancy: warm charcoal and five muted accents (terracotta, sand, sage,
-   * slate, cream), with a little motion. Terracotta takes orange's job. */
+   * slate, cream), with a little motion. Terracotta takes orange's job.
+   * The look is after "Loading, Beautifully" in miaai-lab's gallery of 100
+   * Claude Opus 5.5 pages (miaai-lab.github.io/Claude-Opus-5.5-100-HTML-Files).
+   * That repo has no licence, so none of its code is used here: this CSS is
+   * written fresh to the same palette and mood. */
   :root[data-theme="fancy"] {
     color-scheme: dark;
     --color-paper: #141414;
