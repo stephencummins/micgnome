@@ -11,6 +11,7 @@
  * and nothing about audio. That is the whole reason this tab exists.
  */
 import type { GroundingKey } from './grounding'
+import { LIBRARY } from '../packs/library'
 
 export const SKILL_IDS = ['from-scratch', 'pick-a-pack', 'combine', 'explain', 'fix', 'to-the-mic'] as const
 export type SkillId = (typeof SKILL_IDS)[number]
@@ -48,9 +49,9 @@ export const SKILLS: Skill[] = [
     id: 'pick-a-pack',
     when: 'They are browsing, unsure what they want, or they name a genre or a device.',
     cues: ['pack', 'preset', 'library', 'example', 'start', 'ideas', 'what can', 'show me', 'suggest'],
-    opening: 'There are nine packs already built. Tell me roughly what you are after and I will point you at one.',
+    opening: `There are ${LIBRARY.length} packs already built. Tell me roughly what you are after and I will point you at one.`,
     steps: [
-      'Prefer an existing pack over building something new: they are tested, and loading one is a single step.',
+      'Prefer an existing pack over building something new: they already pass every check, and loading one is a single step.',
       'Name at most two packs, say what each is for in one line, and say which preset inside it to try first.',
       'Loading a pack replaces what is on the bench. If they have edited something, say so before proposing it.',
       'If nothing fits, say so plainly and offer to build something instead.',

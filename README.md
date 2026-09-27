@@ -116,7 +116,7 @@ and a line is faster.
 
 ### The starter library
 
-`src/packs/library.ts`. Nine packs, thirty-six presets, in a **library** tab that loads any
+`src/packs/library.ts`. Ten packs, thirty-eight presets, in a **library** tab that loads any
 of them onto the bench.
 
 | pack | after | idea |
@@ -129,6 +129,7 @@ of them onto the bench.
 | XY RACK | OP&ndash;XY | the three of its six published effects the library did not already have, plus a phaser |
 | HOUSE MIC | no device | the working pack: host, tannoy, mc and a fader, with the built-in sounds playing dry |
 | Y CABLE | guide &sect;7.10 | the only pack that uses BUS: a clean voice with a copy mangled beside it, four ways |
+| QUIZ NIGHT | a pub quiz host&rsquo;s sound desk | the one pack with its own sounds (chime, applause, walk-on, buzzer, all synthesised) and the only one heard on hardware |
 | DUAL MONO | windowbed | not ours: a published config known to run on a TING, ending in a clean channel and a wet one |
 
 Each card leads with a **sigil** (`src/bench/Sigil.tsx`) that draws what the pack does
@@ -138,10 +139,13 @@ tuning line. Generated from the same maths that produces the waveform, in theme 
 so it survives dark mode and any size. A test fails if a pack has no sigil, or a sigil no
 pack.
 
-Every pack is **fx-only** — no `samples` block, so per guide 7.5 the mic falls back to its
+Every pack but QUIZ NIGHT is **fx-only**: no `samples` block, so per guide 7.5 the mic falls back to its
 four factory sounds. Three good consequences: nothing of Teenage Engineering's is
 redistributed, a pack is under 2 kB rather than a megabyte, and anyone can try one without
-finding a wav first.
+finding a wav first. QUIZ NIGHT is the exception on purpose: its four wavs are made from
+scratch by `docs/packs/quiz-night/make_sounds.py`, served from `public/packs/quiz-night/`, and
+fetched onto the bench when the pack loads. It is also the only pack marked **tested on
+hardware** (fx-mic, firmware 1.1.2, 27 Sep 2026); a test holds `verified` to that list.
 
 Six are homages assembled from the fx-mic's own blocks, not recreations of another
 device's DSP. The seventh, HOUSE MIC, is the first pack that is not a demonstration: four
@@ -356,12 +360,18 @@ somebody edited by hand gets repaired and reported rather than refused, and the 
 then cleared so a reload cannot quietly discard edits. This is the read-only gallery without
 the gallery.
 
-### Dark mode
+### Themes
 
-The palette has a dark variant and follows the system by default. **dark** / **light** in
-the header overrides that per browser (`src/bench/Theme.tsx`, one localStorage key,
+The palette has a dark variant and follows the system by default. The theme link in the
+header cycles **light**, **dark** and **fancy**, and overrides the system per browser (`src/bench/Theme.tsx`, one localStorage key,
 stamped on the root before first paint so there is no flash). Every glyph and colour
 token has a dark value, which is why the glyphs are drawn rather than placed.
+
+**fancy** is warm charcoal with terracotta, sand and sage, after miaai-lab&rsquo;s "Loading,
+Beautifully" (none of its code, which is unlicensed). It adds motion that means something: a
+signal falling down the chain, blocks rising in, listen breathing, the handle filling, the
+verdict tick drawing itself, hopping dots on anything still working (`src/bench/Hop.tsx`).
+It is all CSS on hook classes that do nothing in light and dark, and reduced motion stills it.
 
 ### Getting started
 
