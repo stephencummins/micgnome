@@ -5,6 +5,7 @@ import type { Report } from '../fxmic/diagnostics'
 import { serialize } from '../fxmic/serialize'
 import { RECOVERY } from '../fxmic/spec'
 import type { Config } from '../fxmic/types'
+import { Hop } from './Hop'
 
 type Stage = 'confirm' | 'working' | 'done' | 'failed'
 
@@ -109,7 +110,7 @@ export function WriteDialog({
           </div>
         )}
 
-        {stage === 'working' && <p className="data mt-4">writing…</p>}
+        {stage === 'working' && <p className="data mt-4">writing<Hop /></p>}
 
         {stage === 'done' && result && (
           <div className="mt-4 flex flex-col gap-2">

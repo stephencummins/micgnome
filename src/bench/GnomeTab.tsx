@@ -18,6 +18,7 @@ import type { DryRun } from '../gnome/apply'
 import { SKILLS, skillById } from '../gnome/skills'
 import type { SkillId } from '../gnome/skills'
 import type { ProposedAction } from '../gnome/protocol'
+import { Hop } from './Hop'
 import { Mark } from './Mark'
 import type { Action, BenchState } from './state'
 import { TURNSTILE_SITE_KEY } from '../site'
@@ -270,7 +271,7 @@ export function GnomeTab({
           </div>
         ))}
         {busy && <p className="text-mute" aria-label="thinking">
-          thinking<span className="hop" aria-hidden><i /><i /><i /></span>
+          thinking<Hop />
         </p>}
         <div ref={foot} />
       </div>
@@ -309,7 +310,7 @@ export function GnomeTab({
           />
           <button type="submit" disabled={busy || exhausted || draft.trim() === ''}
             className="rounded border-2 border-orange bg-orange px-5 py-2.5 font-medium text-paper disabled:border-rule disabled:bg-transparent disabled:text-mute">
-            {busy ? '…' : 'send'}
+            {busy ? <><span className="sr-only">sending</span><Hop /></> : 'send'}
           </button>
         </form>
 
