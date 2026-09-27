@@ -145,7 +145,10 @@ export function Bench() {
     const url = shareUrl(await encodePack(state.config))
     try {
       await navigator.clipboard.writeText(url)
-      setNote(`Link copied — ${url.length} characters, and the whole pack is in it. Anyone who opens it gets this bench.`)
+      const sounds = state.config.samples?.length ?? 0
+      setNote(sounds
+        ? `Link copied — ${url.length} characters. It carries the config, not the ${sounds === 1 ? 'wav' : `${sounds} wavs`}: send those alongside, or the bench will flag them as missing.`
+        : `Link copied — ${url.length} characters, and the whole pack is in it. Anyone who opens it gets this bench.`)
     } catch {
       setNote(url)
     }
@@ -290,7 +293,7 @@ export function Bench() {
               redo
             </button>
           </span>
-          <button type="button" onClick={() => void share()} title="copy a link that carries this whole pack"
+          <button type="button" onClick={() => void share()} title="copy a link that carries this pack's config"
             className="underline hover:text-orange">
             share
           </button>

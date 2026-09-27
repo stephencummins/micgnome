@@ -269,7 +269,7 @@ input[type="range"]::-moz-range-thumb {
 :root[data-theme="fancy"] button:active:not(:disabled) { transform: scale(0.97); }
 
 /* Dialogs rise over a blurred, darkened bench. */
-:root[data-theme="fancy"] .fixed.inset-0.z-50 { background: rgb(10 10 10 / 0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+:root[data-theme="fancy"] .fixed.inset-0.z-50 { background: rgb(10 10 10 / 0.55); backdrop-filter: blur(6px); }
 :root[data-theme="fancy"] .fixed.inset-0.z-50 > div { animation: rise 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); box-shadow: 0 30px 80px -30px rgb(224 122 95 / 0.35); }
 
 @media (prefers-reduced-motion: reduce) {
