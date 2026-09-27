@@ -19,5 +19,6 @@ they still use the mic's 1 MB and it says there is not enough space. Then eject.
 Every sound is synthesised by `make_sounds.py` (numpy), so nothing here is anyone's recording.
 24 kHz, 16-bit mono: about 800 KB of the mic's 1 MB.
 
-Not yet heard on hardware: whether the mic plays a 24 kHz wav at the right speed (the duck test
-used 48 kHz), and whether `startstop` loops. The walk-on ends on its own either way.
+Heard on an fx-mic (firmware 1.1.2, 27 Sep 2026): the 24 kHz wavs play at the right speed and
+pitch, the chime and buzzer cut the voice, applause lets it through quieter, and a second press
+stops the walk-on. Not yet checked: what a third press does.
