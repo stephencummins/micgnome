@@ -75,7 +75,7 @@ function Card({ pack, dirty, dispatch, onSounds }: {
   }
 
   return (
-    <div className="flex flex-col border border-rule bg-paper p-3">
+    <div className="pack-card flex flex-col border border-rule bg-paper p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex shrink-0 items-center gap-3">
           <Sigil pack={pack.id} />

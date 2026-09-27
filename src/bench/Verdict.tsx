@@ -12,7 +12,8 @@ export function Verdict({ report, onJump }: { report: Report; onJump?: (path: st
     <div className="flex flex-col gap-1">
       {errors.length === 0 && (
         <p className="data flex items-center gap-2 bg-pass-soft px-2 py-1.5 text-pass">
-          <span aria-hidden>✓</span> safe to write
+          <svg className="ink-tick" viewBox="0 0 16 16" aria-hidden><path d="M3 8.5l3.2 3L13 4.5" pathLength={1} /></svg>
+          safe to write
         </p>
       )}
       {errors.map((d, i) => (

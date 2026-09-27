@@ -1,18 +1,19 @@
 import { useState } from 'react'
 
 /**
- * Light or dark, remembered per browser. With nothing stored the page follows
- * the system, which is what most people want and what the CSS already does;
- * the toggle exists for the other people, and for checking the dark palette
- * without changing the whole machine.
+ * Light, dark or fancy, remembered per browser. With nothing stored the page
+ * follows the system, which is what most people want and what the CSS already
+ * does; the toggle exists for the other people, for checking the dark palette
+ * without changing the whole machine, and for fancy, which no system asks for.
  */
-type Theme = 'light' | 'dark'
+type Theme = 'light' | 'dark' | 'fancy'
+const ORDER: Theme[] = ['light', 'dark', 'fancy']
 const KEY = 'micgnome:theme'
 
 export function storedTheme(): Theme | undefined {
   try {
     const t = localStorage.getItem(KEY)
-    return t === 'dark' || t === 'light' ? t : undefined
+    return ORDER.includes(t as Theme) ? (t as Theme) : undefined
   } catch {
     return undefined
   }
@@ -30,7 +31,7 @@ export function applyStoredTheme() {
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(() => storedTheme() ?? systemTheme())
-  const next: Theme = theme === 'dark' ? 'light' : 'dark'
+  const next = ORDER[(ORDER.indexOf(theme) + 1) % ORDER.length]
 
   function flip() {
     document.documentElement.dataset.theme = next

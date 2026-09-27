@@ -46,6 +46,25 @@
       --color-drive: #ff5fae;
     }
   }
+  /* Fancy: warm charcoal and five muted accents (terracotta, sand, sage,
+   * slate, cream), with a little motion. Terracotta takes orange's job. */
+  :root[data-theme="fancy"] {
+    color-scheme: dark;
+    --color-paper: #141414;
+    --color-panel: #1b1a19;
+    --color-ink: #f4f1de;
+    --color-mute: #a19d8c;
+    --color-rule: #34322e;
+    --color-rule-soft: #242321;
+    --color-orange: #e07a5f;
+    --color-orange-soft: #2e1d18;
+    --color-pass: #81b29a;
+    --color-pass-soft: #18241e;
+    --color-filter: #8f94c4;
+    --color-space: #81b29a;
+    --color-pitch: #c3a3d6;
+    --color-drive: #f2cc8f;
+  }
   :root[data-theme="dark"] {
     --color-paper: #0e0d0c;
     --color-panel: #181614;
@@ -135,6 +154,50 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 0;
 }
 
+/* The thinking dots: a plain ellipsis until the fancy theme makes them hop. */
+.hop { display: inline-flex; gap: 0.14em; margin-left: 0.1em; }
+.hop i { width: 0.2em; height: 0.2em; border-radius: 50%; background: currentColor; align-self: flex-end; margin-bottom: 0.25em; }
+
+/* The verdict's tick, drawn in by the fancy theme. */
+.ink-tick { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+:root[data-theme="fancy"] body {
+  background:
+    radial-gradient(60% 50% at 12% 0%, rgb(224 122 95 / 0.08), transparent 70%),
+    radial-gradient(50% 40% at 95% 8%, rgb(129 178 154 / 0.06), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgb(244 241 222 / 0.05) 1px, transparent 1.4px) 0 0 / 16px 16px,
+    var(--color-paper);
+  background-attachment: fixed;
+}
+:root[data-theme="fancy"] .border,
+:root[data-theme="fancy"] .bg-orange { border-radius: 9px; }
+:root[data-theme="fancy"] .border.bg-paper,
+:root[data-theme="fancy"] .border.bg-panel { border-radius: 14px; }
+/* White on terracotta is under 3:1; charcoal on it clears 6. */
+:root[data-theme="fancy"] .bg-orange.text-white { color: #141414; }
+:root[data-theme="fancy"] .pack-card {
+  background: linear-gradient(180deg, #1b1a19, #171615);
+  transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.35s, border-color 0.35s;
+}
+:root[data-theme="fancy"] .pack-card:hover {
+  transform: translateY(-3px);
+  border-color: rgb(224 122 95 / 0.45);
+  box-shadow: 0 22px 50px -24px rgb(224 122 95 / 0.45);
+}
+:root[data-theme="fancy"] .bg-pass-soft,
+:root[data-theme="fancy"] .bg-orange-soft { border-radius: 8px; }
+:root[data-theme="fancy"] input[type="range"]::-webkit-slider-thumb { width: 14px; height: 14px; margin-top: -5.5px; border-radius: 50%; box-shadow: 0 0 0 4px rgb(224 122 95 / 0.18); }
+:root[data-theme="fancy"] input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 0 4px rgb(224 122 95 / 0.18); }
+:root[data-theme="fancy"] .hop i { animation: hop 1.3s cubic-bezier(0.3, 0, 0.3, 1) infinite; background: #e07a5f; }
+:root[data-theme="fancy"] .hop i:nth-child(2) { animation-delay: 0.14s; background: #f2cc8f; }
+:root[data-theme="fancy"] .hop i:nth-child(3) { animation-delay: 0.28s; background: #81b29a; }
+@keyframes hop { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-0.35em); } }
+:root[data-theme="fancy"] .ink-tick { animation: tick-pop 0.5s 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) backwards; }
+:root[data-theme="fancy"] .ink-tick path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: ink 0.45s 0.1s ease-out forwards; }
+@keyframes ink { to { stroke-dashoffset: 0; } }
+@keyframes tick-pop { from { transform: scale(0.6); } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+  :root[data-theme="fancy"] .ink-tick path { stroke-dashoffset: 0; }
 }

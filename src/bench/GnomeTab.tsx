@@ -269,7 +269,9 @@ export function GnomeTab({
             )}
           </div>
         ))}
-        {busy && <p className="text-mute">thinking…</p>}
+        {busy && <p className="text-mute" aria-label="thinking">
+          thinking<span className="hop" aria-hidden><i /><i /><i /></span>
+        </p>}
         <div ref={foot} />
       </div>
 
