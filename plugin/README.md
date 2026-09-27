@@ -48,7 +48,7 @@ twice. And the four samples will not sound, because the plugin does not play `SA
 
 Mic Gnome stands in for the mic, so it goes first on the track, where the mic sits in real
 life. Other vocal plugins can then go after it, as they would after a real mic: on this
-MacBook Humanoid, Nectar 4 DeEsser, RVox Stereo (Waves), Vocal Doubler, Vocal Marinade
+MacBook Humanoid, Nectar 4 DeEsser, RVox Stereo (Waves), Vocal Doubler, Vocal Marinade (Carnivore Audio, VST3 only)
 and VocalSynth 2. A de-esser or RVox to tidy up, Vocal Doubler to widen, and VocalSynth 2 or
 Humanoid for effects the mic does not have. Nectar 4 Voices and Backer add harmonies.
 
