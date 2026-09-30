@@ -311,6 +311,10 @@ export function Bench() {
                 e.target.value = ''
               }} />
           </label>
+          <a href="https://tdmdne.stephen8n.com" target="_blank" rel="noreferrer noopener"
+            className="underline hover:text-orange" title="this drum machine does not exist: a new kit every click">
+            tdmdne
+          </a>
           <a href="https://stephen8n.com" target="_blank" rel="noreferrer noopener"
             className="underline hover:text-orange" title="more from Stephen Cummins">
             stephen8n
