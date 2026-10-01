@@ -439,13 +439,6 @@ export function Bench() {
                 {t === 'gnome' ? 'helper gnome' : t}
               </button>
             ))}
-            <button type="button" onClick={() => (guideOpen ? closeGuide() : setGuideOpen(true))}
-              aria-pressed={guideOpen}
-              className={`tab data -mb-px ml-auto hidden whitespace-nowrap border-b-2 px-1 pb-2 sm:block ${
-                guideOpen ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
-              }`}>
-              how it works
-            </button>
           </div>
 
           {/* Below the desktop breakpoint there is no room beside the bench, so the
