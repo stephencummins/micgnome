@@ -84,14 +84,15 @@ editor UI only.
 | --- | --- | --- |
 | `public/favicon.svg` | the mark drawn as a vector — cone hat, beard, orange nose | browser tab |
 | `src/bench/Mark.tsx` | the same mark, taking its greys from the theme | app header |
-| `public/logo-tile.png` | the square logo, wordmark included | README, `og:image` |
-| `public/apple-touch-icon.png` | the same tile at 180px | home-screen icon |
+| `public/logo-tile.png` | the framed mark over a lowercase Archivo "mic gnome", 512px | README, `og:image` |
+| `public/apple-touch-icon.png` | the framed mark alone, inset so iOS's rounded corners don't clip the frame, 180px | home-screen icon |
 | `public/device.png` | the device render | the help panel |
 
 The tab icon and the header mark are **drawn, not placed**, for two reasons that the
 raster cannot solve: the logo's beard is white on white, so the tile becomes a white box
 in dark mode; and the wordmark inside it is illegible below about 60px, which is where a
 favicon and a header mark both live. The vector is the same artwork with the type removed.
+The two PNGs are rendered from that vector too, so all four match.
 
 ### The glyphs
 
