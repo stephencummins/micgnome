@@ -7,6 +7,21 @@ export type StepStatus = 'done' | 'current' | 'todo' | 'optional'
 export const STEP_TAB: (string | undefined)[] = ['gnome', 'library', 'chain', 'chain', 'samples', undefined, undefined, 'library']
 
 /**
+ * What each step's "where →" link points at on the bench: switch to its tab
+ * (if it has one), then scroll to this and outline it, as TDMDNE's guide does.
+ */
+export const STEP_AT: string[] = [
+  '#tab-gnome',
+  '#tab-library',
+  '#bench-chain',
+  '#bench-modulation',
+  '#tab-samples',
+  '#bench-write',
+  '#bench-downloads',
+  '#tab-library',
+]
+
+/**
  * What the person has actually done, read off the bench rather than asked.
  *
  * Three steps are optional and never block "current": asking the gnome, your

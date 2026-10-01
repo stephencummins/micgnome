@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { STEPS, TILE_GLYPHS, PICTURES } from '../Tour'
+import { STEP_AT } from '../progress'
 
 describe('the tour', () => {
   it('is eight steps, each saying where on the bench it happens', () => {
@@ -40,5 +41,10 @@ describe('the way in, for someone who does not want to build anything', () => {
   it('has a tile and a drawing for every step, or the guide renders a hole', () => {
     expect(TILE_GLYPHS).toHaveLength(STEPS.length)
     expect(PICTURES).toHaveLength(STEPS.length)
+  })
+
+  it('gives every step a control to point at, so each "where →" goes somewhere', () => {
+    expect(STEP_AT).toHaveLength(STEPS.length)
+    for (const at of STEP_AT) expect(at).toMatch(/^#[a-z-]+$/)
   })
 })

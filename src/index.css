@@ -28,8 +28,11 @@
 }
 
 @layer theme {
+  /* How strongly the pack's bit-art shows in the margins. */
+  :root { --wall: 0.16; }
   :root:not([data-theme="light"]) {
     @media (prefers-color-scheme: dark) {
+      --wall: 0.2;
       --color-paper: #0e0d0c;
       --color-panel: #181614;
       --color-ink: #f3f1ee;
@@ -54,6 +57,7 @@
    * written fresh to the same palette and mood. */
   :root[data-theme="fancy"] {
     color-scheme: dark;
+    --wall: 0.2;
     --color-paper: #141414;
     --color-panel: #1b1a19;
     --color-ink: #f4f1de;
@@ -70,6 +74,7 @@
     --color-drive: #f2cc8f;
   }
   :root[data-theme="dark"] {
+    --wall: 0.2;
     --color-paper: #0e0d0c;
     --color-panel: #181614;
     --color-ink: #f3f1ee;
@@ -87,6 +92,8 @@
   }
 }
 
+/* html keeps no background of its own: body's paper then becomes the canvas,
+ * and the wallpaper's fixed layers at z-index -1 paint above it. */
 html { color-scheme: light dark; }
 
 body {
@@ -101,6 +108,29 @@ body {
   outline: 2px solid var(--color-orange);
   outline-offset: 2px;
 }
+
+/*
+ * Dressed like TDMDNE: the bench sits centred in a hairline box on the paper,
+ * and the pack's bit-art is tiled faintly down the margins either side, masked
+ * out of the middle (±--half, then a 60px fade) so it never sits behind a
+ * control or the text. --half follows the device's width, wider with the guide
+ * docked. Two layers so a new pack crossfades in.
+ */
+.bench { --half: 570px; }
+@media (min-width: 64rem) { .bench.guide-on { --half: 720px; } }
+.wall {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-position: center top; background-size: 224px;
+  opacity: 0; transition: opacity 0.8s;
+  --m: linear-gradient(to right, #000 calc(50% - var(--half) - 60px), transparent calc(50% - var(--half)),
+    transparent calc(50% + var(--half)), #000 calc(50% + var(--half) + 60px));
+  -webkit-mask-image: var(--m);
+  mask-image: var(--m);
+}
+.wall.on { opacity: var(--wall); }
+
+/* A guide step's "where →" link outlines the control it means, briefly. */
+.lookhere { outline: 2px solid var(--color-orange) !important; outline-offset: 2px; }
 
 /* The repeated furniture, so the markup stays readable. */
 /*
@@ -216,8 +246,8 @@ input[type="range"]::-moz-range-thumb {
   background-clip: text;
   color: transparent;
 }
-:root[data-theme="fancy"] .brand-mark svg { transform-origin: 50% 10%; }
-:root[data-theme="fancy"] .brand-mark:hover svg { animation: sway 1.4s ease-in-out; }
+:root[data-theme="fancy"] .brand-mark .gnome { transform-box: fill-box; transform-origin: 50% 10%; }
+:root[data-theme="fancy"] .brand-mark:hover .gnome { animation: sway 1.4s ease-in-out; }
 @keyframes sway { 25% { transform: rotate(9deg); } 60% { transform: rotate(-6deg); } 85% { transform: rotate(2deg); } }
 
 /* Tabs: the underline grows out from the middle, terracotta into sand. */

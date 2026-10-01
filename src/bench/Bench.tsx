@@ -11,7 +11,8 @@ import { Chain } from './Chain'
 import { HandleMap } from './HandleMap'
 import { HowTo } from './HowTo'
 import { Guide } from './Tour'
-import { stepStatuses } from './progress'
+import { STEP_AT, STEP_TAB, stepStatuses } from './progress'
+import { Wallpaper } from './Wallpaper'
 import { submitUrl } from './submit'
 import { ThemeToggle } from './Theme'
 import { GnomeTab } from './GnomeTab'
@@ -191,9 +192,21 @@ export function Bench() {
     // so choosing a tab means "show me the tab", not both.
     if (guideOpen && !window.matchMedia('(min-width: 64rem)').matches) closeGuide()
   }
+  /** A guide step's "where →": switch to its tab, then scroll to the control and outline it. */
+  const goTo = (step: number) => {
+    const t = STEP_TAB[step]
+    if (t) chooseTab(t as Tab)
+    setTimeout(() => {
+      const el = document.querySelector<HTMLElement>(STEP_AT[step])
+      if (!el) return
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      el.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' })
+      el.classList.add('lookhere')
+      setTimeout(() => el.classList.remove('lookhere'), 1600)
+    }, 60)
+  }
   const guide = (
-    <Guide status={progress} tab={tab} onClose={closeGuide} onFullGuide={() => setFullGuide(true)}
-      onGoTo={(t) => chooseTab(t as Tab)} />
+    <Guide status={progress} tab={tab} onClose={closeGuide} onFullGuide={() => setFullGuide(true)} onGoTo={goTo} />
   )
   const configBytes = new TextEncoder().encode(configText).byteLength
 
@@ -269,69 +282,84 @@ export function Bench() {
 
   const blocked = report.diagnostics.some((d) => d.severity === 'error')
 
+  const bar = 'border border-rule bg-paper px-2.5 py-1 font-mono text-[12.5px] tracking-[0.02em] hover:border-ink disabled:opacity-40 disabled:hover:border-rule'
+
   return (
-    <div className="min-h-dvh">
-      <header className="sticky top-0 z-20 flex flex-wrap items-baseline justify-between gap-3 border-b border-rule bg-paper px-4 py-2.5">
-        <div className="flex items-center gap-2.5">
-          <span className="brand-mark"><Mark /></span>
-          <b className="tracking-tight">
-            mic <span className="wordmark text-orange">gnome</span>
-          </b>
-          <input aria-label="pack name" value={state.config.name ?? ''}
-            onChange={(e) => dispatch({ type: 'set-pack-name', name: e.target.value })}
-            className="data w-56 border-b border-rule bg-transparent px-1 py-0.5" />
-        </div>
-        <div className="label flex flex-wrap items-center gap-x-4 gap-y-1 whitespace-nowrap">
-          <span>{disk.label} · {kb(diskFiles.reduce((n, f) => n + f.bytes, 0))} on disk</span>
-          <span className="flex items-center gap-2">
-            <button type="button" onClick={() => dispatch({ type: 'undo' })} disabled={!canUndo}
-              title="undo (⌘Z)" className="underline hover:text-orange disabled:no-underline disabled:opacity-40">
-              undo
-            </button>
-            <button type="button" onClick={() => dispatch({ type: 'redo' })} disabled={!canRedo}
-              title="redo (⇧⌘Z)" className="underline hover:text-orange disabled:no-underline disabled:opacity-40">
-              redo
-            </button>
-          </span>
-          <button type="button" onClick={() => void share()} title="copy a link that carries this pack's config"
-            className="underline hover:text-orange">
-            share
-          </button>
+    <div className={`bench min-h-dvh ${guideOpen ? 'guide-on' : ''}`}>
+      <Wallpaper config={state.config} />
+      {/* The family top bar, as on TDMDNE and Riffbook: wordmark, theme, the
+          guide, the siblings, the way home. What acts on the pack lives in the
+          device's own bar below. */}
+      <header className="z-20 flex sm:sticky sm:top-0 flex-wrap items-center justify-between gap-3 border-b border-rule bg-paper px-4 py-[9px]">
+        <h1 className="m-0 flex items-center gap-[9px] text-[14px] font-semibold tracking-tight">
+          <span className="brand-mark"><Mark framed /></span>
+          <span>mic <span className="wordmark text-orange">gnome</span></span>
+        </h1>
+        <nav className="label flex flex-wrap items-center gap-x-4 gap-y-1 whitespace-nowrap" aria-label="site">
           <ThemeToggle />
-          <button type="button" onClick={() => setGuideOpen((o) => !o)} className="underline hover:text-orange">
-            how to use
+          <button type="button" onClick={() => (guideOpen ? closeGuide() : setGuideOpen(true))} aria-pressed={guideOpen}
+            className={`underline hover:text-orange ${guideOpen ? 'text-orange' : ''}`}>
+            how it works
           </button>
-          <label className="cursor-pointer underline hover:text-orange"
-            title="Open a config.json you already have. You do not need one to start — Mic Gnome writes it for you.">
-            import config
-            <input type="file" accept=".json,application/json" className="sr-only"
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) void importConfig(file)
-                e.target.value = ''
-              }} />
-          </label>
           <a href="https://tdmdne.stephen8n.com" target="_blank" rel="noreferrer noopener"
             className="underline hover:text-orange" title="this drum machine does not exist: a new kit every click">
             tdmdne
+          </a>
+          <a href="https://riffbook.stephen8n.com" target="_blank" rel="noreferrer noopener"
+            className="underline hover:text-orange" title="Riffbook: Stephen's music-idea sketchbook (private)">
+            riffbook
           </a>
           <a href="https://stephen8n.com" target="_blank" rel="noreferrer noopener"
             className="underline hover:text-orange" title="more from Stephen Cummins">
             stephen8n
           </a>
-        </div>
+        </nav>
       </header>
+
+      <div className={`mx-auto flex flex-col px-4 pt-5 pb-4 ${guideOpen ? 'max-w-[1120px] lg:max-w-[1420px]' : 'max-w-[1120px]'}`}>
+      <section className="device border border-rule bg-paper" aria-label="the bench">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 border-b border-rule bg-panel px-3.5 py-2.5">
+          <div className="label flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span>pack</span>
+            <input aria-label="pack name" value={state.config.name ?? ''}
+              onChange={(e) => dispatch({ type: 'set-pack-name', name: e.target.value })}
+              className="data w-48 border-b border-rule bg-transparent px-1 py-0.5 font-medium text-ink" />
+            <span aria-hidden>·</span>
+            <span>{disk.label} · <b className="font-medium text-ink">{kb(diskFiles.reduce((n, f) => n + f.bytes, 0))}</b> on disk</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button type="button" onClick={() => dispatch({ type: 'undo' })} disabled={!canUndo} title="undo (⌘Z)" className={bar}>
+              undo
+            </button>
+            <button type="button" onClick={() => dispatch({ type: 'redo' })} disabled={!canRedo} title="redo (⇧⌘Z)" className={bar}>
+              redo
+            </button>
+            <button type="button" onClick={() => void share()} title="copy a link that carries this pack's config" className={bar}>
+              copy link
+            </button>
+            <label className={`${bar} cursor-pointer`}
+              title="Open a config.json you already have. You do not need one to start — Mic Gnome writes it for you.">
+              import config
+              <input type="file" accept=".json,application/json" className="sr-only"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) void importConfig(file)
+                  e.target.value = ''
+                }} />
+            </label>
+          </div>
+        </div>
 
       <PreviewStrip />
 
       {note && (
-        <p className="data flex items-baseline justify-between gap-3 border-b border-rule bg-orange-soft px-4 py-2 text-orange">
+        <p className="data m-0 flex items-baseline justify-between gap-3 border-b border-rule bg-orange-soft px-4 py-2 text-orange">
           {note}
           <button type="button" onClick={() => setNote(undefined)} className="label underline">dismiss</button>
         </p>
       )}
 
-      <main className={`grid min-h-[calc(100dvh-49px)] gap-px bg-rule ${
+      <main className={`grid grid-cols-[minmax(0,1fr)] gap-px bg-rule ${
         guideOpen ? 'lg:grid-cols-[270px_minmax(0,1fr)_300px]' : 'lg:grid-cols-[270px_minmax(0,1fr)]'
       }`}>
         <section className="bg-paper p-4">
@@ -390,11 +418,11 @@ export function Bench() {
           <div>
             <div className="label mb-2">write</div>
             <Verdict report={report} onJump={setFocus} />
-            <button type="button" onClick={() => setWriting(true)} disabled={blocked}
+            <button id="bench-write" type="button" onClick={() => setWriting(true)} disabled={blocked}
               className="data mt-2 w-full border border-orange bg-orange px-3 py-2 tracking-wider text-white disabled:opacity-40">
               write to {disk.label}
             </button>
-            <Downloads configText={configText} files={packFiles} blocked={blocked} onDownload={() => setDownloaded(true)} />
+            <div id="bench-downloads"><Downloads configText={configText} files={packFiles} blocked={blocked} onDownload={() => setDownloaded(true)} /></div>
           </div>
 
           <Paper />
@@ -402,10 +430,10 @@ export function Bench() {
         </section>
 
         <section className="bg-paper p-4">
-          <div className="mb-4 flex gap-4 border-b border-rule-soft">
+          <div className="mb-4 flex gap-x-3.5 border-b border-rule-soft sm:gap-x-4">
             {(['chain', 'samples', 'library', 'gnome'] as const).map((t) => (
-              <button key={t} type="button" onClick={() => chooseTab(t)}
-                className={`tab data -mb-px border-b-2 px-1 pb-2 ${
+              <button key={t} id={`tab-${t}`} type="button" onClick={() => chooseTab(t)}
+                className={`tab data -mb-px whitespace-nowrap border-b-2 px-1 pb-2 ${
                   tab === t ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
                 }`}>
                 {t === 'gnome' ? 'helper gnome' : t}
@@ -413,7 +441,7 @@ export function Bench() {
             ))}
             <button type="button" onClick={() => (guideOpen ? closeGuide() : setGuideOpen(true))}
               aria-pressed={guideOpen}
-              className={`tab data -mb-px ml-auto border-b-2 px-1 pb-2 ${
+              className={`tab data -mb-px ml-auto hidden whitespace-nowrap border-b-2 px-1 pb-2 sm:block ${
                 guideOpen ? 'border-orange text-orange' : 'border-transparent text-mute hover:text-ink'
               }`}>
               how it works
@@ -442,8 +470,8 @@ export function Bench() {
                     className="label flex-1 border-b border-rule-soft bg-transparent py-0.5" />
                 </div>
                 <Listen preset={preset} handle={state.handle} />
-                <Chain preset={preset} dispatch={dispatch} focus={focus} />
-                <Modulation preset={preset} dispatch={dispatch} />
+                <div id="bench-chain"><Chain preset={preset} dispatch={dispatch} focus={focus} /></div>
+                <div id="bench-modulation"><Modulation preset={preset} dispatch={dispatch} /></div>
               </div>
             ) : (
               <p className="label">no presets. add one on the left.</p>
@@ -461,6 +489,8 @@ export function Bench() {
 
         {guideOpen && <aside className="hidden bg-paper p-4 lg:block">{guide}</aside>}
       </main>
+      </section>
+      </div>
 
       {/* Always reachable. The header link is easy to miss, and the moment someone
           wants the recovery instruction is the moment they are least able to hunt. */}
@@ -505,7 +535,7 @@ function PreviewStrip() {
   })
   if (hidden) return null
   return (
-    <p className="label flex items-baseline justify-between gap-4 border-b border-rule bg-panel px-4 py-2 leading-relaxed">
+    <p className="label m-0 flex items-baseline justify-between gap-4 border-b border-rule bg-panel px-3.5 py-2 leading-relaxed">
       <span>
         preview — the mic here is a <b className="font-medium text-orange">simulation</b>, accurate to the guide but
         not to the hardware. to put a pack on a real fx-mic, download the files under the write button and drop

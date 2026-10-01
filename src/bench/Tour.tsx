@@ -246,8 +246,8 @@ export function Guide({
   tab: string
   onClose: () => void
   onFullGuide: () => void
-  /** Switch the bench to a tab — the step's "where" line is a link to it. */
-  onGoTo: (tab: string) => void
+  /** Show a step's control on the bench — the step's "where" line is a link to it. */
+  onGoTo: (step: number) => void
 }) {
   const current = status.indexOf('current')
   const tabStep = STEP_TAB.findIndex((t, i) => t === tab && status[i] !== 'done')
@@ -257,10 +257,14 @@ export function Guide({
   useEffect(() => setPicked(undefined), [auto])
   const open = picked ?? auto
 
+  // Dressed like TDMDNE's guide: one step open at a time, its number in a
+  // hairline square, the open one framed in orange. The number square also
+  // carries Mic Gnome's progress: a pass-green tick once the bench shows the
+  // step done.
   return (
     <div className="flex h-full flex-col" aria-label="how it works">
-      <div className="mb-3 flex items-baseline justify-between border-b border-rule-soft pb-2">
-        <span className="data font-medium">how it works</span>
+      <div className="mb-3 flex items-baseline justify-between">
+        <h2 className="label m-0 font-normal">how it works</h2>
         <button type="button" onClick={onClose} className="label underline hover:text-orange">close</button>
       </div>
 
@@ -268,34 +272,37 @@ export function Guide({
         {STEPS.map((s, i) => {
           const st = status[i]
           const isOpen = i === open
-          const tone =
-            st === 'done' ? 'text-pass' : st === 'current' ? 'text-orange' : st === 'optional' ? 'text-mute' : 'text-mute'
-          const border =
-            isOpen ? 'border-orange' : st === 'done' ? 'border-pass/40' : 'border-rule-soft hover:border-rule'
+          const box =
+            st === 'done' ? 'border-pass text-pass'
+            : isOpen ? 'border-orange text-orange'
+            : st === 'current' ? 'border-rule text-orange'
+            : 'border-rule text-mute'
+          const tone = st === 'done' ? 'text-pass' : st === 'current' ? 'text-orange' : 'text-mute'
           return (
-            <li key={s.title} className={`border ${border} ${isOpen ? 'bg-paper' : ''}`}>
-              <button type="button" onClick={() => setPicked(i)} aria-expanded={isOpen}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left">
-                <span className={`data w-4 shrink-0 ${tone}`}>{st === 'done' ? '✓' : i + 1}</span>
+            <li key={s.title} className={`border ${isOpen ? 'border-orange' : 'border-rule-soft hover:border-rule'}`}>
+              <button type="button" onClick={() => setPicked(isOpen ? -1 : i)} aria-expanded={isOpen}
+                className="flex w-full items-center gap-2.5 px-2.5 py-2 text-left">
+                <span className={`grid h-[18px] w-[18px] shrink-0 place-items-center border font-mono text-[11px] ${box}`}>
+                  {st === 'done' ? '✓' : i + 1}
+                </span>
                 <span className={`shrink-0 ${tone}`}>{TILE_GLYPHS[i]}</span>
-                <span className={`data min-w-0 flex-1 leading-tight ${st === 'done' ? 'text-mute line-through decoration-pass/50' : st === 'current' ? 'text-ink' : 'text-mute'}`}>
+                <span className={`min-w-0 flex-1 font-mono text-[12.5px] leading-tight ${st === 'done' ? 'text-mute line-through decoration-pass/50' : 'text-ink'}`}>
                   {s.title}
                 </span>
-                {st === 'current' && <span className="label shrink-0 text-orange">now</span>}
-                {st === 'optional' && <span className="label shrink-0">optional</span>}
+                {st === 'current' && <span className="label shrink-0 text-[11px] text-orange">now</span>}
+                {st === 'optional' && <span className="label shrink-0 text-[11px]">optional</span>}
               </button>
               {isOpen && (
-                <div className="border-t border-rule-soft px-3 pb-3 pt-3">
+                <div className="px-2.5 pb-2.5 pl-[38px] text-[13.5px] leading-[1.55]">
                   {PICTURES[i]}
-                  {STEP_TAB[i] ? (
-                    <button type="button" onClick={() => onGoTo(STEP_TAB[i]!)}
-                      className="label mt-3 block underline hover:text-orange">
+                  <p className="m-0 mt-3 font-mono text-[12px] tracking-[0.03em] text-mute">
+                    where:{' '}
+                    <button type="button" onClick={() => onGoTo(i)}
+                      className="text-ink underline decoration-orange underline-offset-[3px] hover:text-orange">
                       {s.where} →
                     </button>
-                  ) : (
-                    <p className="label m-0 mt-3">{s.where}</p>
-                  )}
-                  <p className="label m-0 mt-1 leading-relaxed text-ink">{s.body}</p>
+                  </p>
+                  <p className="m-0 mt-2">{s.body}</p>
                 </div>
               )}
             </li>
