@@ -309,6 +309,10 @@ export function Bench() {
             className="underline hover:text-orange" title="Riffbook: Stephen's music-idea sketchbook (private)">
             riffbook
           </a>
+          <a href="https://padgnome.stephen8n.com" target="_blank" rel="noreferrer noopener"
+            className="underline hover:text-orange" title="Pad Gnome: put samples on the pads of an SP-404SX">
+            pad gnome
+          </a>
           <a href="https://stephen8n.com" target="_blank" rel="noreferrer noopener"
             className="underline hover:text-orange" title="more from Stephen Cummins">
             stephen8n
