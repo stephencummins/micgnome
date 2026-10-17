@@ -5,8 +5,8 @@
  * becomes a white box in dark mode; as a vector it takes its greys from the
  * theme and stays crisp at 16px, which is where a favicon lives.
  *
- * `framed` sets him in the hairline square TDMDNE's dice and Riffbook's book
- * sit in, so the three marks read as one set in the header and the tab.
+ * `framed` sets him in the hairline square the other gnomes sit in, so the
+ * family's marks read as one set in the header and the tab.
  */
 export function Mark({ size = 26, framed = false }: { size?: number; framed?: boolean }) {
   return (

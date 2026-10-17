@@ -287,7 +287,7 @@ export function Bench() {
   return (
     <div className={`bench min-h-dvh ${guideOpen ? 'guide-on' : ''}`}>
       <Wallpaper config={state.config} />
-      {/* The family top bar, as on TDMDNE and Riffbook: wordmark, theme, the
+      {/* The family top bar, as on the other gnomes: wordmark, theme, the
           guide, the siblings, the way home. What acts on the pack lives in the
           device's own bar below. */}
       <header className="z-20 flex sm:sticky sm:top-0 flex-wrap items-center justify-between gap-3 border-b border-rule bg-paper px-4 py-[9px]">
@@ -301,17 +301,21 @@ export function Bench() {
             className={`underline hover:text-orange ${guideOpen ? 'text-orange' : ''}`}>
             how it works
           </button>
-          <a href="https://tdmdne.stephen8n.com" target="_blank" rel="noreferrer noopener"
-            className="underline hover:text-orange" title="this drum machine does not exist: a new kit every click">
-            tdmdne
-          </a>
-          <a href="https://riffbook.stephen8n.com" target="_blank" rel="noreferrer noopener"
-            className="underline hover:text-orange" title="Riffbook: Stephen's music-idea sketchbook (private)">
-            riffbook
-          </a>
           <a href="https://padgnome.stephen8n.com" target="_blank" rel="noreferrer noopener"
             className="underline hover:text-orange" title="Pad Gnome: put samples on the pads of an SP-404SX">
             pad gnome
+          </a>
+          <a href="https://subgnome.stephen8n.com" target="_blank" rel="noreferrer noopener"
+            className="underline hover:text-orange" title="Sub Gnome: a sub-bass synth with everything that moves it">
+            sub gnome
+          </a>
+          <a href="https://tdmdne.stephen8n.com" target="_blank" rel="noreferrer noopener"
+            className="underline hover:text-orange" title="Drum Gnome: this drum machine does not exist, a new kit every click">
+            drum gnome
+          </a>
+          <a href="https://riffbook.stephen8n.com" target="_blank" rel="noreferrer noopener"
+            className="underline hover:text-orange" title="Riff Gnome: Stephen's music-idea sketchbook (private)">
+            riff gnome
           </a>
           <a href="https://stephen8n.com" target="_blank" rel="noreferrer noopener"
             className="underline hover:text-orange" title="more from Stephen Cummins">
