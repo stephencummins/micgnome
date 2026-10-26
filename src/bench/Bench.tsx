@@ -317,6 +317,10 @@ export function Bench() {
             className="underline hover:text-orange" title="Riff Gnome: Stephen's music-idea sketchbook (private)">
             riff gnome
           </a>
+          <a href="https://zedgnome.stephen8n.com" target="_blank" rel="noreferrer noopener"
+            className="underline hover:text-orange" title="Zed Gnome: build drum kits for the OP-Z">
+            zed gnome
+          </a>
           <a href="https://stephen8n.com" target="_blank" rel="noreferrer noopener"
             className="underline hover:text-orange" title="more from Stephen Cummins">
             stephen8n
