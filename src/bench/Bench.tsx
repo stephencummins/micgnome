@@ -313,7 +313,7 @@ export function Bench() {
             className="underline hover:text-orange" title="Drum Gnome: this drum machine does not exist, a new kit every click">
             drum gnome
           </a>
-          <a href="https://riffbook.stephen8n.com" target="_blank" rel="noreferrer noopener"
+          <a href="https://riffgnome.stephen8n.com" target="_blank" rel="noreferrer noopener"
             className="underline hover:text-orange" title="Riff Gnome: Stephen's music-idea sketchbook (private)">
             riff gnome
           </a>
