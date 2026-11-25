@@ -1,0 +1,25 @@
+# Mic Gnome
+
+> A browser patch bay for the Teenage Engineering EP-2350 fx-mic: build effect chains, hear an impression of them, and make the config.json the mic reads. Not affiliated with Teenage Engineering.
+
+- The mic's setup is config.json on its USB disk, and a broken file stops the mic booting. Mic Gnome checks it for errors first.
+- "Write" goes to a virtual fx-mic in the browser. For the real one, download the files and copy them onto its disk.
+- The sound in the browser is an impression of the effect chain, not the mic.
+- The pack library says which packs have been tested on hardware and which have not.
+
+## Pages
+
+- [Mic Gnome](https://micgnome.stephen8n.com/): effect chains, samples, the pack library and a helper
+- [Printed manual](https://micgnome.stephen8n.com/zine): the effects and settings, for A4
+- [Booklet](https://micgnome.stephen8n.com/zine-booklet): the same as a small booklet
+
+## Source
+
+- [micgnome](https://github.com/stephencummins/micgnome)
+
+## Related
+
+- [Pad Gnome](https://padgnome.stephen8n.com/): samples onto a Roland SP-404SX card
+- [Zed Gnome](https://zedgnome.stephen8n.com/): drum kits for the OP-Z
+- [Sub Gnome](https://subgnome.stephen8n.com/): a sub-bass synth in the browser
+- [Drum Gnome](https://tdmdne.stephen8n.com/): invented drum machines
