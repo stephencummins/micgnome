@@ -321,6 +321,10 @@ export function Bench() {
             className="underline hover:text-orange" title="Zed Gnome: build drum kits for the OP-Z">
             zed gnome
           </a>
+          <a href="https://tapegnome.stephen8n.com" target="_blank" rel="noreferrer noopener"
+            className="underline hover:text-orange" title="Tape Gnome: a tape mangler in your browser">
+            tape gnome
+          </a>
           <a href="https://stephen8n.com" target="_blank" rel="noreferrer noopener"
             className="underline hover:text-orange" title="more from Stephen Cummins">
             stephen8n
